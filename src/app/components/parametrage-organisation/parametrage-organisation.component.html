@@ -1,0 +1,60 @@
+<mat-card class="dashboard-card">
+  <mat-card-header>
+    <mat-card-title>ACTIVATION DU SERVICE DE PUBLICATION AUTOMATIQUE</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="dashboard-card-content">
+    <p>
+      L'activation du service de publication vous permettra, sans effort supplémentaire, de publier automatiquement vers data.gouv.fr les délibérations et budgets que vous télétransmettez via la plateforme de services Mégalis.<br><br>
+      Chaque nuit,
+      ces délibérations et budgets seront extraits, mis au format standard SCDL
+      (lien vers
+      <a href="https://schema.data.gouv.fr/scdl/deliberations/latest.html">https://schema.data.gouv.fr/scdl/deliberations/latest.html</a>
+      et <a href="https://schema.data.gouv.fr/scdl/budget/latest.html">https://schema.data.gouv.fr/scdl/budget/latest.html</a>) et publiés sur data.gouv.fr dans les jeux de données de l'organisation Megalis Bretagne
+      (<a href="https://www.data.gouv.fr/fr/organizations/megalis-bretagne/#datasets), ">https://www.data.gouv.fr/fr/organizations/megalis-bretagne/#datasets</a>).
+      <br><br>
+    </p>
+    <mat-slide-toggle (change)="onChangeActivationOpenData()" [(ngModel)]="isChecked">{{isChecked ? 'Activé':'Désactivé'}}</mat-slide-toggle>
+    <p>
+    <br><br>
+    <b>Point RGPD : </b>
+    <br>
+    ***************
+      <br><u> Concernant les budgets :</u>
+      <br>
+    Pas de contrainte RGPD, ils sont automatiquement publiés dans tous les cas.
+    <br>
+      <br><u> Concernant les délibérations :</u>
+    <br>
+    Les délibérations peuvent éventuellement contenir des informations personnelles.
+    Au moment de la télétransmission de vos documents, vous pourrez choisir "oui", "non" ou "ne sais pas" à la question de la publication opendata.
+    <ul>
+    <li>Si vous choisissez oui, le document sera publié.</li>
+    <li>Si vous choisissez "ne sais pas", le document ne sera pas publié, dans l'attente que son statut soit déterminé dans le menu "A statuer".</li>
+    <li>    Si vous choisissez "non", le document ne sera pas publié.</li>
+    </ul>
+    Dans tous les cas, vous pourrez toujours revenir a posteriori sur l'état du document ("publié" ou "non publié") via le menu "Toutes les publications".
+
+  </mat-card-content>
+</mat-card>
+
+<!--<form [formGroup]="form" (ngSubmit)="onFormSubmit()" ngNativeValidate>-->
+<!--  <mat-card class="shipping-card">-->
+<!--    <mat-card-header>-->
+<!--      <mat-card-title>Data gouv information</mat-card-title>-->
+<!--    </mat-card-header>-->
+<!--    <mat-card-content>-->
+<!--      <p>Publication data gouv</p>-->
+<!--      <mat-slide-toggle formControlName="enableDataGouv">activé publication data gouv</mat-slide-toggle>-->
+<!--      <mat-form-field class="full-width">-->
+<!--        <input matInput placeholder="uid udata" formControlName="uid">-->
+<!--      </mat-form-field>-->
+<!--      <mat-form-field class="full-width">-->
+<!--        <input matInput placeholder="clef api" formControlName="apiKey">-->
+<!--      </mat-form-field>-->
+<!--    </mat-card-content>-->
+<!--    <mat-card-actions>-->
+<!--      <button mat-raised-button color="primary" type="submit">Submit</button>-->
+<!--    </mat-card-actions>-->
+<!--  </mat-card>-->
+<!--    -->
+<!--</form>-->

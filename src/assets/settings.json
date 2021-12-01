@@ -1,0 +1,13 @@
+{
+  "production": false,
+  "keycloak": {
+    "issuer": "https://xxxxx",
+    "realm": "xxxxx",
+    "clientId": "xxxx",
+    "urlLogout": "https://xxxxx"
+  },
+  "api": {
+    "url": "https://xxxx"
+  },
+  "urlmarqueblanche" :"https://xxxx"
+}

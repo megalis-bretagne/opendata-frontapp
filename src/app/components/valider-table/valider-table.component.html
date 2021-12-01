@@ -1,0 +1,166 @@
+<div class="publication-content">
+
+  <mat-card>
+
+    <div *ngIf="this.etatPublication == '0'">
+      <mat-card-title>&Agrave; STATUER</mat-card-title>
+      <mat-card-subtitle>
+        Vous trouverez ici uniquement les délibérations issues du flux de télétransmission des actes et dont le statut n'a pas encore été défini :<br>
+      <ul>
+        <li>
+          les délibérations identifiées à <strong>"ne sais pas"</strong> pour les <strong>actes gérés manuellement</strong>,
+        </li>
+        <li>
+          <strong>toutes délibérations</strong> issues des <strong>actes gérés automatiquement</strong> (flux actes génériques).
+        </li>
+      </ul>
+Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de la délibération n'est pas disponible sur les portails opendata et la délibération et ses annexes ne sont pas publiées sur la marque blanche.
+        Les métadonnées de la délibération (nom, objet, date, etc.) sont a minima publiées sur les portails opendata.
+
+              </mat-card-subtitle>
+
+
+    </div>
+    <div *ngIf="this.etatPublication == 'all'">
+    <mat-card-title>TOUTES LES PUBLICATIONS</mat-card-title>
+    <mat-card-subtitle>
+
+      Vous trouverez ici l'ensemble des actes (délibérations et budgets) issus du flux de télétransmission des actes.<br><br>
+      Dans la colonne "&Eacute;tat", il s'agit bien du statut de publication effectif au moment où vous consultez cette page :
+      <ul>
+        <li><strong>publié : l'URL de la délibération est disponible </strong> sur les portails opendata et la délibération et ses annexes sont publiées sur la marque blanche</li>
+        <li><strong>non publié : l'URL de la délibération n'est pas disponible</strong> sur les portails opendata et la délibération et ses annexes ne sont pas publiées sur la marque blanche</li>
+      </ul>
+      Les métadonnées de la délibération (nom, objet, date, etc.) sont a minima publiés sur les portails opendata.
+
+
+    </mat-card-subtitle>
+    </div>
+
+  <mat-toolbar id="tab-toolbar">
+
+    <div *ngIf="this.selection.selected.length == 0">
+      Cliquer sur une ou plusieurs délibérations pour changer son état
+    </div>
+
+    <div *ngIf="this.selection.selected.length == 1">
+    <button id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe()" matTooltip="ouvrir l'acte">
+      <mat-icon>visibility</mat-icon>
+    </button>
+    </div>
+
+    <div *ngIf="this.selection.selected.length > 0">
+    <button id="publier-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? publish():msg_alert('aucune publication est selectionnée')" matTooltip="publier en open data">
+      <mat-icon style="color: green">share</mat-icon>
+    </button>
+    </div>
+
+    <div *ngIf="etatPublication!='all' && this.selection.selected.length > 0">
+      <button id="masquer-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? dontPusblish():msg_alert('aucune publication est selectionnée')" matTooltip="Ne pas publier">
+        <mat-icon style="color: red">block</mat-icon>
+      </button>
+    </div>
+
+    <div *ngIf="etatPublication!='0' && this.selection.selected.length > 0">
+      <button id="demasquer-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? unpublish():msg_alert('aucune publication est selectionnée')" matTooltip="dépublier">
+        <mat-icon style="color: red"> block</mat-icon>
+      </button>
+    </div>
+
+  </mat-toolbar>
+  <div class="table-header">
+    <div class="dc-h3 header">
+      {{getLibelleNombre()}} ({{publicationTotal}})
+    </div>
+    <div class="search-bar">
+      <input class="dc-search" placeholder="Rechercher des publications" (keyup)="filterSubject.next($event.target.value)">
+    </div>
+  </div>
+
+  <div class="mat-elevation-z8">
+  <div class="table-container">
+    <table  class="full-width-table" mat-table [dataSource]="dataSource" matSort matSortDisableClear="true"
+           [matSortActive]="defaultSort.active" [matSortDirection]="defaultSort.direction">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>id</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="numero_de_lacte">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Numéro de l'acte</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{element.numero_de_lacte}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="date_de_lacte">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Date de l'acte</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{element.date_de_lacte | date:'dd-MM-yyyy'}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="objet">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
+        <td mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="etat">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>&Eacute;tat</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{getEtatLibelle(element.etat)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acte_nature">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Type d'acte</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{getTypeActeLibelle(element.acte_nature)}} </td>
+      </ng-container>
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="noData">
+        <td mat-cell class="dc-label no-data-cell" *matCellDef="let element"
+            [attr.colspan]="displayedColumns.length">
+          <ng-container *ngIf="!(error$ | async) && !loading">
+            <span class="dc-content">Aucune publication {{getLibelleFilter()}}</span>
+          </ng-container>
+          <ng-container *ngIf="(error$ | async) && !loading">
+            <span class="dc-label">Erreur</span>
+            <span class="dc-content">Impossible de récupérer les publications à valider</span>
+            <span class="retry" (click)="retry()">Réessayer ?</span>
+          </ng-container>
+          <ng-container *ngIf="loading">
+            <span class="dc-label">Récupération des données...</span>
+          </ng-container>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns, sticky: true"></tr>
+      <ng-container *ngIf="!publicationTotal || loading">
+        <tr mat-row *matRowDef="let row; columns: ['noData'];"class="no-data-row" ></tr>
+      </ng-container>
+      <ng-container *ngIf="publicationTotal && !loading">
+        <tr mat-row  (click)="rowClick(row)" *matRowDef="let row; columns: displayedColumns;" class="customer-row"></tr>
+      </ng-container>
+    </table>
+
+    <mat-paginator [length]="publicationTotal" [pageSize]="10"  [pageSizeOptions]="[10, 20, 50]"></mat-paginator>
+  </div>
+</div>
+
+  </mat-card>
+
+</div>
+
+

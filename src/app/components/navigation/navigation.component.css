@@ -1,0 +1,12 @@
+.sidenav-container {
+  height: 100%;
+}
+.sidenav {
+  width: 200px;
+}
+.example-spacer {
+  flex: 1 1 auto;
+}
+.content-container{
+  margin: 20px;
+}
