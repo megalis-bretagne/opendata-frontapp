@@ -35,7 +35,7 @@ build angular app:
 docker image:
   extends: .build
   variables:
-    IMAGE_NAME: "megalis/opendata-front"
+    IMAGE_NAME: "megalis/opendata/opendata-front"
 
 deploy dev:
   extends: .deployInteg
