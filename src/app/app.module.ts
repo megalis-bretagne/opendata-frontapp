@@ -17,6 +17,7 @@ import {ParametrageService} from './services/parametrage.service';
 import {SettingsHttpService} from '../environments/settings.http.service';
 import { MarqueBlancheComponent } from './components/marque-blanche/marque-blanche.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
+import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
 
 
 
@@ -26,7 +27,8 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
     NavigationComponent,
     ParametrageOrganisationComponent,
     ValiderTableComponent,
-    MarqueBlancheComponent
+    MarqueBlancheComponent,
+    DialogBoxComponent
   ],
     imports: [
         BrowserModule,
