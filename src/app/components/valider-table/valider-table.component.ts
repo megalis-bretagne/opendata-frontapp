@@ -86,6 +86,10 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
       tap((value: string) => {
         this.paginator.pageIndex = 0;
         this.filter = value;
+        if (this.filter === '' ) {
+          this.selection.clear();
+        }
+
       })
     );
 
@@ -288,14 +292,6 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   getLibelleNombre(): string {
     return this.etatPublication !== '0' ? this.nombrePublicationLibelle = 'Nombre de publications' : this.nombrePublicationLibelle = 'Nombre de publications à valider';
   }
-
-  updateRowData(row): void{
-    console.log('update');
-  }
-  deleteRowData(row): void{
-      console.log('delete');
-    }
-
   openDialog(event, action, obj: Publication): void {
     event.stopPropagation();
 
@@ -315,13 +311,9 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('after close')
-      console.log(result)
       if (result.event === 'Update'){
-        console.log('after close ==> Update')
         this.service.modify(result.data).toPromise().then((value) => this.refresh());
       }else if (result.event === 'Delete'){
-        console.log('after close ==> Delete')
         this.service.delete(result.data.id).toPromise().then((value) => this.refresh());
       }
     });
