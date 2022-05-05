@@ -22,7 +22,7 @@ build angular app:
   stage: build-angular
   script:
     - npm install --force --silent
-    - ./node_modules/.bin/ng build --aot
+    - ./node_modules/.bin/ng build --prod --aot --outputHashing=all --project=opendata-app
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
