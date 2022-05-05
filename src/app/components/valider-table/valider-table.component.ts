@@ -44,6 +44,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   public loading: boolean;
   public error$: Observable<boolean>;
   public filterSubject = new Subject<string>();
+  public filterSiren = new Subject<string>();
   public defaultSort: Sort = {active: 'date_de_lacte', direction: 'desc'};
   private filter = '';
   public etatPublication = '0';
@@ -52,6 +53,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   user: User;
   nombrePublicationLibelle = 'Nombre de publications à valider';
   valueSearchInput = '';
+  valueSirenAdmin=''
 
   // tslint:disable-next-line:max-line-length
   constructor(public dialog: MatDialog, public store: Store<GlobalState>, public service: PublicationsService,
@@ -80,16 +82,26 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.loadPublications();
+
     const filter$ = this.filterSubject.pipe(
       debounceTime(150),
       distinctUntilChanged(),
       tap((value: string) => {
-        this.paginator.pageIndex = 0;
-        this.filter = value;
-        if (this.filter === '' ) {
-          this.selection.clear();
-        }
+          this.paginator.pageIndex = 0;
+          this.filter = value;
+          if (this.filter === '' ) {
+            this.selection.clear();
+          }
+      })
+    );
 
+    const siren$ = this.filterSiren.pipe(
+      debounceTime(150),
+      distinctUntilChanged(),
+      tap((value: string) => {
+        if(value.length === 9){
+          this.valueSirenAdmin = value;
+        }
       })
     );
 
@@ -97,9 +109,11 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const sort$ = this.sort.sortChange.pipe(tap(() => this.paginator.pageIndex = 0));
 
-    this.subscription.add(merge(filter$, sort$, this.paginator.page).pipe(
+    this.subscription.add(merge(siren$,filter$, sort$, this.paginator.page,).pipe(
       tap(() => this.loadPublications())
     ).subscribe());
+
+
 
     this.route.queryParams.filter(params => params.etat)
       .subscribe(params => {
@@ -112,25 +126,53 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
+  is_admin_open_data(): boolean{
+    if ( this.user === null) {
+      return false;
+    }
+    return  this.user.userType === 'ADMIN';
+  }
+
   private loadPublications(): void {
     // si vide on recherhce tous les état, si 1 alors uniquement les non publié
     let etatParam = '0';
     this.etatPublication === 'all' ? etatParam = '' : etatParam = '0';
     let estMasqueParam: boolean;
     this.etatPublication === 'all' ? estMasqueParam = true : estMasqueParam = false;
-    this.store.dispatch(new PublicationLoadAction(
-      {
-        filter: this.filter.toLocaleLowerCase(),
-        pageIndex: this.paginator.pageIndex,
-        pageSize: this.paginator.pageSize,
-        sortDirection: this.sort.direction,
-        sortField: this.sort.active,
-        siren: this.user.siren,
-        etat: etatParam,
-        est_masque: estMasqueParam
 
-      } as PublicationParams
-    ));
+    if ( this.is_admin_open_data() && this.valueSirenAdmin.length === 9 ){
+      //cas admin
+      this.store.dispatch(new PublicationLoadAction(
+        {
+          filter: this.filter.toLocaleLowerCase(),
+          pageIndex: this.paginator.pageIndex,
+          pageSize: this.paginator.pageSize,
+          sortDirection: this.sort.direction,
+          sortField: this.sort.active,
+          siren: this.valueSirenAdmin,
+          etat: '',
+          est_masque: true
+          // est_supprime: true
+
+        } as PublicationParams
+      ));
+    }else {
+      this.store.dispatch(new PublicationLoadAction(
+        {
+          filter: this.filter.toLocaleLowerCase(),
+          pageIndex: this.paginator.pageIndex,
+          pageSize: this.paginator.pageSize,
+          sortDirection: this.sort.direction,
+          sortField: this.sort.active,
+          siren: this.user.siren,
+          etat: etatParam,
+          est_masque: estMasqueParam
+
+        } as PublicationParams
+      ));
+    }
+
+
   }
 
   private initializeData(publications: Publication[]): void {
@@ -323,6 +365,8 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.valueSearchInput =''
     this.selection.clear();
   }
+
+
 
 
 }

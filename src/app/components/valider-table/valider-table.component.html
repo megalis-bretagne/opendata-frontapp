@@ -2,6 +2,7 @@
 
   <mat-card>
 
+    <div *ngIf="!is_admin_open_data()">
     <div *ngIf="etatPublication === '0'">
       <mat-card-title>&Agrave; STATUER</mat-card-title>
       <mat-card-subtitle>
@@ -36,7 +37,17 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
 
     </mat-card-subtitle>
     </div>
+    </div>
 
+    <div *ngIf="is_admin_open_data()">
+
+      <mat-form-field hintLabel="9 caractères attendu" appearance="fill">
+        <mat-label>Entrer un siren</mat-label>
+<!--        maxlength="9" minlength="9"-->
+        <input matInput  type="text" placeholder="Ex. 253514491" required (keyup)=filterSiren.next($any($event.target).value)>
+      </mat-form-field>
+
+    </div>
   <mat-toolbar id="tab-toolbar">
 
     <div *ngIf="selection.selected.length === 0">
