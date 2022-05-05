@@ -21,7 +21,7 @@ export class AdminServiceService {
   }
 
   createGEDPastell(body): Observable<any> {
-    const url = `${this.settings.settings.api.url}/api/v1/admin/pastell/creation/ged_sftp-opendata`
+    const url = `${this.settings.settings.api.url}/api/v1/admin/pastell/creation//admin/pastell/creation/ged-megalis-opendata`
     return this.http.post<any>(url, body);
   }
 
