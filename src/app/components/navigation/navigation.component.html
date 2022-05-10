@@ -19,21 +19,19 @@
     <div *ngIf="is_Admin()">
       <mat-toolbar>Menu admin</mat-toolbar>
       <mat-nav-list>
-        <a mat-list-item [routerLink]="['/TODO']" >TODO</a>
+        <a mat-list-item [routerLink]="['/']" [queryParams]="{ etat: ''}" >Toutes les publications</a>
+        <a mat-list-item [routerLink]="['/pastell']" >Paramétrage Pastell</a>
       </mat-nav-list>
-
-      <button mat-menu-item [cdkCopyToClipboard]=jeton >
-        <mat-icon>content_copy</mat-icon>
-        <span>copie jeton</span>
-      </button>
+<!--      <button mat-menu-item [cdkCopyToClipboard]=jeton >-->
+<!--        <mat-icon>content_copy</mat-icon>-->
+<!--        <span>copie jeton jwt</span>-->
+<!--      </button>-->
     </div>
     <div *ngIf="is_superAdmin()">
       <mat-toolbar>Super admin</mat-toolbar>
       <mat-nav-list>
         <a mat-list-item [routerLink]="['/TODO']" >TODO</a>
       </mat-nav-list>
-
-
     </div>
     </div>
   </mat-sidenav>

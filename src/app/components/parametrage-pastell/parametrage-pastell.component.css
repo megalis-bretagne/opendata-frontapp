@@ -1,0 +1,23 @@
+/*.mat-form-field {*/
+/*  font-size: 14px;*/
+/*  width: 100%;*/
+/*}*/
+
+.form {
+  /*margin-top: 10px;*/
+  /*display: flex;*/
+  margin-left: 50px;
+  /*justify-content: start*/
+}
+
+/*.button {*/
+/*  margin: 10px;*/
+/*  !*align-items: center;*!*/
+/*}*/
+
+.mat-form-field {
+  /*display: flex;*/
+  width: 250px;
+  margin-right: 25px;
+}
+

@@ -1,0 +1,42 @@
+
+<mat-card class="dashboard-card">
+  <mat-card-header>
+    <mat-card-title>Paramétrage d'une nouvelle entité pastell</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="dashboard-card-content">
+    <p>
+      <br>
+      Sur validation de ce formulaire, plusieurs requêtes vers pastell vont être émises pour créer et associer les connecteurs nécessaire à la récupération des données opendata
+      <br><br>
+      id_e est à récupérer dans pastell
+    </p>
+<!--    <form class="form">-->
+<!--      <mat-form-field >-->
+<!--        <mat-label>id_e de l'entité pastell à paramétrer</mat-label>-->
+<!--        <input matInput  type="number" placeholder="Ex. 253514491" required >-->
+<!--      </mat-form-field>-->
+<!--      <button mat-button (click)="createParametrage()" mat-flat-button color="warn">Valider</button>-->
+<!--    </form>-->
+
+
+    <form #f="ngForm" (submit)="postForm(f)">
+      <mat-form-field>
+        <mat-label>id_e</mat-label>
+        <input matInput  name="id_e" type="number" placeholder="Ex. 253514491" required ngModel>
+      </mat-form-field>
+      <button mat-button mat-flat-button color="primary">Valider</button>
+    </form>
+
+    <ng-template [ngIf]="resultGEDSftp">
+      {{resultGEDSftp}}<br>
+    </ng-template>
+    <ng-template [ngIf]="resultGEDPastell">
+      {{resultGEDPastell}}
+    </ng-template>
+
+  </mat-card-content>
+</mat-card>
+
+
+
+

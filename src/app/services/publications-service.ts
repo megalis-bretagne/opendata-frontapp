@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Publication} from '../models/models';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {DataDialog, Publication} from '../models/models';
 import {PublicationResponse} from '../models/publication-response';
 import {SettingsService} from '../../environments/settings.service';
 
@@ -24,6 +24,16 @@ export class PublicationsService {
   publish(id: number): Observable<Publication> {
     const url = `${this.settings.settings.api.url}/api/v1/publication/publier/` + id;
     return this.http.put(url, {});
+  }
+
+  delete(id: number): Observable<Publication> {
+    const url = `${this.settings.settings.api.url}/api/v1/publication/` + id;
+    return this.http.delete(url, {});
+  }
+
+  modify(element:DataDialog): Observable<Publication> {
+    const url = `${this.settings.settings.api.url}/api/v1/publication/modifier/` + element.id;
+    return this.http.put(url, {},{ params: { objet:  element.objet }});
   }
 
   unpublish(id: number): Observable<Publication> {

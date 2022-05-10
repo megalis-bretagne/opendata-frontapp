@@ -1,12 +1,14 @@
-import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource} from '@angular/material/table';
-import { Store, select } from '@ngrx/store';
-import { MatPaginator } from '@angular/material/paginator';
-import { Observable, merge, Subject, Subscription } from 'rxjs';
-import {Publication} from '../../models/publication';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {MatSort, Sort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
+import {select, Store} from '@ngrx/store';
+import {MatPaginator} from '@angular/material/paginator';
+import {merge, Observable, Subject, Subscription} from 'rxjs';
+import {DataDialog, Publication} from '../../models/publication';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
 import 'rxjs/add/operator/filter';
+import {MatDialog} from '@angular/material/dialog';
+
 
 import {
   selectAllPublication,
@@ -16,12 +18,13 @@ import {
 } from '../../store/selectors/publication.selectors';
 import {PublicationLoadAction} from '../../store/actions/publications.actions';
 import {PublicationParams} from '../../models/publication-params';
-import {debounceTime, distinctUntilChanged , take, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, take, tap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
+import {DialogBoxComponent} from '../dialog-box/dialog-box.component';
 
 @Component({
   selector: 'app-valider-table',
@@ -34,13 +37,14 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['numero_de_lacte', 'objet', 'date_de_lacte', 'acte_nature', 'etat', 'select'];
+  displayedColumns = ['numero_de_lacte', 'objet', 'date_de_lacte', 'acte_nature', 'etat', 'action', 'select'];
   public dataSource: MatTableDataSource<Publication>;
   public publicationTotal: number;
   public noData: Publication[] = [{} as Publication];
   public loading: boolean;
   public error$: Observable<boolean>;
   public filterSubject = new Subject<string>();
+  public filterSiren = new Subject<string>();
   public defaultSort: Sort = {active: 'date_de_lacte', direction: 'desc'};
   private filter = '';
   public etatPublication = '0';
@@ -48,9 +52,11 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   selection = new SelectionModel<Publication>(true, []);
   user: User;
   nombrePublicationLibelle = 'Nombre de publications à valider';
+  valueSearchInput = '';
+  valueSirenAdmin=''
 
   // tslint:disable-next-line:max-line-length
-  constructor(public store: Store<GlobalState>, public service: PublicationsService,
+  constructor(public dialog: MatDialog, public store: Store<GlobalState>, public service: PublicationsService,
               private route: ActivatedRoute,
               private http: HttpClient) { }
 
@@ -76,12 +82,26 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.loadPublications();
+
     const filter$ = this.filterSubject.pipe(
       debounceTime(150),
       distinctUntilChanged(),
       tap((value: string) => {
-        this.paginator.pageIndex = 0;
-        this.filter = value;
+          this.paginator.pageIndex = 0;
+          this.filter = value;
+          if (this.filter === '' ) {
+            this.selection.clear();
+          }
+      })
+    );
+
+    const siren$ = this.filterSiren.pipe(
+      debounceTime(150),
+      distinctUntilChanged(),
+      tap((value: string) => {
+        if(value.length === 9){
+          this.valueSirenAdmin = value;
+        }
       })
     );
 
@@ -89,9 +109,11 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const sort$ = this.sort.sortChange.pipe(tap(() => this.paginator.pageIndex = 0));
 
-    this.subscription.add(merge(filter$, sort$, this.paginator.page).pipe(
+    this.subscription.add(merge(siren$,filter$, sort$, this.paginator.page,).pipe(
       tap(() => this.loadPublications())
     ).subscribe());
+
+
 
     this.route.queryParams.filter(params => params.etat)
       .subscribe(params => {
@@ -104,25 +126,53 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
+  is_admin_open_data(): boolean{
+    if ( this.user === null) {
+      return false;
+    }
+    return  this.user.userType === 'ADMIN';
+  }
+
   private loadPublications(): void {
     // si vide on recherhce tous les état, si 1 alors uniquement les non publié
     let etatParam = '0';
     this.etatPublication === 'all' ? etatParam = '' : etatParam = '0';
     let estMasqueParam: boolean;
     this.etatPublication === 'all' ? estMasqueParam = true : estMasqueParam = false;
-    this.store.dispatch(new PublicationLoadAction(
-      {
-        filter: this.filter.toLocaleLowerCase(),
-        pageIndex: this.paginator.pageIndex,
-        pageSize: this.paginator.pageSize,
-        sortDirection: this.sort.direction,
-        sortField: this.sort.active,
-        siren: this.user.siren,
-        etat: etatParam,
-        est_masque: estMasqueParam
 
-      } as PublicationParams
-    ));
+    if ( this.is_admin_open_data() && this.valueSirenAdmin.length === 9 ){
+      //cas admin
+      this.store.dispatch(new PublicationLoadAction(
+        {
+          filter: this.filter.toLocaleLowerCase(),
+          pageIndex: this.paginator.pageIndex,
+          pageSize: this.paginator.pageSize,
+          sortDirection: this.sort.direction,
+          sortField: this.sort.active,
+          siren: this.valueSirenAdmin,
+          etat: '',
+          est_masque: true
+          // est_supprime: true
+
+        } as PublicationParams
+      ));
+    }else {
+      this.store.dispatch(new PublicationLoadAction(
+        {
+          filter: this.filter.toLocaleLowerCase(),
+          pageIndex: this.paginator.pageIndex,
+          pageSize: this.paginator.pageSize,
+          sortDirection: this.sort.direction,
+          sortField: this.sort.active,
+          siren: this.user.siren,
+          etat: etatParam,
+          est_masque: estMasqueParam
+
+        } as PublicationParams
+      ));
+    }
+
+
   }
 
   private initializeData(publications: Publication[]): void {
@@ -193,6 +243,16 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  delete(element:DataDialog): void {
+    this.loading = true;
+    this.service.delete(element.id).toPromise().then((value) => this.refresh());
+  }
+
+  modify(element:Publication): void {
+    this.loading = true;
+    this.service.modify(element).toPromise().then((value) => this.refresh());
+  }
+
   publish(): void {
     this.loading = true;
     this.selection.selected.forEach(row => this.publishOne(row));
@@ -253,11 +313,12 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     alert(msg);
   }
 
-  openActe(): void {
+  openActe(event,element:Publication): void {
+    event.stopPropagation();
     // this.selection.selected.length === 1 ?
     //   window.open(this.selection.selected[0].actes[0].url, '_blank').focus() :
     //   this.msg_alert('Merci de selectioner 1 ligne');
-    this.http.get(this.selection.selected[0].actes[0].url, { responseType: 'blob' }).toPromise().then( blob =>
+    this.http.get(element.actes[0].url, { responseType: 'blob' }).toPromise().then( blob =>
       {
         const a    = document.createElement('a');
         a.href = window.URL.createObjectURL(blob);
@@ -273,6 +334,39 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   getLibelleNombre(): string {
     return this.etatPublication !== '0' ? this.nombrePublicationLibelle = 'Nombre de publications' : this.nombrePublicationLibelle = 'Nombre de publications à valider';
   }
+  openDialog(event, action, obj: Publication): void {
+    event.stopPropagation();
+
+    let data: DataDialog;
+
+    if (action === "Update") {
+      data =
+        {...obj, action: action, title: "Modification de l'objet"};
+    } else {
+      data =
+        {...obj, action: action, title: "Suppression de l'acte"};
+    }
+
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '600px',
+      data: data
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.event === 'Update'){
+        this.service.modify(result.data).toPromise().then((value) => this.refresh());
+      }else if (result.event === 'Delete'){
+        this.service.delete(result.data.id).toPromise().then((value) => this.refresh());
+      }
+    });
+  }
+  clearInput(): void{
+    this.filterSubject.next("")
+    this.valueSearchInput =''
+    this.selection.clear();
+  }
+
+
 
 
 }

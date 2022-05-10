@@ -2,7 +2,8 @@
 
   <mat-card>
 
-    <div *ngIf="this.etatPublication == '0'">
+    <div *ngIf="!is_admin_open_data()">
+    <div *ngIf="etatPublication === '0'">
       <mat-card-title>&Agrave; STATUER</mat-card-title>
       <mat-card-subtitle>
         Vous trouverez ici uniquement les délibérations issues du flux de télétransmission des actes et dont le statut n'a pas encore été défini :<br>
@@ -21,7 +22,7 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
 
 
     </div>
-    <div *ngIf="this.etatPublication == 'all'">
+    <div *ngIf="this.etatPublication === 'all'">
     <mat-card-title>TOUTES LES PUBLICATIONS</mat-card-title>
     <mat-card-subtitle>
 
@@ -36,18 +37,28 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
 
     </mat-card-subtitle>
     </div>
+    </div>
 
+    <div *ngIf="is_admin_open_data()">
+
+      <mat-form-field hintLabel="9 caractères attendu" appearance="fill">
+        <mat-label>Entrer un siren</mat-label>
+<!--        maxlength="9" minlength="9"-->
+        <input matInput  type="text" placeholder="Ex. 253514491" required (keyup)=filterSiren.next($any($event.target).value)>
+      </mat-form-field>
+
+    </div>
   <mat-toolbar id="tab-toolbar">
 
-    <div *ngIf="this.selection.selected.length == 0">
+    <div *ngIf="selection.selected.length === 0">
       Cliquer sur une ou plusieurs délibérations pour changer son état
     </div>
 
-    <div *ngIf="this.selection.selected.length == 1">
-    <button id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe()" matTooltip="ouvrir l'acte">
-      <mat-icon>visibility</mat-icon>
-    </button>
-    </div>
+<!--    <div *ngIf="this.selection.selected.length == 1">-->
+<!--    <button id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe()" matTooltip="ouvrir l'acte">-->
+<!--      <mat-icon>visibility</mat-icon>-->
+<!--    </button>-->
+<!--    </div>-->
 
     <div *ngIf="this.selection.selected.length > 0">
     <button id="publier-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? publish():msg_alert('aucune publication est selectionnée')" matTooltip="publier en open data">
@@ -55,13 +66,13 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
     </button>
     </div>
 
-    <div *ngIf="etatPublication!='all' && this.selection.selected.length > 0">
+    <div *ngIf="etatPublication!=='all' && this.selection.selected.length > 0">
       <button id="masquer-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? dontPusblish():msg_alert('aucune publication est selectionnée')" matTooltip="Ne pas publier">
         <mat-icon style="color: red">block</mat-icon>
       </button>
     </div>
 
-    <div *ngIf="etatPublication!='0' && this.selection.selected.length > 0">
+    <div *ngIf="etatPublication!=='0' && this.selection.selected.length > 0">
       <button id="demasquer-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? unpublish():msg_alert('aucune publication est selectionnée')" matTooltip="dépublier">
         <mat-icon style="color: red"> block</mat-icon>
       </button>
@@ -69,11 +80,16 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
 
   </mat-toolbar>
   <div class="table-header">
-    <div class="dc-h3 header">
+    <div class="header">
       {{getLibelleNombre()}} ({{publicationTotal}})
     </div>
     <div class="search-bar">
-      <input class="dc-search" placeholder="Rechercher des publications" (keyup)="filterSubject.next($event.target.value)">
+      <mat-form-field>
+        <input matInput type="text" placeholder="Rechercher des publications" (keyup)="filterSubject.next($any($event.target).value)" [(ngModel)]="valueSearchInput">
+        <button *ngIf="valueSearchInput" matSuffix mat-icon-button aria-label="Clear" (click)="clearInput()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
     </div>
   </div>
 
@@ -88,19 +104,20 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
       </ng-container>
 
       <ng-container matColumnDef="numero_de_lacte">
-        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Numéro de l'acte</th>
-        <td mat-cell class="dc-content" *matCellDef="let element">{{element.numero_de_lacte}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="date_de_lacte">
-        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Date de l'acte</th>
-        <td mat-cell class="dc-content" *matCellDef="let element">{{element.date_de_lacte | date:'dd-MM-yyyy'}} </td>
+        <th style="width: 15%" mat-header-cell class="dc-label"  *matHeaderCellDef mat-sort-header>Numéro de l'acte</th>
+        <td style="width: 15%" mat-cell class="dc-content" *matCellDef="let element">{{element.numero_de_lacte}} </td>
       </ng-container>
 
       <ng-container matColumnDef="objet">
-        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
-        <td mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
+        <th style="width: 45%" mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
+        <td style="width: 45%" mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
       </ng-container>
+
+      <ng-container matColumnDef="date_de_lacte">
+        <th style="width: 10%"  mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Date de l'acte</th>
+        <td style="width: 10%" mat-cell class="dc-content" *matCellDef="let element">{{element.date_de_lacte | date:'dd-MM-yyyy'}} </td>
+      </ng-container>
+
 
       <ng-container matColumnDef="etat">
         <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>&Eacute;tat</th>
@@ -111,6 +128,23 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
         <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Type d'acte</th>
         <td mat-cell class="dc-content" *matCellDef="let element">{{getTypeActeLibelle(element.acte_nature)}} </td>
       </ng-container>
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let element" class="action-link">
+          <button id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe($event,element)" matTooltip="ouvrir l'acte">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button id="edit-button" mat-icon-button class="material-icons md-48" (click)="openDialog($event,'Update',element)" matTooltip="éditer l'objet de l'acte">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button id="delete-button" mat-icon-button class="material-icons md-48" (click)="openDialog($event,'Delete',element)" matTooltip="supprimer l'acte">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
 
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
@@ -133,7 +167,7 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
       <ng-container matColumnDef="noData">
         <td mat-cell class="dc-label no-data-cell" *matCellDef="let element"
             [attr.colspan]="displayedColumns.length">
-          <ng-container *ngIf="!(error$ | async) && !loading">
+          <ng-container *ngIf="(error$ | async)===false && !loading">
             <span class="dc-content">Aucune publication {{getLibelleFilter()}}</span>
           </ng-container>
           <ng-container *ngIf="(error$ | async) && !loading">

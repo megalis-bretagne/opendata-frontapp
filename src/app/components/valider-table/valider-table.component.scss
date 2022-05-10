@@ -9,7 +9,7 @@ table {
 }
 
 td, th {
-  width: 20%;
+  width: 10%;
 }
 
 .mat-icon{
@@ -22,7 +22,8 @@ td, th {
 
 .publication-content {
   .table-header {
-    margin-top: 16px;
+    margin-top: 10px;
+    //margin-bottom: 5px;
     display: flex;
     justify-content: space-between;
 
@@ -33,14 +34,7 @@ td, th {
 
     .search-bar {
       display: flex;
-
-      .dc-search {
-        width: 196px;
-
-        @media (min-width: 1920px) {
-          width: 302px;
-        }
-      }
+      width: 50%;
     }
   }
 
