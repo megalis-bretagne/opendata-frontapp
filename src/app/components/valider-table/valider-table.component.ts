@@ -234,11 +234,23 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
       case '1': {
         return 'Délibération';
       }
+      case '2': {
+        return 'Acte réglementaire';
+      }
+      case '3': {
+        return 'Acte individuel';
+      }
+      case '4': {
+        return 'Contrat,convention et avenant';
+      }
+      case '6': {
+        return 'Autre';
+      }
       case '5': {
         return 'Budget';
       }
       default: {
-        return 'Autre';
+        return 'autre';
       }
     }
   }
