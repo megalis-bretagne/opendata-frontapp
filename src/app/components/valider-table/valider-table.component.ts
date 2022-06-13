@@ -214,7 +214,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getPublicationLibelle(openData: string): string {
     switch (openData) {
-      case '0': {
+      case '3': {
         return 'oui';
       }
       case '1': {
