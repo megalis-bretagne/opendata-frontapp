@@ -36,7 +36,7 @@ export class MarqueBlancheComponent implements OnInit {
       this.safeObjectUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(url);
 
       this.htmlStr = '' +
-      '<iframe style="border: 0;" src=' + url +
+      '<iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" src=' + url +
       ' title="Marque blanche open data" width="100%" height="600">\n' +
       '</iframe>';
     });
