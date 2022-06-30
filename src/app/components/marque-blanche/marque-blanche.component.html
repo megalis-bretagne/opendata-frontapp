@@ -14,6 +14,6 @@
 <mat-card>
   <mat-card-title>Aperçu</mat-card-title>
   <ng-container *ngIf="safeObjectUrl as okaySafeUrl">
-    <iframe style="border: 0;" [src]="safeObjectUrl" title="Marque blanche" width="100%" height="600" ></iframe>
+    <iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" [src]="safeObjectUrl" title="Marque blanche" width="100%" height="600" ></iframe>
   </ng-container>
 </mat-card>
