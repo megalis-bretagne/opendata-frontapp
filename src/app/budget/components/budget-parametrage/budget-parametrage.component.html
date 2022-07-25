@@ -1,11 +1,43 @@
-<app-budget-parametrage-nav></app-budget-parametrage-nav>
+<div>
 
-<hr>
+    <app-budget-parametrage-nav></app-budget-parametrage-nav>
 
-Contenu
+    <div class="visualisations">
+        <app-budget-card [titre]="'Le budget principal'" [description]="'Ceci est une description du budget principal'"
+            [parametrable]="true">
+            <p>Je suis du contenu projeté</p>
+        </app-budget-card>
 
-<hr>
-<ng-container *ngIf="(user$ | async) as user">
-    <h3>Informations de debug</h3>
-    <p>Utilisateur: {{user.email}} </p>
-</ng-container>
+        <app-budget-card [titre]="'Répartition des recettes'"
+            [description]="'Ceci est une description de la répartition des recettes'" [parametrable]="true">
+            <p>Je suis du contenu projeté</p>
+        </app-budget-card>
+
+
+        <app-budget-card [titre]="'Répartition des dépenses'"
+            [description]="'Ceci est une description de la répartition des dépenses'" [parametrable]="true">
+            <p>Je suis du contenu projeté</p>
+        </app-budget-card>
+
+        <app-budget-card [titre]="'Le top 3 des dépenses'"
+            [description]="'Ceci est une description du top 3 des dépenses'" [parametrable]="true">
+            <p>Je suis du contenu projeté</p>
+        </app-budget-card>
+    </div>
+
+    <div class="boutons-bas-de-page">
+        <button mat-raised-button disabled (click)="onCopierIframeClic()">
+            <mat-icon>code</mat-icon>
+            Copier l'iframe
+        </button>
+        <button mat-raised-button disabled (click)="onTelechargerPdfClic()">
+            <mat-icon>download</mat-icon>
+            Télécharget le PDF
+        </button>
+        <button mat-raised-button color="primary" disabled (click)="onEnregistrerClic()">
+            <mat-icon>save</mat-icon>
+            Enregistrer
+        </button>
+    </div>
+
+</div>

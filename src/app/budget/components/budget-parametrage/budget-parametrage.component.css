@@ -1,0 +1,16 @@
+.visualisations {
+    display: flex;
+    flex-direction: column;
+}
+
+.visualisations>* {
+    margin-top: 1em;
+}
+
+.boutons-bas-de-page {
+    margin-top: 2em;
+    text-align: right;
+}
+.boutons-bas-de-page button {
+    margin-right: 1em;
+}

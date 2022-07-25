@@ -6,17 +6,20 @@ import { StoreModule } from '@ngrx/store';
 import { BUDGET_SERVICE_TOKEN, FakeBudgetService } from './services/budget.service';
 import { BudgetParametrageComponent } from './components/budget-parametrage/budget-parametrage.component';
 import { BudgetParametrageNavComponent } from './components/budget-parametrage/budget-parametrage-nav/budget-parametrage-nav.component';
+import { BudgetCardComponent } from './components/budget-card/budget-card.component';
+import { BudgetStorageModule } from './store/budget-storage.module';
 
 @NgModule({
   declarations: [
     BudgetParametrageComponent,
     BudgetParametrageNavComponent,
+    BudgetCardComponent,
   ],
   imports: [
     CommonModule,
 
     MaterialModule,
-    StoreModule.forFeature('budget', []),
+    BudgetStorageModule,
 
     BudgetRoutingModule,
   ],

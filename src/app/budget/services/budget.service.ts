@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, InjectionToken } from "@angular/core";
-import { Observable, of } from "rxjs";
-import { delay } from "rxjs/operators";
+import { Observable, of, from } from "rxjs";
+import { delay, switchMap } from "rxjs/operators";
+import { LigneBudget } from "../store/states/budget.state";
 
 /**
  * Etape budgetaire tel que décrit ici:
@@ -18,6 +19,7 @@ export enum EtapeBudgetaire {
 export interface BudgetService {
 
   anneesDisponibles(siren: string): Observable<number[]>
+  loadBudgets(siren: string, annee: number): Observable<LigneBudget>
 }
 
 @Injectable()
@@ -36,6 +38,19 @@ export class FakeBudgetService implements BudgetService {
       .pipe(
         delay(1000)
       );
+  }
+
+  loadBudgets(siren: string, annee: number): Observable<LigneBudget> {
+    this._debug(`Charge les lignes budgetaires pour le siren ${siren} et l'année ${annee}`);
+    this.checkSiren(siren);
+
+    let lignes = this.httpClient.get<LigneBudget[]>('./assets/fake-budget.json')
+      .pipe(
+        delay(1000),
+        switchMap(lignes => from(lignes))
+      );
+
+    return lignes;
   }
 
   private checkSiren(siren: string) {
