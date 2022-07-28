@@ -1,5 +1,4 @@
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import {Publication} from '../../models/publication';
 import {Parametrage} from '../../models/parametrage';
 
 export interface ParametrageState extends EntityState<Parametrage> {
@@ -7,7 +6,7 @@ export interface ParametrageState extends EntityState<Parametrage> {
   loading: boolean;
 }
 
-export const parametrageAdapter: EntityAdapter<Publication> = createEntityAdapter<Publication>({
+export const parametrageAdapter: EntityAdapter<Parametrage> = createEntityAdapter<Parametrage>({
   selectId: (parametrage: Parametrage) => parametrage.id
 });
 

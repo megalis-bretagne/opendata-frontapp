@@ -6,7 +6,6 @@ import {MatPaginator} from '@angular/material/paginator';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {DataDialog, Publication} from '../../models/publication';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
-import 'rxjs/add/operator/filter';
 import {MatDialog} from '@angular/material/dialog';
 
 
@@ -18,7 +17,7 @@ import {
 } from '../../store/selectors/publication.selectors';
 import {PublicationLoadAction} from '../../store/actions/publications.actions';
 import {PublicationParams} from '../../models/publication-params';
-import {debounceTime, distinctUntilChanged, take, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, take, tap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
@@ -115,7 +114,10 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
 
-    this.route.queryParams.filter(params => params.etat)
+    this.route.queryParams
+      .pipe(
+        filter(params => params.etat)
+      )
       .subscribe(params => {
           if (params.etat !== this.etatPublication) {
             this.etatPublication = params.etat;

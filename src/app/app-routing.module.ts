@@ -29,8 +29,8 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/validationTable'
-  }
+    redirectTo: '/'
+  },
 ];
 
 @NgModule({
