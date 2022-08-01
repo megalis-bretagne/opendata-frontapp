@@ -1,7 +1,4 @@
-import { Component , OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { LogIn } from './store/actions/auth.actions';
-import {GlobalState} from './store/states/global.state';
+import { Component } from '@angular/core';
 
 
 @Component({
@@ -9,14 +6,9 @@ import {GlobalState} from './store/states/global.state';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
+
   title = 'opendata-app';
 
-  constructor(private store: Store<GlobalState>)
-  {}
-
-  ngOnInit(): void {
-    this.store.dispatch(new LogIn());
-  }
-
+  constructor() { }
 }

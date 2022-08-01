@@ -13,15 +13,18 @@ export class AuthService {
   {}
 
   checkLogin(): Promise<Keycloak.KeycloakProfile> {
+    // console.debug('[AuthService] checkLogin');
     return this.keycloakService.loadUserProfile();
   }
 
   getToken(): Promise<string> {
+    // console.debug('[AuthService] getToken');
     return this.keycloakService.getToken();
   }
 
 
   logout(): void {
+    // console.debug('[AuthService] logout');
     this.keycloakService.logout(this.settings.settings.keycloak.urlLogout);
   }
 
