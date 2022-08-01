@@ -1,0 +1,13 @@
+<mat-card>
+    <mat-card-title>MARQUE BLANCHE BUDGET</mat-card-title>
+    <mat-card-subtitle>Cette rubrique vous permet de configurer votre page budget "marque blanche"</mat-card-subtitle>
+</mat-card>
+
+<p>
+    C'est une page qui doit être accessible une fois loggé.
+</p>
+<p>Son accès en mode non loggé provoque le comportement de login de keycloak</p>
+
+<ng-container *ngIf="(user$ | async) as user">
+    <p>Utilisateur: {{user.email}} </p>
+</ng-container>

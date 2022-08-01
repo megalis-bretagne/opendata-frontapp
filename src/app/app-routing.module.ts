@@ -32,6 +32,10 @@ const routes: Routes = [
     ]
   },
   {
+    path: 'budget',
+    loadChildren: () => import('./budget/budget.module').then(m => m.BudgetModule)
+  },
+  {
     path: '**',
     redirectTo: '/'
   },

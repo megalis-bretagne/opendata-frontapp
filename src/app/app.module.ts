@@ -19,6 +19,7 @@ import { MarqueBlancheComponent } from './components/marque-blanche/marque-blanc
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
 import { ParametragePastellComponent } from './components/parametrage-pastell/parametrage-pastell.component';
+import { BudgetModule } from './budget/budget.module';
 
 
 
@@ -30,7 +31,7 @@ import { ParametragePastellComponent } from './components/parametrage-pastell/pa
     ValiderTableComponent,
     MarqueBlancheComponent,
     DialogBoxComponent,
-    ParametragePastellComponent
+    ParametragePastellComponent,
   ],
     imports: [
         BrowserModule,
@@ -41,7 +42,9 @@ import { ParametragePastellComponent } from './components/parametrage-pastell/pa
         HttpClientModule,
         BrowserAnimationsModule,
         MaterialModule,
-        ClipboardModule
+        ClipboardModule,
+
+        BudgetModule,
     ],
   providers: [
     {
