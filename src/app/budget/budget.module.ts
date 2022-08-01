@@ -1,17 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BudgetParametrageComponent } from './components/budget-parametrage/budget-parametrage.component';
 import { MaterialModule } from '../shared/material.module';
 import { BudgetRoutingModule } from './budget-routing.module';
 import { StoreModule } from '@ngrx/store';
-import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
-
-
+import { BUDGET_SERVICE_TOKEN, FakeBudgetService } from './services/budget.service';
+import { BudgetParametrageComponent } from './components/budget-parametrage/budget-parametrage.component';
+import { BudgetParametrageNavComponent } from './components/budget-parametrage/budget-parametrage-nav/budget-parametrage-nav.component';
 
 @NgModule({
   declarations: [
     BudgetParametrageComponent,
-    BudgetConsultationComponent
+    BudgetParametrageNavComponent,
   ],
   imports: [
     CommonModule,
@@ -19,8 +18,13 @@ import { BudgetConsultationComponent } from './components/budget-consultation/bu
     MaterialModule,
     StoreModule.forFeature('budget', []),
 
-
     BudgetRoutingModule,
   ],
+  providers: [
+    {
+      provide: BUDGET_SERVICE_TOKEN,
+      useClass: FakeBudgetService, // TODO: Using fake service, replace
+    }
+  ]
 })
 export class BudgetModule { }

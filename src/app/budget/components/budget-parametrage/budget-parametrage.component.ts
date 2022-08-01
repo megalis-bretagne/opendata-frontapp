@@ -1,26 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
 import { User } from 'src/app/models/user';
-import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
+import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 @Component({
   selector: 'app-budget-parametrage',
   templateUrl: './budget-parametrage.component.html',
-  styleUrls: ['./budget-parametrage.component.css']
+  styleUrls: ['./budget-parametrage.component.css'],
+  providers: [BudgetParametrageComponentService],
 })
-export class BudgetParametrageComponent implements OnInit {
+export class BudgetParametrageComponent implements OnDestroy {
 
   user$: Observable<User>;
+  siren$: Observable<string>;
 
-  constructor(private store: Store<GlobalState>) {
-    this.user$ = this.store.select(selectAuthState)
-      .pipe(
-        map((state) => state.user)
-      )
+  private _stop$: Subject<void> = new Subject<void>();
+
+  constructor(
+    private componentService: BudgetParametrageComponentService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {
+
+    this.user$ = this.componentService.user$;
+    this.siren$ = this.componentService.siren$;
   }
 
-  ngOnInit(): void {
+  ngOnDestroy(): void {
+    this._stop$.next();
+    this._stop$.complete();
   }
 }

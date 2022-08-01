@@ -1,0 +1,29 @@
+<mat-tab-group
+#selecteurAnnee
+[(selectedIndex)]="anneesSelectedIndex"
+(selectedTabChange)="onSelectionneAnnee($event)">
+  <mat-tab *ngFor="let annee of anneesDisponibles" [label]="annee">
+  </mat-tab>
+</mat-tab-group>
+
+<!-- <p>Selected index: {{anneesSelectedIndex}} </p> -->
+
+<br>
+
+<div class="horizontal">
+
+  <mat-form-field>
+    <mat-label>Étape du budget</mat-label>
+    <mat-select [(value)]="selectedEtape" (valueChange)="onSelectedEtapeChange($event)">
+      <mat-option [value]="option.value" *ngFor="let option of etapeOptions"> {{option.viewValue}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Présentation</mat-label>
+    <mat-select [(value)]="selectedPresentation" (valueChange)="onPresentationChange($event)">
+      <mat-option [value]="option.value" *ngFor="let option of presentationOptions"> {{option.viewValue}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+</div>
