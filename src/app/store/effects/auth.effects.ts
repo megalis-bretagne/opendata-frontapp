@@ -22,6 +22,7 @@ export class AuthEffects {
   effectLogIn$ = createEffect(
     () => this.actions.pipe(
       ofType(AuthActionTypes.LOGIN),
+      // tap(() => console.debug('[AuthEffects]: LOGIN')),
       switchMap(() =>
         this.authService.checkLogin().then((profile) => {
             const user = new User();
