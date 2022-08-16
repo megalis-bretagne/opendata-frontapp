@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, InjectionToken } from "@angular/core";
-import { Observable, of, from } from "rxjs";
-import { delay, switchMap } from "rxjs/operators";
+import { Observable, from } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import { SettingsService } from "src/environments/settings.service";
 import { LigneBudget } from "../store/states/budget.state";
 
 /**
@@ -23,33 +24,36 @@ export interface BudgetService {
 }
 
 @Injectable()
-export class FakeBudgetService implements BudgetService {
+export class RealBudgetService implements BudgetService {
 
+  private _base_url: string
 
-  constructor(private httpClient: HttpClient) {
-    this._debug('Construction');
+  constructor(
+    private http: HttpClient,
+    private settings: SettingsService,
+  ) {
+    this._base_url = `${this.settings.settings.api.url}/api/v1/budgets`
   }
 
-  anneesDisponibles(siren: string) {
+  anneesDisponibles(siren: string): Observable<number[]> {
+
     this._debug(`Cherche les années ou des données budget sont disponibles pour le siren ${siren}`);
     this.checkSiren(siren);
 
-    return of([2022, 2021, 2020])
-      .pipe(
-        delay(1000)
-      );
+    const url = `${this._base_url}/${siren}/annees_disponibles`;
+    return this.http.get<number[]>(url)
   }
 
   loadBudgets(siren: string, annee: number): Observable<LigneBudget> {
+
     this._debug(`Charge les lignes budgetaires pour le siren ${siren} et l'année ${annee}`);
     this.checkSiren(siren);
 
-    let lignes = this.httpClient.get<LigneBudget[]>('./assets/fake-budget.json')
+    const url = `${this._base_url}/${siren}/${annee}`;
+    let lignes = this.http.get<LigneBudget[]>(url)
       .pipe(
-        delay(1000),
         switchMap(lignes => from(lignes))
-      );
-
+      )
     return lignes;
   }
 
@@ -59,9 +63,8 @@ export class FakeBudgetService implements BudgetService {
   }
 
   private _debug(msg: string) {
-    console.debug(`[${FakeBudgetService.name}] ${msg}`)
+    console.debug(`[${RealBudgetService.name}] ${msg}`)
   }
 }
-
 
 export const BUDGET_SERVICE_TOKEN = new InjectionToken<BudgetService>('BudgetService');

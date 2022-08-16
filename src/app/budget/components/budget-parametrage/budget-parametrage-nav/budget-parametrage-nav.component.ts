@@ -13,12 +13,12 @@ import { BudgetParametrageComponentService, PresentationType } from '../budget-p
 })
 export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
-  anneesDisponibles: number[];
+  anneesDisponibles: number[] = [new Date().getFullYear()];
   anneesSelectedIndex: number;
 
   readonly etapeOptions = [
     { value: EtapeBudgetaire.COMPTE_ADMINISTRATIF, viewValue: "Compte administratif" },
-    { value: EtapeBudgetaire.BUDGET_PRIMITIF, viewValue: "BudgetPrimitif" },
+    { value: EtapeBudgetaire.BUDGET_PRIMITIF, viewValue: "Budget primitif" },
   ];
   selectedEtape: EtapeBudgetaire = EtapeBudgetaire.COMPTE_ADMINISTRATIF;
 
@@ -68,7 +68,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
     combineLatest([annee$, this.componentService.anneesDisponibles$])
       .pipe(takeUntil(this._stop$))
       .subscribe(([annee, anneesDisponibles]) => {
-        // this._debug(JSON.stringify([annee, anneesDisponibles]));
+        this._debug(JSON.stringify([annee, anneesDisponibles]));
         let index = anneesDisponibles.indexOf(annee);
         this.anneesDisponibles = anneesDisponibles;
         this.anneesSelectedIndex = index;

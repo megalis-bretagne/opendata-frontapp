@@ -1,0 +1,14 @@
+<ng-container>
+    <div *ngIf="echartData$ | async as echartsData">
+
+        <div
+            echarts
+            [options]="echartsData.options"
+            [initOpts]="echartsData.initOptions"
+            [autoResize]="true"
+            class="echart-chart"
+        ></div>
+            <!-- Pour forcer le moteur de rendu -->
+            <!-- [initOpts]="{ renderer: 'svg' }" --> 
+    </div>
+</ng-container>

@@ -5,6 +5,8 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from '../../services/budget.service';
+import { BudgetAnneesDisponiblesLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetState, selectAnneesDisponibles } from '../../store/states/budget.state';
 
 export enum PresentationType {
   SIMPLIFIE,
@@ -25,12 +27,13 @@ export class BudgetParametrageComponentService {
   readonly navigation: Navigation;
 
   constructor(
-    private store: Store<GlobalState>,
+    private globalStore: Store<GlobalState>,
+    private budgetStore: Store<BudgetState>,
     @Inject(BUDGET_SERVICE_TOKEN)
     private budgetService: BudgetService,
   ) {
 
-    this.user$ = this.store.select(selectAuthState)
+    this.user$ = this.globalStore.select(selectAuthState)
       .pipe(
         map(state => state.user)
       );
@@ -40,9 +43,12 @@ export class BudgetParametrageComponentService {
         map(user => user.siren),
       );
 
-    this.anneesDisponibles$ = this.siren$
+    this.siren$.subscribe(siren =>
+      this.budgetStore.dispatch(new BudgetAnneesDisponiblesLoadingAction(siren))
+    )
+
+    this.anneesDisponibles$ = this.budgetStore.select(selectAnneesDisponibles)
       .pipe(
-        mergeMap(siren => this.budgetService.anneesDisponibles(siren)),
         tap(annees => this.anneesDisponiblesSnapshot = annees)
       );
 

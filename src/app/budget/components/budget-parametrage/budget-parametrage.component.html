@@ -1,11 +1,16 @@
 <div>
 
+    <!-- <div *ngIf="errorInLoadingBudget$ | async as error">
+        An error occured {{error}}
+    </div> -->
+    <!-- TODO: handle error -->
+
     <app-budget-parametrage-nav></app-budget-parametrage-nav>
 
     <div class="visualisations">
         <app-budget-card [titre]="'Le budget principal'" [description]="'Ceci est une description du budget principal'"
             [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
+            <app-budget-principal-graphe></app-budget-principal-graphe>
         </app-budget-card>
 
         <app-budget-card [titre]="'Répartition des recettes'"

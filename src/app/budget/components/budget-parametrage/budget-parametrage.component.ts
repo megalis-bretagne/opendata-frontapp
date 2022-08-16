@@ -4,7 +4,7 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState } from '../../store/states/budget.state';
+import { BudgetState, selectBudgetError } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 @Component({
@@ -18,6 +18,8 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   user$: Observable<User>;
   siren$: Observable<string>;
 
+  errorInLoadingBudget$;
+
   private _stop$: Subject<void> = new Subject<void>();
 
   constructor(
@@ -26,6 +28,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
     this.user$ = this.componentService.user$;
     this.siren$ = this.componentService.siren$;
+    this.errorInLoadingBudget$ = this.store.select(selectBudgetError)
   }
 
   ngOnInit(): void {
