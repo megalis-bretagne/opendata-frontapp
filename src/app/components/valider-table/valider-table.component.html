@@ -7,16 +7,24 @@
       <mat-card-title>&Agrave; STATUER</mat-card-title>
       <mat-card-subtitle>
         Vous trouverez ici uniquement les actes issus du flux de télétransmission des actes et dont le statut n'a pas encore été défini :<br>
-      <ul>
-        <li>
-          les délibérations identifiées à <strong>"ne sais pas"</strong> pour les <strong>actes gérés manuellement</strong>,
-        </li>
-        <li>
-          <strong>toutes délibérations</strong> issues des <strong>actes gérés automatiquement</strong> (flux actes génériques).
-        </li>
-      </ul>
-Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de la délibération n'est pas disponible sur les portails opendata et la délibération et ses annexes ne sont pas publiées sur la marque blanche.
-        Les métadonnées de la délibération (nom, objet, date, etc.) sont a minima publiées sur les portails opendata.
+        <ul>
+          <li>
+          <p>les actes identifiés à <strong>"ne sais pas"</strong> pour les <strong>actes gérés manuellement</strong>,</p>
+          </li>
+          <li>
+          <p><strong>tous les actes</strong> issus des <strong>actes gérés automatiquement</strong> (flux actes génériques).</p>
+          </li>
+          </ul>
+          <p>Dans l'attente, ces actes ne sont pas publiés.</p>
+          <p><strong>Pour rappel concernant la publication sur les catalogues opendata</strong> (data.gouv.fr et <a title="https://data-catalogue.megalis.bretagne.bzh/fr/" href="https://data-catalogue.megalis.bretagne.bzh/fr/" rel="noopener noreferrer nofollow">https://data-catalogue.megalis.bretagne.bzh/fr/</a>) :</p>
+          <ul>
+          <li>
+          <p><strong>seules les</strong> <strong>délibérations et budgets</strong> sont publiés à ce jour sur les portails opendata (data.gouv, catalogue Mégalis). En effet, le schéma national SCDL (socle commun de données locales) n'est pas encore établi au niveau national pour les autres actes,</p>
+          </li>
+          <li>
+          <p><strong>dans le cas des délibérations</strong>, quand elles sont à l'état "non publié", cela veut dire que l'URL de la délibération n'est pas disponible sur les portails opendata (et la délibération et ses annexes ne sont pas publiées sur la marque blanche). Les métadonnées de la délibération (nom, objet, date, etc.) sont toujours a minima publiées sur les portails opendata.</p>
+          </li>
+          </ul>
 
               </mat-card-subtitle>
 
@@ -26,13 +34,17 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
     <mat-card-title>TOUTES LES PUBLICATIONS</mat-card-title>
     <mat-card-subtitle>
 
-      Vous trouverez ici l'ensemble des actes (délibérations et budgets) issus du flux de télétransmission des actes.<br><br>
-      Dans la colonne "&Eacute;tat", il s'agit bien du statut de publication effectif au moment où vous consultez cette page :
-      <ul>
-        <li><strong>publié : l'URL de la délibération est disponible </strong> sur les portails opendata et la délibération et ses annexes sont publiées sur la marque blanche</li>
-        <li><strong>non publié : l'URL de la délibération n'est pas disponible</strong> sur les portails opendata et la délibération et ses annexes ne sont pas publiées sur la marque blanche</li>
-      </ul>
-      Les métadonnées de la délibération (nom, objet, date, etc.) sont a minima publiés sur les portails opendata.
+      Vous trouverez ici l'ensemble des actes issus du flux de télétransmission des actes.<br /><br />Dans la colonne "État", il s'agit bien du statut de publication effectif au moment où vous consultez cette page :
+<ul>
+<li>
+<p><strong>publié :</strong> l'acte et ses annexes sont publiés sur la marque blanche</p>
+<p><strong>Dans le cas particulier des délibérations, l'URL de téléchargement de l'acte est également disponible</strong> sur les portails opendata.</p>
+</li>
+<li>
+<p><strong>non publié :</strong> l'acte et ses annexes ne sont pas publiés sur la marque blanche</p>
+<p><strong>Dans le cas particulier des délibérations : l'URL de téléchargement de l'acte n'est pas disponible</strong> sur les portails opendata. Seules les métadonnées des délibérations (nom, objet, date, etc.) sont alors publiées sur les portails opendata.</p>
+</li>
+</ul>
 
 
     </mat-card-subtitle>
@@ -51,7 +63,7 @@ Dans l'attente, elles sont à l'état "non publié", c'est-à-dire que l'URL de 
   <mat-toolbar id="tab-toolbar">
 
     <div *ngIf="selection.selected.length === 0">
-      Cliquer sur une ou plusieurs délibérations pour changer son état
+      Cliquer sur un ou plusieurs actes pour changer son état
     </div>
 
 <!--    <div *ngIf="this.selection.selected.length == 1">-->
