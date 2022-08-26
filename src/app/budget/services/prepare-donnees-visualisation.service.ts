@@ -30,6 +30,13 @@ class NomenclatureFonctionnelle {
         return Math.max(...niveaux.values())
     }
 
+    static getParentOuLuiMeme(niveau: number, code: string) {
+        let currNiveau = NomenclatureFonctionnelle.niveauDuCode(code)
+        if (niveau >= currNiveau)
+            return code;
+        return code.slice(0, niveau)
+    }
+
     static niveauDuCode(code: string) {
         return code.length
     }
@@ -44,13 +51,12 @@ interface VisualisationPourDonut {
 @Injectable()
 export class PrepareDonneesVisualisation {
 
-    nbCategorieMax = 10;
     formatter = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
     })
 
-    recettesPourDonut(
+    donneesPourDonut(
         donneesBudget: DonneesBudget,
         informationPlanDeCompte: InformationPlanDeCompte,
         rd: 'recette' | 'depense',
@@ -76,11 +82,9 @@ export class PrepareDonneesVisualisation {
             if (ligne.recette == expectRecette)
                 continue;
 
-            let refFonc = referencesFonctionnelles[ligne.fonction_code]
+            let code = NomenclatureFonctionnelle.getParentOuLuiMeme(niveauAAffiche, ligne.fonction_code);
+            let refFonc = referencesFonctionnelles[code]
             let key = refFonc.libelle
-
-            if (nbCategories >= this.nbCategorieMax)
-                key = "Autres";
 
             if(!mapped.has(key))
                 nbCategories += 1;

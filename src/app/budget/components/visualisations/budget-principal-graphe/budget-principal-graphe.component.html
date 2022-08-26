@@ -1,14 +1,16 @@
 <ng-container>
     <div *ngIf="echartData$ | async as echartsData">
 
-        <div
-            echarts
-            [options]="echartsData.options"
-            [initOpts]="echartsData.initOptions"
-            [autoResize]="true"
-            class="echart-chart"
-        ></div>
-            <!-- Pour forcer le moteur de rendu -->
-            <!-- [initOpts]="{ renderer: 'svg' }" --> 
+        <div echarts [options]="echartsData.options" [initOpts]="echartsData.initOptions" [autoResize]="true"
+            class="echart-chart"></div>
+        <!-- Pour forcer le moteur de rendu -->
+        <!-- [initOpts]="{ renderer: 'svg' }" -->
+    </div>
+    <div class="bottom-links">
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeVue=='general' }" (click)="onClicVueGenerale()">Vue
+            générale</a> |
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeVue=='detaille' }" (click)="onClicVueDetaille()">
+            Vue détaillée
+        </a>
     </div>
 </ng-container>

@@ -14,7 +14,7 @@ export type TypeVue = 'general' | 'detaille'
 export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
   echartData$ = new BehaviorSubject({});
-  private _typeVue$ = new BehaviorSubject<TypeVue>('general')
+  typeVue: TypeVue = 'general'
 
   @Input()
   donneesBudget: DonneesBudget
@@ -33,20 +33,20 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.donneesBudget && changes.informationPlanDeCompte) {
-      let chartData = this.toEchartsData(this.donneesBudget, this.informationPlanDeCompte)
-      this.echartData$.next(chartData)
+      this.refresh()
     }
   }
 
-  toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: InformationPlanDeCompte) {
+  toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: InformationPlanDeCompte, typeVue: TypeVue) {
 
-    let donneesVisualisation = this.mapper.recettesPourDonut(donneesBudget, informationPlanDeCompte, this.rd, "general")
+    let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, informationPlanDeCompte, this.rd, typeVue)
     let intitule = `Budget de \n ${donneesVisualisation.prettyTotal}`
 
     let chartOption: EChartsOption = {
       name: ``,
       tooltip: { trigger: 'item' },
       legend: {
+        type: 'scroll',
         right: '5%',
         orient: 'vertical',
       },
@@ -71,5 +71,20 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
     }
 
     return chartData;
+  }
+
+  onClicVueGenerale() {
+    this.typeVue = 'general';
+    this.refresh()
+  }
+
+  onClicVueDetaille() {
+    this.typeVue = 'detaille';
+    this.refresh()
+  }
+
+  refresh() {
+      let chartData = this.toEchartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue);
+      this.echartData$.next(chartData)
   }
 }
