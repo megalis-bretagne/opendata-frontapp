@@ -1,6 +1,10 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
 import { EtapeBudgetaire } from "../../services/budget.service"
 
+export type ReferencesFonctionnelles = {
+    [code: string]: ReferenceFonctionnelle
+}
+
 export interface ReferenceFonctionnelle {
     code: string,
     libelle: string
@@ -17,9 +21,7 @@ export interface DonneesBudget {
     annee: number,
     siren: number,
     denomination_siege: string,
-    references_fonctionnelles: {
-        [code: string]: ReferenceFonctionnelle
-    },
+    references_fonctionnelles: ReferencesFonctionnelles,
     lignes: [LigneBudget]
 }
 
@@ -39,7 +41,7 @@ export const initialBudgetState: BudgetState = {
 
 export const selectBudgetFeatureState = createFeatureSelector<BudgetState>('budget')
 
-export const selectDonnees = (siren: number, etape: EtapeBudgetaire, annee: number) =>
+export const selectDonnees = (siren: number, annee: number, etape: EtapeBudgetaire) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.budgets.find(budget =>
             (budget.annee == annee && budget.etape == etape && budget.siren == siren)

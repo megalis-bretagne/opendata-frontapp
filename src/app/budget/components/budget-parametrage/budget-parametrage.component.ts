@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, selectBudgetError } from '../../store/states/budget.state';
+import { BudgetState, DonneesBudget, selectDonnees, selectBudgetError } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 @Component({
@@ -17,6 +17,8 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   user$: Observable<User>;
   siren$: Observable<string>;
+
+  donneesBudget: DonneesBudget
 
   errorInLoadingBudget$;
 
@@ -33,16 +35,20 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    combineLatest([
+    let navigationParamsObs = combineLatest([
       this.siren$,
       this.componentService.navigation.anneeSelectionnee$,
-      this.componentService.navigation.etapeBudgetaireSelectionnee$]
-    )
+      this.componentService.navigation.etapeBudgetaireSelectionnee$,
+    ])
+
+    navigationParamsObs
       .pipe(
         tap(([siren, annee, etape]) => {
-          this.store.dispatch(new BudgetLoadingAction(siren, etape, annee))
-        }
-        ),
+          this.store.dispatch(new BudgetLoadingAction(siren, etape, annee));
+        }),
+
+        mergeMap(([siren, annee, etape]) => this.store.select(selectDonnees(parseInt(siren), annee, etape))),
+        tap(donnees => this.donneesBudget = donnees),
         takeUntil(this._stop$)
       )
       .subscribe()

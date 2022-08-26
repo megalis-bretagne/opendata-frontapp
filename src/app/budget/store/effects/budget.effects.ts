@@ -35,7 +35,7 @@ export class BudgetEffects {
 
                     return loadDonnees;
                 }
-                ),
+                )
             ),
         { dispatch: true },
     );

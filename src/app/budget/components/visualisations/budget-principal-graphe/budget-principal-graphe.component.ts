@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { EChartsOption } from 'echarts';
 import { BehaviorSubject } from 'rxjs';
-import { BudgetState } from 'src/app/budget/store/states/budget.state';
+import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
+import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
 
 export type TypeVue = 'general' | 'detaille'
 
@@ -10,61 +11,64 @@ export type TypeVue = 'general' | 'detaille'
   templateUrl: './budget-principal-graphe.component.html',
   styleUrls: ['./budget-principal-graphe.component.css']
 })
-export class BudgetPrincipalGrapheComponent implements OnInit {
+export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
-  echartData$;
-  private _typeVue = new BehaviorSubject<TypeVue>('general')
+  echartData$ = new BehaviorSubject({});
+  private _typeVue$ = new BehaviorSubject<TypeVue>('general')
 
-  constructor(private store: Store<BudgetState>) { }
+  @Input()
+  donneesBudget: DonneesBudget
 
-  ngOnInit(): void { }
+  @Input()
+  rd: 'recette'|'depense';
 
-  // ngOnInit(): void {
+  __cpt = 0
 
-  //   let lignes$ = this.store.pipe(select(selectLignesBudget))
-  //   this.echartData$ = lignes$.pipe(
-  //     map(this.toEchartsData)
-  //   )
-  // }
+  constructor(private mapper: PrepareDonneesVisualisation) { }
 
-  // toEchartsData(lignes: LigneBudget[]) {
+  ngOnInit(): void { 
 
-  //   let values = lignes.map(ligne => ligne.montant);
-  //   let montant = values.reduce((acc, v) => acc + v, 0);
-  //   let intitule = `Budget de \n ${montant}€`;
-  //   let data = lignes.map(ligne => { 
-  //     return { value: 10, name: ligne.nature };
-  //     // return { value: ligne.montant, name: ligne.nature };
-  //   })
-  //   let chartOption: EChartsOption = {
-  //     name: ``,
-  //     tooltip: { trigger: 'item' },
-  //     legend: {
-  //       right: '5%',
-  //       orient: 'vertical',
-  //     },
-  //     series: [
-  //       {
-  //         type: 'pie',
-  //         radius: ['40%', '70%'],
-  //         label: {
-  //           position: 'center',
-  //           fontSize: 20,
-  //           formatter: () => intitule
-  //         },
-  //         data: data
-  //       }
-  //     ]
-  //   };
-  //   let chartInitOptions = {
-  //     // width: 800,
-  //     // height: 600,
-  //   }
+  }
 
-  //   return {
-  //     options: chartOption,
-  //     initOptions: chartInitOptions,
-  //   };
-  // }
+  ngOnChanges(changes: SimpleChanges): void {
+      if (changes.donneesBudget) {
+        let chartData = this.toEchartsData(this.donneesBudget)
+        this.echartData$.next(chartData)
+      }
+  }
 
+  toEchartsData(donneesBudget: DonneesBudget) {
+
+    let donneesVisualisation = this.mapper.recettesPourDonut(donneesBudget, this.rd, "general")
+    let intitule = `Budget de \n ${donneesVisualisation.prettyTotal}`
+
+    let chartOption: EChartsOption = {
+      name: ``,
+      tooltip: { trigger: 'item' },
+      legend: {
+        right: '5%',
+        orient: 'vertical',
+      },
+      series: [
+        {
+          type: 'pie',
+          radius: ['40%', '70%'],
+          label: {
+            position: 'center',
+            fontSize: 20,
+            formatter: () => ""+intitule
+          },
+          data: donneesVisualisation.data,
+        }
+      ]
+    };
+    let chartInitOptions = { }
+
+    let chartData =  {
+      options: chartOption,
+      chartInitOptions,
+    }
+
+    return chartData;
+  }
 }

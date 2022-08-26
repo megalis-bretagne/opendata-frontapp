@@ -8,9 +8,26 @@
     <app-budget-parametrage-nav></app-budget-parametrage-nav>
 
     <div class="visualisations">
-        <app-budget-card [titre]="'Le budget principal'" [description]="'Ceci est une description du budget principal'"
+        <app-budget-card 
+            titre="Les recettes {{donneesBudget?.annee}} pour {{donneesBudget?.denomination_siege}}" 
+            description="Les recettes pour l'année {{donneesBudget?.annee}} 
+            de la {{donneesBudget?.denomination_siege}}"
             [parametrable]="true">
-            <app-budget-principal-graphe></app-budget-principal-graphe>
+            <app-budget-principal-graphe
+                [donneesBudget]="donneesBudget"
+                rd="recette"
+                ></app-budget-principal-graphe>
+        </app-budget-card>
+
+        <app-budget-card 
+            titre="Les dépenses {{donneesBudget?.annee}} pour {{donneesBudget?.denomination_siege}}" 
+            description="Les dépenses pour l'année {{donneesBudget?.annee}} 
+            de la {{donneesBudget?.denomination_siege}}"
+            [parametrable]="true">
+            <app-budget-principal-graphe
+                [donneesBudget]="donneesBudget"
+                rd="depense"
+                ></app-budget-principal-graphe>
         </app-budget-card>
 
         <app-budget-card [titre]="'Répartition des recettes'"

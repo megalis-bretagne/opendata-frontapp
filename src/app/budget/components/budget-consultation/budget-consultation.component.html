@@ -1,3 +1,12 @@
-
-<p>C'est la page de consultation des différents visuels de budgets.</p>
-<p>Cette page doit être accessible publiquement.</p>
+<div class="visualisations">
+    <app-budget-card 
+        titre="Les recettes {{donneesBudget?.annee}} pour {{donneesBudget?.denomination_siege}}" 
+        description="Les recettes pour l'année {{donneesBudget?.annee}} 
+        de la {{donneesBudget?.denomination_siege}}"
+        [parametrable]="false">
+        <app-budget-principal-graphe
+            [donneesBudget]="donneesBudget"
+            rd="recette"
+            ></app-budget-principal-graphe>
+    </app-budget-card>
+</div>

@@ -15,6 +15,8 @@ import { SVGRenderer } from 'echarts/renderers';
 import langFr from 'echarts/lib/i18n/langFR';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { BudgetPrincipalGrapheComponent } from './components/visualisations/budget-principal-graphe/budget-principal-graphe.component';
+import { PrepareDonneesVisualisation } from './services/prepare-donnees-visualisation.service';
+import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -29,6 +31,7 @@ echarts.registerLocale('FR', langFr);
     BudgetParametrageNavComponent,
     BudgetCardComponent,
     BudgetPrincipalGrapheComponent,
+    BudgetConsultationComponent,
   ],
   imports: [
     CommonModule,
@@ -44,7 +47,8 @@ echarts.registerLocale('FR', langFr);
     {
       provide: BUDGET_SERVICE_TOKEN,
       useClass: RealBudgetService,
-    }
+    },
+    PrepareDonneesVisualisation
   ]
 })
 export class BudgetModule { }
