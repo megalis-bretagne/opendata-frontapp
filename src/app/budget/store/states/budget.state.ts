@@ -2,15 +2,15 @@ import { createFeatureSelector, createSelector } from "@ngrx/store"
 import { EtapeBudgetaire } from "../../services/budget.service"
 
 
-export interface ReferenceFonctionnelle {
-    code: string,
-    libelle: string
-}
-
-export interface CompteNature {
+export interface _ElementPdc {
     code: string,
     libelle: string,
+    parent_code: string,
 }
+
+export interface ReferenceFonctionnelle extends _ElementPdc { }
+
+export interface CompteNature extends _ElementPdc { }
 
 export type ReferencesFonctionnelles = {
     [code: string]: ReferenceFonctionnelle

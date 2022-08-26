@@ -1,14 +1,13 @@
 import { Injectable } from "@angular/core";
 import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
-import { DonneesBudget, InformationPlanDeCompte, ReferencesFonctionnelles } from "../store/states/budget.state";
+import { DonneesBudget, InformationPlanDeCompte, ReferenceFonctionnelle, ReferencesFonctionnelles } from "../store/states/budget.state";
 
 //
 // TODO: Ici, gros du travail pour préparer la donnée à présenter
 //       map reduce sur la fonction ou la nature
 //
 
-/**
- */
+/** */
 class NomenclatureFonctionnelle {
 
     referencesFonctionnelles: ReferencesFonctionnelles;
@@ -17,28 +16,16 @@ class NomenclatureFonctionnelle {
         this.referencesFonctionnelles = referencesFonctionnelles
     }
     
-    getReferencesDeNiveau(niveau: number) {
-        return Object.entries(this.referencesFonctionnelles)
-            .filter(([code, _]) => code.length == niveau)
-    }
-
-    nbNiveaux() {
-        let niveaux = new Set<number>();
-        for (const k of Object.keys(this.referencesFonctionnelles)) {
-            niveaux.add(k.length);
+    getParentOuLuiMeme(ref: ReferenceFonctionnelle) {
+        let _ref = ref
+        while(_ref.parent_code) {
+            _ref = this.referencesFonctionnelles[_ref.parent_code]
         }
-        return Math.max(...niveaux.values())
+        return _ref
     }
 
-    static getParentOuLuiMeme(niveau: number, code: string) {
-        let currNiveau = NomenclatureFonctionnelle.niveauDuCode(code)
-        if (niveau >= currNiveau)
-            return code;
-        return code.slice(0, niveau)
-    }
-
-    static niveauDuCode(code: string) {
-        return code.length
+    get(code: string) {
+        return this.referencesFonctionnelles[code];
     }
 }
 
@@ -67,27 +54,21 @@ export class PrepareDonneesVisualisation {
         let nomenclature = new NomenclatureFonctionnelle(referencesFonctionnelles);
         let mapped = new Map<string, number>()
 
-        let nbNiveaux = nomenclature.nbNiveaux()
-        let niveauAAffiche = 1 // Plus haut niveau
-        if (typeVue == 'detaille')
-            niveauAAffiche = nbNiveaux; // Plus détaillé
-
         let expectRecette = rd == 'recette';
 
-        let nbCategories = 0;
         let total = 0;
 
         for (var ligne of donneesBudget.lignes) {
 
             if (ligne.recette == expectRecette)
                 continue;
+            
+            let code = ligne.fonction_code;
+            let refFonc = nomenclature.get(code)
+            if (typeVue == 'general')
+                refFonc = nomenclature.getParentOuLuiMeme(refFonc)
 
-            let code = NomenclatureFonctionnelle.getParentOuLuiMeme(niveauAAffiche, ligne.fonction_code);
-            let refFonc = referencesFonctionnelles[code]
             let key = refFonc.libelle
-
-            if(!mapped.has(key))
-                nbCategories += 1;
 
             let previous = mapped.get(key) || 0
             let now = previous;
