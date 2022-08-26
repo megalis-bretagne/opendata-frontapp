@@ -1,4 +1,13 @@
-<mat-card>
+
+<ng-container *ngIf="isLoading">
+    Loading...
+</ng-container>
+
+<ng-container *ngIf="hasError">
+    Error occured!
+</ng-container>
+
+<mat-card *ngIf="isSuccess()">
 
     <mat-card-title class="horizontal">
         <div>

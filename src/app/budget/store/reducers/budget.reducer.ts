@@ -11,11 +11,13 @@ export function budgetReducer(state = initialBudgetState, action: BudgetAction):
             }
         case BudgetActionType.LoadSuccess: {
             let donnees = action.donnees;
+            let infoPdc = action.informationPdc;
             return {
                 ...state,
                 error: false,
                 loading: false,
-                budgets: [...state.budgets, donnees]
+                budgets: [...state.budgets, donnees],
+                infoPlanDeComptes: [ ...state.infoPlanDeComptes, infoPdc]
             }
         }
         case BudgetActionType.LoadFailure:

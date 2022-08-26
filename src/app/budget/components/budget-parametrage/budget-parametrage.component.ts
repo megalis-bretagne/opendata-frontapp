@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { zip } from "rxjs"
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, DonneesBudget, selectDonnees, selectBudgetError } from '../../store/states/budget.state';
+import { BudgetState, DonneesBudget, selectDonnees, selectBudgetError, InformationPlanDeCompte, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 @Component({
@@ -19,6 +20,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   siren$: Observable<string>;
 
   donneesBudget: DonneesBudget
+  informationsPlanDeCompte: InformationPlanDeCompte
 
   errorInLoadingBudget$;
 
@@ -47,8 +49,16 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
           this.store.dispatch(new BudgetLoadingAction(siren, etape, annee));
         }),
 
-        mergeMap(([siren, annee, etape]) => this.store.select(selectDonnees(parseInt(siren), annee, etape))),
-        tap(donnees => this.donneesBudget = donnees),
+        mergeMap(([siren, annee, etape]) => {
+          return zip (
+            this.store.select(selectDonnees(siren, annee, etape)),
+            this.store.select(selectInformationsPlanDeCompte(siren, annee)),
+          );
+        }),
+        tap(([donnees, informationPdc]) => { 
+          this.donneesBudget = donnees 
+          this.informationsPlanDeCompte = informationPdc;
+        }),
         takeUntil(this._stop$)
       )
       .subscribe()

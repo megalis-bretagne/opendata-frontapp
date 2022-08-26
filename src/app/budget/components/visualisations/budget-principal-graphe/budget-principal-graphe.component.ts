@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { EChartsOption } from 'echarts';
 import { BehaviorSubject } from 'rxjs';
 import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
-import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
+import { DonneesBudget, InformationPlanDeCompte } from 'src/app/budget/store/states/budget.state';
 
 export type TypeVue = 'general' | 'detaille'
 
@@ -20,26 +20,27 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
   donneesBudget: DonneesBudget
 
   @Input()
-  rd: 'recette'|'depense';
+  informationPlanDeCompte: InformationPlanDeCompte
 
-  __cpt = 0
+  @Input()
+  rd: 'recette' | 'depense';
 
   constructor(private mapper: PrepareDonneesVisualisation) { }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-      if (changes.donneesBudget) {
-        let chartData = this.toEchartsData(this.donneesBudget)
-        this.echartData$.next(chartData)
-      }
+    if (changes.donneesBudget && changes.informationPlanDeCompte) {
+      let chartData = this.toEchartsData(this.donneesBudget, this.informationPlanDeCompte)
+      this.echartData$.next(chartData)
+    }
   }
 
-  toEchartsData(donneesBudget: DonneesBudget) {
+  toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: InformationPlanDeCompte) {
 
-    let donneesVisualisation = this.mapper.recettesPourDonut(donneesBudget, this.rd, "general")
+    let donneesVisualisation = this.mapper.recettesPourDonut(donneesBudget, informationPlanDeCompte, this.rd, "general")
     let intitule = `Budget de \n ${donneesVisualisation.prettyTotal}`
 
     let chartOption: EChartsOption = {
@@ -56,15 +57,15 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
           label: {
             position: 'center',
             fontSize: 20,
-            formatter: () => ""+intitule
+            formatter: () => "" + intitule
           },
           data: donneesVisualisation.data,
         }
       ]
     };
-    let chartInitOptions = { }
+    let chartInitOptions = {}
 
-    let chartData =  {
+    let chartData = {
       options: chartOption,
       chartInitOptions,
     }

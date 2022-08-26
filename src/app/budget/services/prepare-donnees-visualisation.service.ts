@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
-import { DonneesBudget, ReferencesFonctionnelles } from "../store/states/budget.state";
+import { DonneesBudget, InformationPlanDeCompte, ReferencesFonctionnelles } from "../store/states/budget.state";
 
 //
 // TODO: Ici, gros du travail pour préparer la donnée à présenter
@@ -52,18 +52,19 @@ export class PrepareDonneesVisualisation {
 
     recettesPourDonut(
         donneesBudget: DonneesBudget,
+        informationPlanDeCompte: InformationPlanDeCompte,
         rd: 'recette' | 'depense',
         typeVue: TypeVue,
     ): VisualisationPourDonut {
 
-        let referencesFonctionnelles = donneesBudget.references_fonctionnelles;
+        let referencesFonctionnelles = informationPlanDeCompte.references_fonctionnelles;
         let nomenclature = new NomenclatureFonctionnelle(referencesFonctionnelles);
         let mapped = new Map<string, number>()
 
         let nbNiveaux = nomenclature.nbNiveaux()
         let niveauAAffiche = 1 // Plus haut niveau
         if (typeVue == 'detaille')
-            niveauAAffiche = nbNiveaux // Plus détaillé
+            niveauAAffiche = nbNiveaux; // Plus détaillé
 
         let expectRecette = rd == 'recette';
 

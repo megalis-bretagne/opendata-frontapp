@@ -3,7 +3,7 @@ import { Injectable, InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { SettingsService } from "src/environments/settings.service";
-import { DonneesBudget } from "../store/states/budget.state";
+import { DonneesBudget, InformationPlanDeCompte } from "../store/states/budget.state";
 
 export enum EtapeBudgetaire {
 
@@ -39,6 +39,7 @@ export interface BudgetService {
 
   anneesDisponibles(siren: string): Observable<number[]>
   loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudget>
+  loadInformationsPdc(siren: string, annee: number): Observable<InformationPlanDeCompte>
 }
 
 @Injectable()
@@ -62,7 +63,7 @@ export class RealBudgetService implements BudgetService {
     return this.http.get<number[]>(url)
   }
 
-  loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudget> {
+  loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudget> {
 
     this._debug(`Charge les données budgetaires pour le siren ${siren}, l'étape ${etape} et l'année ${annee}`);
     this.checkSiren(siren);
@@ -78,6 +79,24 @@ export class RealBudgetService implements BudgetService {
         })
       );
     return donnees;
+  }
+
+  loadInformationsPdc(siren: string, annee: number): Observable<InformationPlanDeCompte> {
+
+    this._debug(`Charge les informations du plan de compte pour le siren ${siren} et l'année ${annee}`)
+    this.checkSiren(siren)
+
+    const url = `${this._base_url}/${siren}/${annee}/pdc`;
+    let informationsPdc = 
+      this.http.get<InformationPlanDeCompte>(url).pipe(
+        map(informations => {
+          informations.siren = siren;
+          informations.annee = annee;
+          return informations;
+        })
+      );
+
+    return informationsPdc;
   }
 
   private checkSiren(siren: string) {

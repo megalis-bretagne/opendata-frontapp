@@ -1,11 +1,15 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
+import {tap, takeUntil} from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { BudgetState, selectBudgetError, selectBudgetIsLoading } from '../../store/states/budget.state';
 
 @Component({
   selector: 'app-budget-card',
   templateUrl: './budget-card.component.html',
   styleUrls: ['./budget-card.component.css']
 })
-export class BudgetCardComponent implements OnInit {
+export class BudgetCardComponent implements OnInit, OnDestroy {
 
   @Input()
   parametrable = false;
@@ -25,9 +29,30 @@ export class BudgetCardComponent implements OnInit {
   @Output()
   genererImageClic = new EventEmitter();
 
-  constructor() { }
+
+  isLoading: boolean = true;
+  hasError = false;
+  isSuccess = () => !this.isLoading && !this.hasError;
+
+  _stop$ = new Subject();
+
+  constructor(private store: Store<BudgetState>) { }
 
   ngOnInit(): void {
+    this.store.select(selectBudgetError)
+      .pipe(
+        tap(hasError => this.hasError = hasError),
+        takeUntil(this._stop$)
+      ).subscribe()
+    this.store.select(selectBudgetIsLoading)
+      .pipe(
+        tap(isLoading => this.isLoading = isLoading),
+        takeUntil(this._stop$)
+      ).subscribe()
+  }
+
+  ngOnDestroy(): void {
+      this._stop$.next();
   }
 
   onDeplacerClic() {

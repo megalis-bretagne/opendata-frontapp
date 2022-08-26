@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Route } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, selectDonnees as selectDonneesBudget } from '../../store/states/budget.state';
+import { BudgetState, DonneesBudget, InformationPlanDeCompte, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 
 @Component({
   selector: 'app-budget-consultation',
@@ -17,7 +17,8 @@ export class BudgetConsultationComponent implements OnInit {
   etape: any;
   annee: any;
 
-  donneesBudget;
+  donneesBudget: DonneesBudget;
+  informationsPdc: InformationPlanDeCompte;
 
   private _stop$: Subject<void> = new Subject<void>();
 
@@ -36,6 +37,15 @@ export class BudgetConsultationComponent implements OnInit {
             takeUntil(this._stop$),
         )
         .subscribe();
+
+      this.store.select(selectInformationsPlanDeCompte(this.siren, this.annee))
+        .pipe(
+            tap(infoPdc => console.info(`Informations plan de comptes ${infoPdc}`)),
+            tap(infoPdc => this.informationsPdc = infoPdc),
+            takeUntil(this._stop$),
+        )
+        .subscribe();
+
   }
   
 }
