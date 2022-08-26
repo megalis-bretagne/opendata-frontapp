@@ -82,7 +82,7 @@ class Navigation {
   }
 
   public selectionneEtapeBudgetaire(etape: EtapeBudgetaire) {
-    this._debug(`Selectionne l'étape ${EtapeBudgetaire[etape]}`);
+    this._debug(`Selectionne l'étape ${etape}`);
     this._etapeBudgetaireSelectionnee.next(etape);
   }
 

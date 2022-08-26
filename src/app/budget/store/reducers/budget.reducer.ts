@@ -9,20 +9,20 @@ export function budgetReducer(state = initialBudgetState, action: BudgetAction):
                 error: false,
                 loading: true
             }
-        case BudgetActionType.LoadSuccess:
-            let lignes = action.lignes;
+        case BudgetActionType.LoadSuccess: {
+            let donnees = action.donnees;
             return {
                 ...state,
                 error: false,
                 loading: false,
-                lignes: lignes,
+                budgets: [...state.budgets, donnees]
             }
+        }
         case BudgetActionType.LoadFailure:
             return {
                 ...state,
                 error: true,
                 loading: false,
-                lignes: [],
             }
         case BudgetActionType.LoadingAnneesDisponibles:
             return {

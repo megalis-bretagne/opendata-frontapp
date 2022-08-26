@@ -1,5 +1,6 @@
 import { Action } from "@ngrx/store";
-import { LigneBudget } from "../states/budget.state";
+import { EtapeBudgetaire } from "../../services/budget.service";
+import { DonneesBudget } from "../states/budget.state";
 
 export enum BudgetActionType {
     Loading = '[Budget] Loading',
@@ -13,11 +14,11 @@ export enum BudgetActionType {
 
 export class BudgetLoadingAction implements Action {
     public readonly type = BudgetActionType.Loading;
-    constructor(public siren: string, public annee: number) { }
+    constructor(public siren: string, public etape: EtapeBudgetaire, public annee: number) { }
 }
 export class BudgetLoadSuccessAction implements Action {
     public readonly type = BudgetActionType.LoadSuccess;
-    constructor(public lignes: LigneBudget[]) { }
+    constructor(public donnees: DonneesBudget) { }
 }
 export class BudgetLoadFailureAction implements Action {
     public readonly type = BudgetActionType.LoadFailure;

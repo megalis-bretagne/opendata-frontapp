@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of } from "rxjs";
-import { catchError, map, switchMap, toArray } from "rxjs/operators";
-import { BudgetService, BUDGET_SERVICE_TOKEN } from "../../services/budget.service";
+import { catchError, map, switchMap } from "rxjs/operators";
+import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from "../../services/budget.service";
 import { BudgetActionType, BudgetAnneesDisponiblesLoadFailureAction, BudgetAnneesDisponiblesLoadingAction, BudgetAnneesDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
 
 @Injectable()
@@ -17,12 +17,25 @@ export class BudgetEffects {
         () => this.actions$
             .pipe(
                 ofType<BudgetLoadingAction>(BudgetActionType.Loading),
-                map(action => [action.siren, action.annee]),
-                switchMap(([siren, annee]) =>
-                    this.budgetService.loadBudgets(siren as string, annee as number).pipe(toArray())
+                map(action => [action.siren, action.etape, action.annee]),
+                switchMap(([siren, etape, annee]) => {
+                    let loadDonnees = this.budgetService.loadBudgets(
+                        siren as string,
+                        etape as EtapeBudgetaire,
+                        annee as number
+                    ).pipe(
+                        map(donnees => {
+                            return new BudgetLoadSuccessAction(donnees)
+                        }),
+                        catchError(err => {
+                            console.error(err)
+                            return of(new BudgetLoadFailureAction(err))
+                        })
+                    );
+
+                    return loadDonnees;
+                }
                 ),
-                map(lignes => new BudgetLoadSuccessAction(lignes)),
-                catchError(err => of(new BudgetLoadFailureAction(err))),
             ),
         { dispatch: true },
     );

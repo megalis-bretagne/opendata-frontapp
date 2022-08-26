@@ -3,7 +3,7 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
-import { EtapeBudgetaire } from 'src/app/budget/services/budget.service';
+import { EtapeBudgetaire, EtapeBudgetaireUtil } from 'src/app/budget/services/budget.service';
 import { BudgetParametrageComponentService, PresentationType } from '../budget-parametrage-component.service';
 
 @Component({
@@ -32,7 +32,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
   private _stop$ = new Subject<void>();
   private _anneeFromRoute$: Observable<number>;
-  private _etapeFromRoute: Observable<number>;
+  private _etapeFromRoute: Observable<EtapeBudgetaire>;
   private _presentationFromRoute: Observable<number>;
 
   constructor(
@@ -48,8 +48,8 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
       );
     this._etapeFromRoute = this.route.queryParams
       .pipe(
-        map(params => Number(params['etape'])),
-        filter(etape => etape in EtapeBudgetaire),
+        map(params => params['etape'] as EtapeBudgetaire),
+        filter(etape => EtapeBudgetaireUtil.hasValue(etape)),
       );
     this._presentationFromRoute = this.route.queryParams
       .pipe(

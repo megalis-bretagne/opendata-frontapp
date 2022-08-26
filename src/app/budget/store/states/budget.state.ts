@@ -1,34 +1,60 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
+import { EtapeBudgetaire } from "../../services/budget.service"
+
+export interface ReferenceFonctionnelle {
+    code: string,
+    libelle: string
+}
 
 export interface LigneBudget {
-    annee: number,
-    etape: 'budget primitif' | 'budget supplémentaire' | 'décision modificative' | 'compte administratif'
-    nom: string,
-    nature: string,
-    fonction: string,
-
+    fonction_code: string,
+    recette: boolean,
     montant: number,
 }
 
+export interface DonneesBudget {
+    etape: EtapeBudgetaire,
+    annee: number,
+    siren: number,
+    denomination_siege: string,
+    references_fonctionnelles: {
+        [code: string]: ReferenceFonctionnelle
+    },
+    lignes: [LigneBudget]
+}
+
 export interface BudgetState {
-    lignes: LigneBudget[],
+    budgets: DonneesBudget[]
     anneesDisponibles: number[],
     loading: boolean,
     error: boolean,
 }
 
 export const initialBudgetState: BudgetState = {
-    lignes: [],
+    budgets: [],
     anneesDisponibles: [],
     loading: true,
     error: false,
 }
 
 export const selectBudgetFeatureState = createFeatureSelector<BudgetState>('budget')
-export const selectLignesBudget = createSelector(
-    selectBudgetFeatureState,
-    (state) => state.lignes,
-)
+
+export const selectDonnees = (siren: number, etape: EtapeBudgetaire, annee: number) =>
+    createSelector(selectBudgetFeatureState, (state) => {
+        return state.budgets.find(budget =>
+            (budget.annee == annee && budget.etape == etape && budget.siren == siren)
+        )
+    });
+
+export const selectReferencesFonctionnelles = (siren: number, annee: number) =>
+    createSelector(selectBudgetFeatureState, (state) => {
+        // Les références fonctionnelles proviennent du plan de compte, on peut donc
+        // ignorer l'étape budgetaire lors de leur identification.
+        return state.budgets.find(budget =>
+            (budget.annee == annee && budget.siren == siren && budget.references_fonctionnelles)
+        )
+            .references_fonctionnelles
+    });
 
 export const selectAnneesDisponibles = createSelector(
     selectBudgetFeatureState,

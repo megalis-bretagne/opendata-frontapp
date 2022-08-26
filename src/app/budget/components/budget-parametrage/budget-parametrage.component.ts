@@ -32,12 +32,20 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    
-    combineLatest([this.siren$, this.componentService.navigation.anneeSelectionnee$])
+
+    combineLatest([
+      this.siren$,
+      this.componentService.navigation.anneeSelectionnee$,
+      this.componentService.navigation.etapeBudgetaireSelectionnee$]
+    )
       .pipe(
-        tap(([siren, annee]) => this.store.dispatch(new BudgetLoadingAction(siren, annee))),
+        tap(([siren, annee, etape]) => {
+          this.store.dispatch(new BudgetLoadingAction(siren, etape, annee))
+        }
+        ),
         takeUntil(this._stop$)
-      ) .subscribe()
+      )
+      .subscribe()
   }
 
   onEnregistrerClic() {

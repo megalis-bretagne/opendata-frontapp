@@ -1,26 +1,44 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, InjectionToken } from "@angular/core";
-import { Observable, from } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { SettingsService } from "src/environments/settings.service";
-import { LigneBudget } from "../store/states/budget.state";
+import { DonneesBudget } from "../store/states/budget.state";
 
-/**
- * Etape budgetaire tel que décrit ici:
- * https://schema.data.gouv.fr/scdl/budget/0.8.1/documentation.html#etape-budgetaire-propriete-bgt-natdec
- */
 export enum EtapeBudgetaire {
 
-  BUDGET_PRIMITIF,
-  BUDGET_SUPPLEMENTAIRE,
-  DECISION_MODIFICATIVE,
-  COMPTE_ADMINISTRATIF,
+  BUDGET_PRIMITIF = "primitif",
+  BUDGET_SUPPLEMENTAIRE = "supplémentaire",
+  DECISION_MODIFICATIVE = "modificative",
+  COMPTE_ADMINISTRATIF = "administratif",
+}
+
+export class EtapeBudgetaireUtil {
+
+  public static hasValue(v: string) {
+    return Object.values(EtapeBudgetaire).includes(v as EtapeBudgetaire);
+  }
+
+  public static fromApi(etape_api: string): EtapeBudgetaire {
+    switch (etape_api) {
+      case "budget primitif":
+        return EtapeBudgetaire.BUDGET_PRIMITIF;
+      case "budget supplémentaire":
+        return EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE;
+      case "décision modificative":
+        return EtapeBudgetaire.DECISION_MODIFICATIVE;
+      case "compte administratif":
+        return EtapeBudgetaire.COMPTE_ADMINISTRATIF;
+      default:
+        throw new Error(`${etape_api} n'est pas une étape valide`)
+    }
+  }
 }
 
 export interface BudgetService {
 
   anneesDisponibles(siren: string): Observable<number[]>
-  loadBudgets(siren: string, annee: number): Observable<LigneBudget>
+  loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudget>
 }
 
 @Injectable()
@@ -44,17 +62,22 @@ export class RealBudgetService implements BudgetService {
     return this.http.get<number[]>(url)
   }
 
-  loadBudgets(siren: string, annee: number): Observable<LigneBudget> {
+  loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudget> {
 
-    this._debug(`Charge les lignes budgetaires pour le siren ${siren} et l'année ${annee}`);
+    this._debug(`Charge les données budgetaires pour le siren ${siren}, l'étape ${etape} et l'année ${annee}`);
     this.checkSiren(siren);
 
-    const url = `${this._base_url}/${siren}/${annee}`;
-    let lignes = this.http.get<LigneBudget[]>(url)
-      .pipe(
-        switchMap(lignes => from(lignes))
-      )
-    return lignes;
+    const url = `${this._base_url}/${siren}/${annee}/${etape}`;
+    let donnees =
+      this.http.get<DonneesBudget>(url).pipe(
+        map(donnees => {
+          let etape_str = donnees.etape as string;
+          let etape = EtapeBudgetaireUtil.fromApi(etape_str);
+          donnees.etape = etape;
+          return donnees;
+        })
+      );
+    return donnees;
   }
 
   private checkSiren(siren: string) {
