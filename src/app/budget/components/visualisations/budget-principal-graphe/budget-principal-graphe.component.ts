@@ -46,10 +46,8 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
 
-    let data = donneesVisualisation.data.map(x => ({ 
-      name: `${x.name} - ${this.prettyCurrencyFormatter.format(x.value)}`, 
-      value: x.value
-    }));
+    let data_dict = donneesVisualisation.data_dict;
+    let data = donneesVisualisation.data;
 
     let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
 
@@ -57,11 +55,15 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
     let chartOption: EChartsOption = {
       name: ``,
-      tooltip: { trigger: 'item' },
+      tooltip: { 
+        trigger: 'item',
+        formatter: (item) => `${item.name}: <b> ${this.prettyCurrencyFormatter.format(item.value)}</b>`,
+      },
       legend: {
         type: 'scroll',
         right: '5%',
         orient: 'vertical',
+        formatter: (name) => `${name} - ${this.prettyCurrencyFormatter.format(data_dict[name])}`
       },
       series: [
         {

@@ -8,7 +8,8 @@ import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";
 interface VisualisationPourDonut {
     total: number,
     prettyTotal: string,
-    data: { value: number, name: string }[]
+    data: { value: number, name: string }[],
+    data_dict: { [name: string]: number }
 }
 
 @Injectable()
@@ -30,6 +31,7 @@ export class PrepareDonneesVisualisation {
         else if (nomenclature.type == "nature")
             console.info(`On utilise une nomenclature par nature`);
 
+        let data_dict = {};
         let mapped = new Map<string, number>()
 
         let expectRecette = rd == 'recette';
@@ -41,18 +43,22 @@ export class PrepareDonneesVisualisation {
             if (ligne.recette == expectRecette)
                 continue;
 
-
             let code = extract_code(ligne);
             let libelle = this._extraireLibelleCategoriePourLigne(code, nomenclature, typeVue);
             let key = libelle
 
             let previous = mapped.get(key) || 0
             let now = previous;
+            let current = ligne.montant;
 
-            now += ligne.montant;
-            total += ligne.montant
+            now += current;
+            total += current;
+
+            now = this._truncate_2decimals(now);
+            total = this._truncate_2decimals(total);
 
             mapped.set(key, now);
+            data_dict[key] = now;
         }
 
         let data = [...mapped]
@@ -64,7 +70,7 @@ export class PrepareDonneesVisualisation {
         return {
             total,
             prettyTotal,
-            data,
+            data, data_dict
         };
     }
 
@@ -84,5 +90,10 @@ export class PrepareDonneesVisualisation {
             elmtNomenclature = nomenclature.getParentOuLuiMeme(elmtNomenclature)
 
         return elmtNomenclature.libelle;
+    }
+
+    _truncate_2decimals(x: number) {
+        let truncated = Math.trunc(x * 100) / 100;
+        return truncated;
     }
 }
