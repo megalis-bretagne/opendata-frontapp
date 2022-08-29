@@ -18,6 +18,7 @@ import { BudgetPrincipalGrapheComponent } from './components/visualisations/budg
 import { PrepareDonneesVisualisation } from './services/prepare-donnees-visualisation.service';
 import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
 import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
+import { LayoutModule } from '@angular/cdk/layout';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -36,6 +37,7 @@ echarts.registerLocale('FR', langFr);
   ],
   imports: [
     CommonModule,
+    LayoutModule,
 
     NgxEchartsModule.forRoot({ echarts }),
 

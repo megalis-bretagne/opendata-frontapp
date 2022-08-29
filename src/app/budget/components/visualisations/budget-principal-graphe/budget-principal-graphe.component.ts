@@ -1,6 +1,8 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
@@ -13,7 +15,7 @@ export type TypeVue = 'general' | 'detaille'
   templateUrl: './budget-principal-graphe.component.html',
   styleUrls: ['./budget-principal-graphe.component.css']
 })
-export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
+export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDestroy {
 
   echartData$ = new BehaviorSubject({});
   typeVue: TypeVue = 'general'
@@ -28,16 +30,34 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
   @Input()
   rd: 'recette' | 'depense';
 
-  constructor(private mapper: PrepareDonneesVisualisation, private prettyCurrencyFormatter: PrettyCurrencyFormatter) { }
+  private _stop$ = new Subject();
+
+  constructor(
+    private mapper: PrepareDonneesVisualisation, 
+    private prettyCurrencyFormatter: PrettyCurrencyFormatter,
+    private breakpointObserver: BreakpointObserver) { }
 
   ngOnInit(): void {
 
+    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium])
+      .pipe(
+        tap(bstate => {
+          // TODO: reprendre ici
+          try { this.refresh() } catch(err) {} // ignore error
+        }),
+        takeUntil(this._stop$),
+      )
+      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.donneesBudget && changes.informationPlanDeCompte) {
       this.refresh()
     }
+  }
+
+  ngOnDestroy(): void {
+      this._stop$.next();
   }
 
   toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: Pdc.InformationPdc, typeVue: TypeVue) {

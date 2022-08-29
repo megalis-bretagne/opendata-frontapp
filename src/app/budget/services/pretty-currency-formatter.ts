@@ -25,6 +25,7 @@ export class PrettyCurrencyFormatter {
         let nMillions = Math.trunc(amount / 1_000_000);
         let rest = amount % 1_000_000;
         let n100Mil = Math.trunc(rest / 100_000);
+
         if (n100Mil == 0)
             return `${nMillions} M€`
         else
