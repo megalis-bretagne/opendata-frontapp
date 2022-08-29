@@ -1,33 +1,8 @@
 import { Injectable } from "@angular/core";
 import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
-import { DonneesBudget, InformationPlanDeCompte, ReferenceFonctionnelle, ReferencesFonctionnelles } from "../store/states/budget.state";
+import { Pdc } from "../models/plan-de-comptes";
+import { DonneesBudget, LigneBudget } from "../store/states/budget.state";
 
-//
-// TODO: Ici, gros du travail pour préparer la donnée à présenter
-//       map reduce sur la fonction ou la nature
-//
-
-/** */
-class NomenclatureFonctionnelle {
-
-    referencesFonctionnelles: ReferencesFonctionnelles;
-
-    constructor(referencesFonctionnelles: ReferencesFonctionnelles) {
-        this.referencesFonctionnelles = referencesFonctionnelles
-    }
-    
-    getParentOuLuiMeme(ref: ReferenceFonctionnelle) {
-        let _ref = ref
-        while(_ref.parent_code) {
-            _ref = this.referencesFonctionnelles[_ref.parent_code]
-        }
-        return _ref
-    }
-
-    get(code: string) {
-        return this.referencesFonctionnelles[code];
-    }
-}
 
 interface VisualisationPourDonut {
     total: number,
@@ -39,19 +14,26 @@ interface VisualisationPourDonut {
 export class PrepareDonneesVisualisation {
 
     formatter = new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
+        style: 'currency',
+        currency: 'EUR',
     })
 
     donneesPourDonut(
         donneesBudget: DonneesBudget,
-        informationPlanDeCompte: InformationPlanDeCompte,
+        nomenclature: Pdc.Nomenclature,
         rd: 'recette' | 'depense',
         typeVue: TypeVue,
     ): VisualisationPourDonut {
 
-        let referencesFonctionnelles = informationPlanDeCompte.references_fonctionnelles;
-        let nomenclature = new NomenclatureFonctionnelle(referencesFonctionnelles);
+        let extract_code = (ligne: LigneBudget) => ligne.fonction_code;
+        if (nomenclature.type == "nature")
+            extract_code = (ligne) => ligne.compte_nature_code;
+        
+        if (nomenclature.type == "fonctions")
+            console.info(`On utilise une nomenclature fonctionnelle`);
+        else if(nomenclature.type == "nature")
+            console.info(`On utilise une nomenclature par nature`);
+
         let mapped = new Map<string, number>()
 
         let expectRecette = rd == 'recette';
@@ -62,13 +44,11 @@ export class PrepareDonneesVisualisation {
 
             if (ligne.recette == expectRecette)
                 continue;
-            
-            let code = ligne.fonction_code;
-            let refFonc = nomenclature.get(code)
-            if (typeVue == 'general')
-                refFonc = nomenclature.getParentOuLuiMeme(refFonc)
 
-            let key = refFonc.libelle
+
+            let code = extract_code(ligne);
+            let libelle = this._extraireLibelleCategoriePourLigne(code, nomenclature, typeVue);
+            let key = libelle
 
             let previous = mapped.get(key) || 0
             let now = previous;
@@ -80,7 +60,7 @@ export class PrepareDonneesVisualisation {
         }
 
         let data = [...mapped]
-            .map(([name, value]) => ({name, value}))
+            .map(([name, value]) => ({ name, value }))
             .sort((a, b) => b.value - a.value);  // desc
 
         let prettyTotal = this.formatter.format(total)
@@ -90,5 +70,23 @@ export class PrepareDonneesVisualisation {
             prettyTotal,
             data,
         };
+    }
+
+    _extraireLibelleCategoriePourLigne(
+        code: string,
+        nomenclature: Pdc.Nomenclature, 
+        typeVue: TypeVue,
+    ) {
+            let elmtNomenclature = nomenclature.get(code)
+
+            if (elmtNomenclature == null) {
+                console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature. Il sera catégorisé inconnu dans la visualisation.`);
+                return "Inconnu";
+            }
+
+            if (typeVue == 'general')
+                elmtNomenclature = nomenclature.getParentOuLuiMeme(elmtNomenclature)
+
+            return elmtNomenclature.libelle;
     }
 }

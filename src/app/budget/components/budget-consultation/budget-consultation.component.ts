@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
+import { Pdc } from '../../models/plan-de-comptes';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, DonneesBudget, InformationPlanDeCompte, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetState, DonneesBudget, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 
 @Component({
   selector: 'app-budget-consultation',
@@ -18,7 +19,7 @@ export class BudgetConsultationComponent implements OnInit {
   annee: any;
 
   donneesBudget: DonneesBudget;
-  informationsPdc: InformationPlanDeCompte;
+  informationsPdc: Pdc.InformationPdc;
 
   private _stop$: Subject<void> = new Subject<void>();
 

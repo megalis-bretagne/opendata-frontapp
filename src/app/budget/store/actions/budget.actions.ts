@@ -1,6 +1,7 @@
 import { Action } from "@ngrx/store";
+import { Pdc } from "../../models/plan-de-comptes";
 import { EtapeBudgetaire } from "../../services/budget.service";
-import { DonneesBudget, InformationPlanDeCompte } from "../states/budget.state";
+import { DonneesBudget } from "../states/budget.state";
 
 export enum BudgetActionType {
     Loading = '[Budget] Loading',
@@ -18,7 +19,7 @@ export class BudgetLoadingAction implements Action {
 }
 export class BudgetLoadSuccessAction implements Action {
     public readonly type = BudgetActionType.LoadSuccess;
-    constructor(public donnees: DonneesBudget, public informationPdc: InformationPlanDeCompte) { }
+    constructor(public donnees: DonneesBudget, public informationPdc: Pdc.InformationPdc) { }
 }
 export class BudgetLoadFailureAction implements Action {
     public readonly type = BudgetActionType.LoadFailure;

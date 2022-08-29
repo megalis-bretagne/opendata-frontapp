@@ -1,8 +1,9 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { BehaviorSubject } from 'rxjs';
+import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
-import { DonneesBudget, InformationPlanDeCompte } from 'src/app/budget/store/states/budget.state';
+import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
 
 export type TypeVue = 'general' | 'detaille'
 
@@ -15,12 +16,13 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
   echartData$ = new BehaviorSubject({});
   typeVue: TypeVue = 'general'
+  typeNomenclature: Pdc.TypeNomenclature = "fonctions"
 
   @Input()
   donneesBudget: DonneesBudget
 
   @Input()
-  informationPlanDeCompte: InformationPlanDeCompte
+  informationPlanDeCompte: Pdc.InformationPdc
 
   @Input()
   rd: 'recette' | 'depense';
@@ -37,9 +39,11 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
     }
   }
 
-  toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: InformationPlanDeCompte, typeVue: TypeVue) {
+  toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: Pdc.InformationPdc, typeVue: TypeVue) {
 
-    let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, informationPlanDeCompte, this.rd, typeVue)
+    let nomenclature = Pdc.extraire_nomenclature(informationPlanDeCompte, this.typeNomenclature)
+
+    let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
     let intitule = `Budget de \n ${donneesVisualisation.prettyTotal}`
 
     let chartOption: EChartsOption = {
@@ -80,6 +84,16 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
 
   onClicVueDetaille() {
     this.typeVue = 'detaille';
+    this.refresh()
+  }
+
+  onClicNomenclatureFonctions() {
+    this.typeNomenclature = "fonctions";
+    this.refresh()
+  }
+
+  onClicNomenclatureNature() {
+    this.typeNomenclature = "nature";
     this.refresh()
   }
 

@@ -13,4 +13,8 @@
             Vue détaillée
         </a>
     </div>
+    <div class="debug">
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeNomenclature =='fonctions' }" (click)="onClicNomenclatureFonctions()">Nomenclature par fonctions</a> |
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeNomenclature == 'nature' }" (click)="onClicNomenclatureNature()">Nomenclature par nature</a>
+    </div>
 </ng-container>

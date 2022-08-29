@@ -1,34 +1,10 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
 import { EtapeBudgetaire } from "../../services/budget.service"
-
-
-export interface _ElementPdc {
-    code: string,
-    libelle: string,
-    parent_code: string,
-}
-
-export interface ReferenceFonctionnelle extends _ElementPdc { }
-
-export interface CompteNature extends _ElementPdc { }
-
-export type ReferencesFonctionnelles = {
-    [code: string]: ReferenceFonctionnelle
-}
-export type ComptesNature = {
-    [code: string]: CompteNature
-}
-
-export interface InformationPlanDeCompte {
-    siren: string,
-    annee: number,
-
-    references_fonctionnelles: ReferencesFonctionnelles | {}
-    comptes_nature: ComptesNature | {} 
-}
+import { Pdc } from "../../models/plan-de-comptes"
 
 export interface LigneBudget {
     fonction_code: string,
+    compte_nature_code: string,
     recette: boolean,
     montant: number,
 }
@@ -43,7 +19,7 @@ export interface DonneesBudget {
 
 export interface BudgetState {
     budgets: DonneesBudget[],
-    infoPlanDeComptes: InformationPlanDeCompte[],
+    infoPlanDeComptes: Pdc.InformationPdc[],
     anneesDisponibles: number[],
     loading: boolean,
     error: boolean,
