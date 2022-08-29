@@ -17,6 +17,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { BudgetPrincipalGrapheComponent } from './components/visualisations/budget-principal-graphe/budget-principal-graphe.component';
 import { PrepareDonneesVisualisation } from './services/prepare-donnees-visualisation.service';
 import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
+import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -48,7 +49,8 @@ echarts.registerLocale('FR', langFr);
       provide: BUDGET_SERVICE_TOKEN,
       useClass: RealBudgetService,
     },
-    PrepareDonneesVisualisation
+    PrepareDonneesVisualisation,
+    PrettyCurrencyFormatter,
   ]
 })
 export class BudgetModule { }

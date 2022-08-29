@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
 import { Pdc } from "../models/plan-de-comptes";
 import { DonneesBudget, LigneBudget } from "../store/states/budget.state";
+import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";
 
 
 interface VisualisationPourDonut {
@@ -13,25 +14,20 @@ interface VisualisationPourDonut {
 @Injectable()
 export class PrepareDonneesVisualisation {
 
-    formatter = new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'EUR',
-    })
+    constructor(private prettyCurrencyFormatter: PrettyCurrencyFormatter) { }
 
     donneesPourDonut(
-        donneesBudget: DonneesBudget,
-        nomenclature: Pdc.Nomenclature,
-        rd: 'recette' | 'depense',
-        typeVue: TypeVue,
+        donneesBudget: DonneesBudget, nomenclature: Pdc.Nomenclature,
+        rd: 'recette' | 'depense', typeVue: TypeVue,
     ): VisualisationPourDonut {
 
         let extract_code = (ligne: LigneBudget) => ligne.fonction_code;
         if (nomenclature.type == "nature")
             extract_code = (ligne) => ligne.compte_nature_code;
-        
+
         if (nomenclature.type == "fonctions")
             console.info(`On utilise une nomenclature fonctionnelle`);
-        else if(nomenclature.type == "nature")
+        else if (nomenclature.type == "nature")
             console.info(`On utilise une nomenclature par nature`);
 
         let mapped = new Map<string, number>()
@@ -63,7 +59,7 @@ export class PrepareDonneesVisualisation {
             .map(([name, value]) => ({ name, value }))
             .sort((a, b) => b.value - a.value);  // desc
 
-        let prettyTotal = this.formatter.format(total)
+        let prettyTotal = this.prettyCurrencyFormatter.format_as_title(total)
 
         return {
             total,
@@ -74,19 +70,19 @@ export class PrepareDonneesVisualisation {
 
     _extraireLibelleCategoriePourLigne(
         code: string,
-        nomenclature: Pdc.Nomenclature, 
+        nomenclature: Pdc.Nomenclature,
         typeVue: TypeVue,
     ) {
-            let elmtNomenclature = nomenclature.get(code)
+        let elmtNomenclature = nomenclature.get(code)
 
-            if (elmtNomenclature == null) {
-                console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature. Il sera catégorisé inconnu dans la visualisation.`);
-                return "Inconnu";
-            }
+        if (elmtNomenclature == null) {
+            console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature. Il sera catégorisé inconnu dans la visualisation.`);
+            return "Inconnu";
+        }
 
-            if (typeVue == 'general')
-                elmtNomenclature = nomenclature.getParentOuLuiMeme(elmtNomenclature)
+        if (typeVue == 'general')
+            elmtNomenclature = nomenclature.getParentOuLuiMeme(elmtNomenclature)
 
-            return elmtNomenclature.libelle;
+        return elmtNomenclature.libelle;
     }
 }

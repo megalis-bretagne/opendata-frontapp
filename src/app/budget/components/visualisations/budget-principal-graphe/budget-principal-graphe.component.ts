@@ -3,6 +3,7 @@ import { EChartsOption } from 'echarts';
 import { BehaviorSubject } from 'rxjs';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
+import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
 
 export type TypeVue = 'general' | 'detaille'
@@ -27,7 +28,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
   @Input()
   rd: 'recette' | 'depense';
 
-  constructor(private mapper: PrepareDonneesVisualisation) { }
+  constructor(private mapper: PrepareDonneesVisualisation, private prettyCurrencyFormatter: PrettyCurrencyFormatter) { }
 
   ngOnInit(): void {
 
@@ -44,7 +45,15 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
     let nomenclature = Pdc.extraire_nomenclature(informationPlanDeCompte, this.typeNomenclature)
 
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
-    let intitule = `Budget de \n ${donneesVisualisation.prettyTotal}`
+
+    let data = donneesVisualisation.data.map(x => ({ 
+      name: `${x.name} - ${this.prettyCurrencyFormatter.format(x.value)}`, 
+      value: x.value
+    }));
+
+    let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
+
+    let font_size = 20;
 
     let chartOption: EChartsOption = {
       name: ``,
@@ -60,10 +69,13 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges {
           radius: ['40%', '70%'],
           label: {
             position: 'center',
-            fontSize: 20,
-            formatter: () => "" + intitule
+            fontSize: font_size,
+            formatter: () => "" + intitule,
+            rich: {
+              b: { fontWeight: "bold", fontSize: font_size }
+            }
           },
-          data: donneesVisualisation.data,
+          data: data,
         }
       ]
     };
