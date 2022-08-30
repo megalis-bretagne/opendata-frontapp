@@ -18,7 +18,6 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
   readonly etapeOptions = [
     { value: EtapeBudgetaire.COMPTE_ADMINISTRATIF, viewValue: "Compte administratif" },
-    { value: EtapeBudgetaire.BUDGET_PRIMITIF, viewValue: "Budget primitif" },
   ];
   selectedEtape: EtapeBudgetaire = EtapeBudgetaire.COMPTE_ADMINISTRATIF;
 
