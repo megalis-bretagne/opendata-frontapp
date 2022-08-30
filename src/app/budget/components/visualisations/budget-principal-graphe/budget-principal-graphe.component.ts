@@ -4,11 +4,16 @@ import { EChartsOption } from 'echarts';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
-import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
+import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
 
 export type TypeVue = 'general' | 'detaille'
+
+export enum ModePresentationMontant {
+  MONTANT = "montant",
+  POURCENTAGE = "pourcentage",
+}
 
 let mediumOrLower = [Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium];
 
@@ -18,6 +23,12 @@ let mediumOrLower = [Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium];
   styleUrls: ['./budget-principal-graphe.component.css']
 })
 export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDestroy {
+
+  readonly montantPresentationOptions = [
+    {value: ModePresentationMontant.MONTANT, viewValue: "Montant" },
+    {value: ModePresentationMontant.POURCENTAGE, viewValue: "Pourcentage" },
+  ];
+  selectedMontantPresentation: ModePresentationMontant = ModePresentationMontant.MONTANT;
 
   echartData$ = new BehaviorSubject({});
   typeVue: TypeVue = 'general'
@@ -66,7 +77,12 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
       this._stop$.next();
   }
 
-  toChartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: Pdc.InformationPdc, typeVue: TypeVue) {
+  toChartsData(
+    donneesBudget: DonneesBudget, 
+    informationPlanDeCompte: Pdc.InformationPdc, 
+    typeVue: TypeVue,
+    modePresentationMontant: ModePresentationMontant,
+  ) {
 
     if (Object.keys(informationPlanDeCompte.references_fonctionnelles).length === 0) {
       console.info(`Aucune donnée provenant de la nomenclature de fontions. On visualise par nature.`);
@@ -76,11 +92,9 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
     let nomenclature = Pdc.extraire_nomenclature(informationPlanDeCompte, this.typeNomenclature)
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
 
-    let data_dict = donneesVisualisation.data_dict;
-    let data = donneesVisualisation.data;
 
     let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
-    let chartOption: EChartsOption = this.echartsOptions(intitule, data, data_dict);
+    let chartOption: EChartsOption = this.echartsOptions(intitule, donneesVisualisation, modePresentationMontant);
 
     let chartInitOptions = {}
 
@@ -94,15 +108,23 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
 
   echartsOptions(
     intitule: string, 
-    data: { name: string, value: number }[], 
-    data_dict: { [name:string]: number },
+    donneesVisualisation: VisualisationPourDonut,
+    modePresentationMontant: ModePresentationMontant,
   ) {
+    let data_dict = donneesVisualisation.data_dict;
+    let data = donneesVisualisation.data;
 
     let isMediumOrLower = this.breakpointObserver.isMatched(mediumOrLower)
 
     let font_size = 20;
     let show_legend = ! isMediumOrLower;
     let horizontal_positon = isMediumOrLower? '50%' : '20%';
+
+    let legend_formatter = (name) => `${name} - ${this.prettyCurrencyFormatter.format(data_dict[name])}`;
+    if (modePresentationMontant == ModePresentationMontant.POURCENTAGE) {
+      let toPourcentage = (name) => this.prettyCurrencyFormatter.format_percentage(data_dict[name], donneesVisualisation.total);
+      legend_formatter = (name) => `${name} (${toPourcentage(name)}) `
+    }
 
     let chartOption: EChartsOption = {
       name: ``,
@@ -114,7 +136,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
         show: show_legend,
         type: 'scroll',
         orient: 'vertical',
-        formatter: (name) => `${name} - ${this.prettyCurrencyFormatter.format(data_dict[name])}`
+        formatter: legend_formatter,
       },
       series: [
         {
@@ -139,26 +161,30 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
 
   onClicVueGenerale() {
     this.typeVue = 'general';
-    this.refresh()
+    this.refresh();
   }
 
   onClicVueDetaille() {
     this.typeVue = 'detaille';
-    this.refresh()
+    this.refresh();
   }
 
   onClicNomenclatureFonctions() {
     this.typeNomenclature = "fonctions";
-    this.refresh()
+    this.refresh();
   }
 
   onClicNomenclatureNature() {
     this.typeNomenclature = "nature";
-    this.refresh()
+    this.refresh();
+  }
+
+  onSelectedMontantPresentationChange() {
+    this.refresh();
   }
 
   refresh() {
-      let chartData = this.toChartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue);
+      let chartData = this.toChartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue, this.selectedMontantPresentation);
       this.echartData$.next(chartData)
   }
 }

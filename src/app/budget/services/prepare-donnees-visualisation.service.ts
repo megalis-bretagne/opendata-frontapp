@@ -5,7 +5,7 @@ import { DonneesBudget, LigneBudget } from "../store/states/budget.state";
 import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";
 
 
-interface VisualisationPourDonut {
+export interface VisualisationPourDonut {
     total: number,
     prettyTotal: string,
     data: { value: number, name: string }[],

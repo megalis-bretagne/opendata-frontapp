@@ -1,4 +1,12 @@
 <ng-container>
+    <div style="text-align: right;">
+        <mat-form-field>
+            <mat-select [(value)]="selectedMontantPresentation" (valueChange)="onSelectedMontantPresentationChange()">
+                <mat-option [value]="option.value" *ngFor="let option of montantPresentationOptions"> {{option.viewValue}} </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
     <div *ngIf="echartData$ | async as echartsData">
 
         <div 

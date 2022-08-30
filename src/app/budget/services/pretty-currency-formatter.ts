@@ -14,8 +14,18 @@ export class PrettyCurrencyFormatter {
         maximumFractionDigits: 0,
     });
 
+    percentage = new Intl.NumberFormat('fr-FR', {
+        style: 'percent',
+        maximumFractionDigits: 2,
+    })
+
     format(amount: number) {
         return this._getFormatter(amount).format(amount);
+    }
+
+    format_percentage(amount: number, total: number) {
+        let ratio = amount / total;
+        return this.percentage.format(ratio);
     }
 
     format_as_title(amount: number) {
