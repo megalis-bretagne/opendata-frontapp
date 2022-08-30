@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { MaterialModule } from '../shared/material.module';
 import { BudgetRoutingModule } from './budget-routing.module';
 import { BUDGET_SERVICE_TOKEN, RealBudgetService } from './services/budget.service';
@@ -19,6 +19,7 @@ import { PrepareDonneesVisualisation } from './services/prepare-donnees-visualis
 import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
 import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
 import { LayoutModule } from '@angular/cdk/layout';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -38,6 +39,7 @@ echarts.registerLocale('FR', langFr);
   imports: [
     CommonModule,
     LayoutModule,
+    ClipboardModule,
 
     NgxEchartsModule.forRoot({ echarts }),
 
@@ -47,6 +49,7 @@ echarts.registerLocale('FR', langFr);
     BudgetRoutingModule,
   ],
   providers: [
+    Location,
     {
       provide: BUDGET_SERVICE_TOKEN,
       useClass: RealBudgetService,

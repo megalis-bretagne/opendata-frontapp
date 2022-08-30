@@ -30,10 +30,10 @@ export class BudgetConsultationComponent implements OnInit {
      this.etape = this.route.snapshot.params['etape'];
      this.annee = this.route.snapshot.params['annee'];
 
-     this.store.dispatch(new BudgetLoadingAction(this.siren, this.etape, this.annee));
+     this.store.dispatch(new BudgetLoadingAction(this.siren, this.annee, this.etape));
      this.store.select(selectDonneesBudget(this.siren, this.annee, this.etape))
         .pipe(
-            tap(donnees => console.info(`Donnees ${donnees}`)),
+            // tap(donnees => console.info(`Donnees ${donnees}`)),
             tap(donnees => this.donneesBudget = donnees),
             takeUntil(this._stop$),
         )

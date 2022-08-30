@@ -18,7 +18,7 @@ const routes: Routes = [
         ]
     },
     {
-        path: 'consultation/:siren/:annee/:etape',
+        path: 'public/:siren/:annee/:etape',
         component: BudgetConsultationComponent,
     },
 ]
