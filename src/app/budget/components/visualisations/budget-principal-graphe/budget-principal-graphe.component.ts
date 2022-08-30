@@ -2,13 +2,15 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
 
 export type TypeVue = 'general' | 'detaille'
+
+let mediumOrLower = [Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium];
 
 @Component({
   selector: 'app-budget-principal-graphe',
@@ -39,11 +41,14 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
 
   ngOnInit(): void {
 
-    this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium])
+    this.breakpointObserver.observe(mediumOrLower)
       .pipe(
-        tap(bstate => {
-          // TODO: reprendre ici
-          try { this.refresh() } catch(err) {} // ignore error
+        map(state => state.matches),
+        distinctUntilChanged(),
+        tap(_ => {
+          try { 
+            this.refresh() 
+          } catch(err) {}
         }),
         takeUntil(this._stop$),
       )
@@ -51,7 +56,8 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.donneesBudget && changes.informationPlanDeCompte) {
+    if (changes.donneesBudget && changes.informationPlanDeCompte
+      && changes.donneesBudget.currentValue && changes.informationPlanDeCompte.currentValue) {
       this.refresh()
     }
   }
@@ -60,18 +66,43 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
       this._stop$.next();
   }
 
-  toEchartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: Pdc.InformationPdc, typeVue: TypeVue) {
+  toChartsData(donneesBudget: DonneesBudget, informationPlanDeCompte: Pdc.InformationPdc, typeVue: TypeVue) {
+
+    if (Object.keys(informationPlanDeCompte.references_fonctionnelles).length === 0) {
+      console.info(`Aucune donnée provenant de la nomenclature de fontions. On visualise par nature.`);
+      this.typeNomenclature = 'nature';
+    }
 
     let nomenclature = Pdc.extraire_nomenclature(informationPlanDeCompte, this.typeNomenclature)
-
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
 
     let data_dict = donneesVisualisation.data_dict;
     let data = donneesVisualisation.data;
 
     let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
+    let chartOption: EChartsOption = this.echartsOptions(intitule, data, data_dict);
+
+    let chartInitOptions = {}
+
+    let chartData = {
+      options: chartOption,
+      chartInitOptions,
+    }
+
+    return chartData;
+  }
+
+  echartsOptions(
+    intitule: string, 
+    data: { name: string, value: number }[], 
+    data_dict: { [name:string]: number },
+  ) {
+
+    let isMediumOrLower = this.breakpointObserver.isMatched(mediumOrLower)
 
     let font_size = 20;
+    let show_legend = ! isMediumOrLower;
+    let horizontal_positon = isMediumOrLower? '50%' : '20%';
 
     let chartOption: EChartsOption = {
       name: ``,
@@ -80,8 +111,8 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
         formatter: (item) => `${item.name}: <b> ${this.prettyCurrencyFormatter.format(item.value)}</b>`,
       },
       legend: {
+        show: show_legend,
         type: 'scroll',
-        right: '5%',
         orient: 'vertical',
         formatter: (name) => `${name} - ${this.prettyCurrencyFormatter.format(data_dict[name])}`
       },
@@ -89,6 +120,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
         {
           type: 'pie',
           radius: ['40%', '70%'],
+          center: [horizontal_positon, '50%'],
           label: {
             position: 'center',
             fontSize: font_size,
@@ -101,14 +133,8 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
         }
       ]
     };
-    let chartInitOptions = {}
 
-    let chartData = {
-      options: chartOption,
-      chartInitOptions,
-    }
-
-    return chartData;
+    return chartOption;
   }
 
   onClicVueGenerale() {
@@ -132,7 +158,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   refresh() {
-      let chartData = this.toEchartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue);
+      let chartData = this.toChartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue);
       this.echartData$.next(chartData)
   }
 }
