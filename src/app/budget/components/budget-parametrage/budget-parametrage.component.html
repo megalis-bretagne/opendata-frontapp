@@ -9,8 +9,8 @@
 
     <div class="visualisations">
         <app-budget-card 
-            titre="Les recettes {{donneesBudget?.annee}} pour {{donneesBudget?.denomination_siege}}" 
-            description="Les recettes pour l'année {{donneesBudget?.annee}} 
+            titre="Les recettes {{donneesBudget?.annee}} du budget principal pour {{donneesBudget?.denomination_siege}}" 
+            description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal,
             de la {{donneesBudget?.denomination_siege}}"
             [parametrable]="true">
             <app-budget-principal-graphe
@@ -21,8 +21,8 @@
         </app-budget-card>
 
         <app-budget-card 
-            titre="Les dépenses {{donneesBudget?.annee}} pour {{donneesBudget?.denomination_siege}}" 
-            description="Les dépenses pour l'année {{donneesBudget?.annee}} 
+            titre="Les dépenses {{donneesBudget?.annee}} du budget principal pour {{donneesBudget?.denomination_siege}}" 
+            description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal,
             de la {{donneesBudget?.denomination_siege}}"
             [parametrable]="true">
             <app-budget-principal-graphe
@@ -31,7 +31,7 @@
                 rd="depense"
                 ></app-budget-principal-graphe>
         </app-budget-card>
-
+<!-- 
         <app-budget-card [titre]="'Répartition des recettes'"
             [description]="'Ceci est une description de la répartition des recettes'" [parametrable]="true">
             <p>Je suis du contenu projeté</p>
@@ -46,7 +46,7 @@
         <app-budget-card [titre]="'Le top 3 des dépenses'"
             [description]="'Ceci est une description du top 3 des dépenses'" [parametrable]="true">
             <p>Je suis du contenu projeté</p>
-        </app-budget-card>
+        </app-budget-card> -->
     </div>
 
     <div class="boutons-bas-de-page">
