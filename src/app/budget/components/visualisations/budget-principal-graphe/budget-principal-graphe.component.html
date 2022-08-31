@@ -1,0 +1,32 @@
+<ng-container>
+    <div style="text-align: right;">
+        <mat-form-field>
+            <mat-select [(value)]="selectedMontantPresentation" (valueChange)="onSelectedMontantPresentationChange()">
+                <mat-option [value]="option.value" *ngFor="let option of montantPresentationOptions"> {{option.viewValue}} </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div *ngIf="echartData$ | async as echartsData">
+
+        <div 
+        echarts 
+        [options]="echartsData.options" 
+        [initOpts]="echartsData.initOptions" 
+        [autoResize]="true"
+            class="echart-chart"></div>
+        <!-- Pour forcer le moteur de rendu -->
+        <!-- [initOpts]="{ renderer: 'svg' }" -->
+    </div>
+    <div class="bottom-links">
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeVue=='general' }" (click)="onClicVueGenerale()">Vue
+            générale</a> |
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeVue=='detaille' }" (click)="onClicVueDetaille()">
+            Vue détaillée
+        </a>
+    </div>
+    <div class="debug">
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeNomenclature =='fonctions' }" (click)="onClicNomenclatureFonctions()">Nomenclature par fonctions</a> |
+        <a [routerLink]="" [ngClass]="{ 'link-active': typeNomenclature == 'nature' }" (click)="onClicNomenclatureNature()">Nomenclature par nature</a>
+    </div>
+</ng-container>
