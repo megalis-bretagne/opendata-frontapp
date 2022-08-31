@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, InjectionToken } from "@angular/core";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { BehaviorSubject, Observable } from "rxjs";
+import { tap, map, delay } from "rxjs/operators";
 import { SettingsService } from "src/environments/settings.service";
 import { Pdc } from "../models/plan-de-comptes";
 import { DonneesBudget } from "../store/states/budget.state";
@@ -61,7 +61,11 @@ export class RealBudgetService implements BudgetService {
     this.checkSiren(siren);
 
     const url = `${this._base_url}/${siren}/annees_disponibles`;
-    return this.http.get<number[]>(url)
+    // return this.http.get<number[]>(url)
+
+    // TODO: se débarrasser de la verrue asap
+    let verrueAnnee = new BehaviorSubject([2021]).pipe(delay(1000))
+    return verrueAnnee;
   }
 
   loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudget> {
