@@ -46,26 +46,18 @@ export interface BudgetService {
 @Injectable()
 export class RealBudgetService implements BudgetService {
 
-  private _base_url: string
-
   constructor(
     private http: HttpClient,
     private settings: SettingsService,
-  ) {
-    this._base_url = `${this.settings.settings.api.url}/api/v1/budgets`
-  }
+  ) { }
 
   anneesDisponibles(siren: string): Observable<number[]> {
 
     this._debug(`Cherche les années ou des données budget sont disponibles pour le siren ${siren}`);
     this.checkSiren(siren);
 
-    const url = `${this._base_url}/${siren}/annees_disponibles`;
-    // return this.http.get<number[]>(url)
-
-    // TODO: se débarrasser de la verrue asap
-    let verrueAnnee = new BehaviorSubject([2021]).pipe(delay(1000))
-    return verrueAnnee;
+    const url = `${this._getBudgetBaseUrl()}/${siren}/annees_disponibles`;
+    return this.http.get<number[]>(url)
   }
 
   loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudget> {
@@ -73,7 +65,7 @@ export class RealBudgetService implements BudgetService {
     this._debug(`Charge les données budgetaires pour le siren ${siren}, l'étape ${etape} et l'année ${annee}`);
     this.checkSiren(siren);
 
-    const url = `${this._base_url}/${siren}/${annee}/${etape}`;
+    const url = `${this._getBudgetBaseUrl()}/${siren}/${annee}/${etape}`;
     let donnees =
       this.http.get<DonneesBudget>(url).pipe(
         map(donnees => {
@@ -91,7 +83,7 @@ export class RealBudgetService implements BudgetService {
     this._debug(`Charge les informations du plan de compte pour le siren ${siren} et l'année ${annee}`)
     this.checkSiren(siren)
 
-    const url = `${this._base_url}/${siren}/${annee}/pdc`;
+    const url = `${this._getBudgetBaseUrl()}/${siren}/${annee}/pdc`;
     let informationsPdc = 
       this.http.get<Pdc.InformationPdc>(url).pipe(
         map(informations => {
@@ -112,6 +104,11 @@ export class RealBudgetService implements BudgetService {
   private _debug(msg: string) {
     console.debug(`[${RealBudgetService.name}] ${msg}`)
   }
+
+  private _getBudgetBaseUrl() {
+    return `${this.settings.settings.api.url}/api/v1/budgets`
+  }
 }
 
 export const BUDGET_SERVICE_TOKEN = new InjectionToken<BudgetService>('BudgetService');
+// 
