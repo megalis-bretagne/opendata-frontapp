@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { MaterialModule } from '../shared/material.module';
 import { BudgetRoutingModule } from './budget-routing.module';
 import { BUDGET_SERVICE_TOKEN, RealBudgetService } from './services/budget.service';

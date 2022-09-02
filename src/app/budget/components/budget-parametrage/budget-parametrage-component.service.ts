@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from '../../services/budget.service';
@@ -53,6 +53,10 @@ export class BudgetParametrageComponentService {
       );
 
     this.navigation = new Navigation(this.budgetService, this);
+  }
+
+  debug(msg) {
+    console.debug(`[BudgetParametrageComponentService] ${msg}`);
   }
 }
 

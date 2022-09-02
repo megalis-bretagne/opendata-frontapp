@@ -57,7 +57,10 @@ export class RealBudgetService implements BudgetService {
     this.checkSiren(siren);
 
     const url = `${this._getBudgetBaseUrl()}/${siren}/annees_disponibles`;
-    return this.http.get<number[]>(url)
+    return this.http.get<string[]>(url)
+      .pipe(
+        map(annees => annees.map(annee => Number(annee)))
+      );
   }
 
   loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudget> {

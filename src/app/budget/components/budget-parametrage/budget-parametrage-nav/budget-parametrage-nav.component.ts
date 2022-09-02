@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, first, map, takeUntil } from 'rxjs/operators';
 import { EtapeBudgetaire, EtapeBudgetaireUtil } from 'src/app/budget/services/budget.service';
 import { BudgetParametrageComponentService, PresentationType } from '../budget-parametrage-component.service';
 
@@ -14,7 +14,7 @@ import { BudgetParametrageComponentService, PresentationType } from '../budget-p
 export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
   anneesDisponibles: number[] = [new Date().getFullYear()];
-  anneesSelectedIndex: number;
+  anneesSelectedIndex: number = 0;
 
   readonly etapeOptions = [
     { value: EtapeBudgetaire.COMPTE_ADMINISTRATIF, viewValue: "Compte administratif" },
@@ -39,11 +39,12 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
   ) {
-
     this._anneeFromRoute$ = this.route.queryParams
       .pipe(
-        map(params => Number(params['annee'])),
-        filter(annee => Boolean(annee))
+        map(params => {
+          let annee = Number(params['annee'])
+          return annee;
+        }),
       );
     this._etapeFromRoute = this.route.queryParams
       .pipe(
@@ -58,29 +59,53 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     /*
      Positionne les options de navigation selon les queryParams
      ou le component service.
      */
-    let annee$ = merge(this._anneeFromRoute$, this.componentService.navigation.anneeSelectionnee$, of(0));
-    combineLatest([annee$, this.componentService.anneesDisponibles$])
+    let annee$ = merge(this._anneeFromRoute$, this.componentService.navigation.anneeSelectionnee$)
+      .pipe(distinctUntilChanged());
+    let anneesDisponibles$ = this.componentService.anneesDisponibles$
+      .pipe(
+        distinctUntilChanged(),
+        filter(annees => Boolean(annees) && annees.length > 0),
+      );
+    let infoAnnees$ = combineLatest([annee$, anneesDisponibles$])
+
+    infoAnnees$
       .pipe(takeUntil(this._stop$))
       .subscribe(([annee, anneesDisponibles]) => {
-        this._debug(JSON.stringify([annee, anneesDisponibles]));
         let index = anneesDisponibles.indexOf(annee);
+        // this._debug(`Reçu année: ${annee} et années disponibles: ${anneesDisponibles}`);
+        // this._debug(`this.anneesDisponibles: ${anneesDisponibles}`);
+        // this._debug(`this.anneesSelectedIndex: ${index}`);
         this.anneesDisponibles = anneesDisponibles;
         this.anneesSelectedIndex = index;
       });
 
     merge(this._etapeFromRoute, this.componentService.navigation.etapeBudgetaireSelectionnee$)
-      .pipe(takeUntil(this._stop$))
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this._stop$),
+      )
       .subscribe(etape => this.selectedEtape = etape);
 
     merge(this._presentationFromRoute, this.componentService.navigation.presentationSelectionnee$)
-      .pipe(takeUntil(this._stop$))
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this._stop$),
+      )
       .subscribe(presentation => this.selectedPresentation = presentation);
 
+    // Initialisation des informations de navigation
+    infoAnnees$
+      .pipe(first())
+      .subscribe(
+        ([annee, anneesDisponibles]) => {
+          let anneeOuDefault = (anneesDisponibles.indexOf(annee) == -1) ? anneesDisponibles[0] : annee;
+          this.componentService.navigation.selectionneAnnee(anneeOuDefault)
+        }
+      );
     this.componentService.navigation.selectionneEtapeBudgetaire(this.selectedEtape);
     this.componentService.navigation.selectionnePresentation(this.selectedPresentation);
 
@@ -110,6 +135,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   onSelectionneAnnee(event: MatTabChangeEvent) {
     let index = event.index;
     let annee = this.anneesDisponibles[index];
+    // this._debug(`onSelectionneAnnee(${annee})`);
     this.componentService.navigation.selectionneAnnee(annee);
   }
 
