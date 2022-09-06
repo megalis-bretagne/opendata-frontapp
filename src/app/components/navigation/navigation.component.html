@@ -37,33 +37,35 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <mat-toolbar-row>
-        <button
-          type="button"
-          aria-label="Toggle sidenav"
-          mat-icon-button
-          (click)="drawer.toggle()"
-          *ngIf="isHandset$ | async">
-          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-        </button>
-          <span>Gestion des publications opendata<br>SIREN: {{user?.siren}}</span>
+    <div class="toolbar-container">
+      <mat-toolbar color="primary">
+        <mat-toolbar-row>
+          <button
+            type="button"
+            aria-label="Toggle sidenav"
+            mat-icon-button
+            (click)="drawer.toggle()"
+            *ngIf="isHandset$ | async">
+            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+          </button>
+            <span>Gestion des publications opendata<br>SIREN: {{user?.siren}}</span>
 
-          <span class="example-spacer"></span>
-<!--          <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">help_outline</mat-icon>-->
-          <button mat-icon-button [matMenuTriggerFor]="auth"><mat-icon>person_outline</mat-icon></button>
-                      <mat-menu #auth="matMenu">
-<!--                        <button mat-menu-item (click)="mes_infos()">-->
-<!--                          <mat-icon>perm_identity</mat-icon>-->
-<!--                          <span>Mes infos</span>-->
-<!--                        </button>-->
-                        <button mat-menu-item (click)="logout()">
-                          <mat-icon>exit_to_app</mat-icon>
-                          <span>Déconnexion</span>
-                        </button>
-                      </mat-menu>
-      </mat-toolbar-row>
-    </mat-toolbar>
+            <span class="example-spacer"></span>
+  <!--          <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">help_outline</mat-icon>-->
+            <button mat-icon-button [matMenuTriggerFor]="auth"><mat-icon>person_outline</mat-icon></button>
+                        <mat-menu #auth="matMenu">
+  <!--                        <button mat-menu-item (click)="mes_infos()">-->
+  <!--                          <mat-icon>perm_identity</mat-icon>-->
+  <!--                          <span>Mes infos</span>-->
+  <!--                        </button>-->
+                          <button mat-menu-item (click)="logout()">
+                            <mat-icon>exit_to_app</mat-icon>
+                            <span>Déconnexion</span>
+                          </button>
+                        </mat-menu>
+        </mat-toolbar-row>
+      </mat-toolbar>
+    </div>
 
     <div *ngIf="has_role()" class="content-container">
       <!-- Add Content Here -->

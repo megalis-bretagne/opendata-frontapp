@@ -5,7 +5,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
-import {PublicationsService} from './services/publications-service';
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { ValiderTableComponent } from './components/valider-table/valider-table.component';
@@ -13,7 +12,6 @@ import { ParametrageOrganisationComponent } from './components/parametrage-organ
 
 import { StorageModule } from './store/storage.module';
 import {MaterialModule} from './shared/material.module';
-import {ParametrageService} from './services/parametrage.service';
 import {SettingsHttpService} from '../environments/settings.http.service';
 import { MarqueBlancheComponent } from './components/marque-blanche/marque-blanche.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
@@ -43,7 +41,6 @@ import { BudgetModule } from './budget/budget.module';
         BrowserAnimationsModule,
         MaterialModule,
         ClipboardModule,
-
         BudgetModule,
     ],
   providers: [

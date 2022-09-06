@@ -5,13 +5,12 @@ import { map, shareReplay } from 'rxjs/operators';
 import {Store} from '@ngrx/store';
 import {LogOut} from '../../store/actions/auth.actions';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
-import {SettingsService} from '../../../environments/settings.service';
 import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
-  styleUrls: ['./navigation.component.css']
+  styleUrls: ['./navigation.component.scss']
 })
 export class NavigationComponent implements OnInit {
   getState: Observable<any>;
