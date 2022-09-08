@@ -46,7 +46,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   private _stop$ = new Subject();
 
   constructor(
-    private mapper: PrepareDonneesVisualisation, 
+    private mapper: PrepareDonneesVisualisation,
     private prettyCurrencyFormatter: PrettyCurrencyFormatter,
     private breakpointObserver: BreakpointObserver) { }
 
@@ -57,8 +57,8 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
         map(state => state.matches),
         distinctUntilChanged(),
         tap(_ => {
-          try { 
-            this.refresh() 
+          try {
+            this.refresh()
           } catch(err) {}
         }),
         takeUntil(this._stop$),
@@ -78,8 +78,8 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   toChartsData(
-    donneesBudget: DonneesBudget, 
-    informationPlanDeCompte: Pdc.InformationPdc, 
+    donneesBudget: DonneesBudget,
+    informationPlanDeCompte: Pdc.InformationPdc,
     typeVue: TypeVue,
     modePresentationMontant: ModePresentationMontant,
   ) {
@@ -107,7 +107,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   echartsOptions(
-    intitule: string, 
+    intitule: string,
     donneesVisualisation: VisualisationPourDonut,
     modePresentationMontant: ModePresentationMontant,
   ) {
@@ -128,7 +128,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
 
     let chartOption: EChartsOption = {
       name: ``,
-      tooltip: { 
+      tooltip: {
         trigger: 'item',
         formatter: (item) => `${item.name}: <b> ${this.prettyCurrencyFormatter.format(item.value)}</b>`,
       },
