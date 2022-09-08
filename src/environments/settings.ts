@@ -5,12 +5,12 @@ export class Keycloak {
   issuer = '';
   realm = '';
   clientId = '';
-  urlLogout: '';
+  urlLogout = '';
 }
 
 export class Settings {
   production = false;
-  api: Api;
-  keycloak: Keycloak;
-  urlmarqueblanche: string;
+  api: Api = new Api();
+  keycloak: Keycloak = new Keycloak();
+  urlmarqueblanche: string = '';
 }

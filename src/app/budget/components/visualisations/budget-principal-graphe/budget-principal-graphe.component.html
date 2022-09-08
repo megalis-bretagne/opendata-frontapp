@@ -10,24 +10,24 @@
 
     <div *ngIf="echartData$ | async as echartsData">
 
-        <div echarts [options]="echartsData.options" [initOpts]="echartsData.initOptions" [autoResize]="true"
+        <div echarts [options]="echartsData.options" [initOpts]="echartsData.initOptions " [autoResize]="true"
             class="echart-chart"></div>
         <!-- Pour forcer le moteur de rendu -->
         <!-- [initOpts]="{ renderer: 'svg' }" -->
     </div>
     <div class="bottom-links">
-        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeVue=='general' }"
+        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeVue ==='general' }"
             (click)="onClicVueGenerale()">Vue
             générale</a> |
-        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeVue=='detaille' }"
+        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeVue ==='detaille' }"
             (click)="onClicVueDetaille()">
             Vue détaillée
         </a>
     </div>
     <div class="debug">
-        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeNomenclature =='fonctions' }"
+        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeNomenclature ==='fonctions' }"
             (click)="onClicNomenclatureFonctions()">Nomenclature par fonctions</a> |
-        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeNomenclature == 'nature' }"
+        <a [routerLink]="" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeNomenclature === 'nature' }"
             (click)="onClicNomenclatureNature()">Nomenclature par nature</a>
     </div>
 </ng-container>
