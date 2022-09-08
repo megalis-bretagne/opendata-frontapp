@@ -74,7 +74,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnDestroy(): void {
-      this._stop$.next();
+      this._stop$.next(null);
   }
 
   toChartsData(
