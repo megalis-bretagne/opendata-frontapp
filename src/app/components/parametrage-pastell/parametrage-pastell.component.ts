@@ -8,8 +8,7 @@ import {AdminServiceService} from "../../services/admin.service";
   styleUrls: ['./parametrage-pastell.component.css']
 })
 export class ParametragePastellComponent  {
-  resultGEDSftp:string
-  resultGEDPastell:string
+  result:string
 
   constructor(private service: AdminServiceService) { }
 
@@ -18,13 +17,9 @@ export class ParametragePastellComponent  {
     if (isNaN(id_e)) {
       console.log("id_e not entered")
     } else {
-      this.service.createGEDSftp({id_e :id_e }).subscribe( result=> {
-          this.resultGEDSftp =result.statut;
+      this.service.createParametragePastell({id_e :id_e }).subscribe( result=> {
+          this.result =result.statut;
       })
-      this.service.createGEDPastell({id_e :id_e }).subscribe(result => {
-        this.resultGEDPastell =result.statut;
-      })
-
     }
   }
 }

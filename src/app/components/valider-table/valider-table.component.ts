@@ -6,7 +6,6 @@ import {MatPaginator} from '@angular/material/paginator';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {DataDialog, Publication} from '../../models/publication';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
-import 'rxjs/add/operator/filter';
 import {MatDialog} from '@angular/material/dialog';
 
 
@@ -18,7 +17,7 @@ import {
 } from '../../store/selectors/publication.selectors';
 import {PublicationLoadAction} from '../../store/actions/publications.actions';
 import {PublicationParams} from '../../models/publication-params';
-import {debounceTime, distinctUntilChanged, take, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, take, tap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
@@ -50,7 +49,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   public etatPublication = '0';
   private subscription: Subscription = new Subscription();
   selection = new SelectionModel<Publication>(true, []);
-  user: User;
+  user: User | null = null;
   nombrePublicationLibelle = 'Nombre de publications à valider';
   valueSearchInput = '';
   valueSirenAdmin=''
@@ -115,7 +114,10 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
 
-    this.route.queryParams.filter(params => params.etat)
+    this.route.queryParams
+      .pipe(
+        filter(params => params.etat)
+      )
       .subscribe(params => {
           if (params.etat !== this.etatPublication) {
             this.etatPublication = params.etat;
@@ -257,12 +259,12 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   delete(element:DataDialog): void {
     this.loading = true;
-    this.service.delete(element.id).toPromise().then((value) => this.refresh());
+    this.service.delete(element.id).toPromise().then((_value) => this.refresh());
   }
 
   modify(element:Publication): void {
     this.loading = true;
-    this.service.modify(element).toPromise().then((value) => this.refresh());
+    this.service.modify(element).toPromise().then((_value) => this.refresh());
   }
 
   publish(): void {
@@ -271,7 +273,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private publishOne(row: Publication): void {
-    this.service.publish(row.id).toPromise().then((value) => this.refresh());
+    this.service.publish(row.id).toPromise().then((_value) => this.refresh());
   }
 
   unpublish(): void {
@@ -280,7 +282,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private unpublishOne(row: Publication): void {
-    this.service.unpublish(row.id).toPromise().then((value) =>  this.refresh());
+    this.service.unpublish(row.id).toPromise().then((_value) =>  this.refresh());
   }
 
   dontPusblish(): void {
@@ -289,7 +291,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   dontPusblishOne(row: Publication): void {
-    this.service.dontPusblish(row.id).toPromise().then((value) =>  this.refresh());
+    this.service.dontPusblish(row.id).toPromise().then((_value) =>  this.refresh());
   }
 
   rowClick(row): void {
@@ -366,9 +368,9 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result.event === 'Update'){
-        this.service.modify(result.data).toPromise().then((value) => this.refresh());
+        this.service.modify(result.data).toPromise().then((_value) => this.refresh());
       }else if (result.event === 'Delete'){
-        this.service.delete(result.data.id).toPromise().then((value) => this.refresh());
+        this.service.delete(result.data.id).toPromise().then((_value) => this.refresh());
       }
     });
   }

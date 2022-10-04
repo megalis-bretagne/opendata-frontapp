@@ -1,0 +1,55 @@
+
+<ng-container *ngIf="isLoading">
+    Loading...
+</ng-container>
+
+<ng-container *ngIf="hasError">
+    Error occured!
+</ng-container>
+
+<mat-card *ngIf="isSuccess()">
+
+    <mat-card-title class="horizontal">
+        <div>
+            {{titre}}
+        </div>
+
+        <div *ngIf="parametrable">
+
+            <!-- <button disabled (click)="onDeplacerClic()" class="menu-btn" mat-mini-fab color="basic">
+                <mat-icon>open_with</mat-icon>
+            </button>
+
+            <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
+                <mat-icon>edit</mat-icon>
+            </button> -->
+            <!-- <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
+                    <mat-icon>edit</mat-icon>
+            </button> -->
+
+        </div>
+
+    </mat-card-title>
+
+    <mat-card-subtitle>
+        {{description}}
+    </mat-card-subtitle>
+
+    <mat-card-content>
+        <ng-content></ng-content>
+    </mat-card-content>
+
+    <mat-card-footer class="horizontal">
+        <div></div>
+        <div>
+            <button *ngIf="parametrable" disabled (click)="onIframeClic()" class="menu-btn" mat-mini-fab color="basic">
+                <mat-icon>code</mat-icon>
+            </button>
+
+            <button disabled (click)="onExportClic()" class="menu-btn" mat-mini-fab color="basic">
+                <mat-icon>upload</mat-icon>
+            </button>
+        </div>
+    </mat-card-footer>
+
+</mat-card>

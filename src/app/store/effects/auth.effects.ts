@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/catch';
-import {tap, map, switchMap, mapTo} from 'rxjs/operators';
+import {tap, map, switchMap} from 'rxjs/operators';
 
 import { AuthService } from '../../services/auth.service';
 import {
@@ -26,6 +22,7 @@ export class AuthEffects {
   effectLogIn$ = createEffect(
     () => this.actions.pipe(
       ofType(AuthActionTypes.LOGIN),
+      // tap(() => console.debug('[AuthEffects]: LOGIN')),
       switchMap(() =>
         this.authService.checkLogin().then((profile) => {
             const user = new User();

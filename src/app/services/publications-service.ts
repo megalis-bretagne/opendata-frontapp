@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {DataDialog, Publication} from '../models/models';
 import {PublicationResponse} from '../models/publication-response';
 import {SettingsService} from '../../environments/settings.service';

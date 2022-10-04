@@ -13,7 +13,7 @@ import {ParametrageEffects} from './effects/parametrage.effects';
   imports: [
     StoreModule.forRoot(reducers),
     EffectsModule.forRoot([ AuthEffects, PublicationEffects, ParametrageEffects]),
-    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: !environment.production}),
+    StoreDevtoolsModule.instrument({maxAge: 25, logOnly: environment.production}),
   ],
   exports: [StoreModule]
 })

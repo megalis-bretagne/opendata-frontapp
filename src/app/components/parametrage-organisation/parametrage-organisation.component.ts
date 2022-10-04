@@ -1,5 +1,5 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import {Observable, Subscription} from 'rxjs';
 import {select, Store} from '@ngrx/store';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
@@ -17,7 +17,7 @@ import {User} from '../../models/user';
   templateUrl: './parametrage-organisation.component.html',
   styleUrls: ['./parametrage-organisation.component.css']
 })
-export class ParametrageOrganisationComponent implements OnInit, OnDestroy, AfterViewInit  {
+export class ParametrageOrganisationComponent implements OnInit, AfterViewInit  {
 
   private subscription: Subscription = new Subscription();
   public noData: boolean;
@@ -29,9 +29,9 @@ export class ParametrageOrganisationComponent implements OnInit, OnDestroy, Afte
   user: User;
   isChecked = false;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(public store: Store<GlobalState>, public formBuilder: FormBuilder) {
+  constructor(public store: Store<GlobalState>, public formBuilder: UntypedFormBuilder) {
     this.form = formBuilder.group({
       enableDataGouv: formBuilder.control(false),
       uid: formBuilder.control(''),
@@ -60,9 +60,6 @@ export class ParametrageOrganisationComponent implements OnInit, OnDestroy, Afte
 
   ngAfterViewInit(): void {
     this.loadParametrage();
-  }
-
-  ngOnDestroy(): void {
   }
 
   private loadParametrage(): void {

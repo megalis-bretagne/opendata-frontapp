@@ -1,0 +1,12 @@
+.horizontal {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+mat-card-footer {
+    min-height: 4em;
+}
+.menu-btn {
+    margin-right: 5px;
+}

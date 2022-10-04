@@ -1,36 +1,44 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {AuthGuard} from './services/auth-guard.service';
-import {ParametrageOrganisationComponent} from './components/parametrage-organisation/parametrage-organisation.component';
-import {ValiderTableComponent} from './components/valider-table/valider-table.component';
-import {MarqueBlancheComponent} from './components/marque-blanche/marque-blanche.component';
-import {ParametragePastellComponent} from "./components/parametrage-pastell/parametrage-pastell.component";
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './services/auth-guard.service';
+import { ParametrageOrganisationComponent } from './components/parametrage-organisation/parametrage-organisation.component';
+import { ValiderTableComponent } from './components/valider-table/valider-table.component';
+import { MarqueBlancheComponent } from './components/marque-blanche/marque-blanche.component';
+import { ParametragePastellComponent } from "./components/parametrage-pastell/parametrage-pastell.component";
+import { NavigationComponent } from './components/navigation/navigation.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ValiderTableComponent,
-    canActivate: [AuthGuard]
+    component: NavigationComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        component: ValiderTableComponent,
+      },
+      {
+        path: 'parametrage',
+        component: ParametrageOrganisationComponent,
+      },
+      {
+        path: 'marqueblanche',
+        component: MarqueBlancheComponent,
+      },
+      {
+        path: 'pastell',
+        component: ParametragePastellComponent,
+      },
+    ]
   },
   {
-    path: 'parametrage',
-    component: ParametrageOrganisationComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'marqueblanche',
-    component: MarqueBlancheComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'pastell',
-    component: ParametragePastellComponent,
-    canActivate: [AuthGuard]
+    path: 'budget',
+    loadChildren: () => import('./budget/budget.module').then(m => m.BudgetModule)
   },
   {
     path: '**',
-    redirectTo: '/validationTable'
-  }
+    redirectTo: '/'
+  },
 ];
 
 @NgModule({
