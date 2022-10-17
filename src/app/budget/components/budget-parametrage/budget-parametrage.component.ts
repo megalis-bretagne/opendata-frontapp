@@ -7,7 +7,7 @@ import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Pdc } from '../../models/plan-de-comptes';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, DonneesBudget, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetState, DonneesBudgetaires, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 @Component({
@@ -21,7 +21,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   user$: Observable<User>;
   siren$: Observable<string>;
 
-  donneesBudget: DonneesBudget
+  donneesBudget: DonneesBudgetaires
   informationsPlanDeCompte: Pdc.InformationPdc
 
   errorInLoadingBudget$;

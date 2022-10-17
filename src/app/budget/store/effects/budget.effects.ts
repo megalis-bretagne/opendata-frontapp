@@ -3,8 +3,8 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { of, zip } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from "../../services/budget.service";
-import { BudgetActionType, BudgetAnneesDisponiblesLoadFailureAction, BudgetAnneesDisponiblesLoadingAction, BudgetAnneesDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
-import { DonneesBudget } from "../states/budget.state";
+import { BudgetActionType, BudgetDisponiblesLoadFailureAction, BudgetDisponiblesLoadingAction, BudgetDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
+import { DonneesBudgetaires } from "../states/budget.state";
 
 @Injectable()
 export class BudgetEffects {
@@ -34,7 +34,7 @@ export class BudgetEffects {
                     let zipped = zip(loadDonnees, loadInformationsPdc)
                     .pipe(
                         map(([ donnees, informationsPdc ]) =>
-                            new BudgetLoadSuccessAction(donnees as DonneesBudget, informationsPdc)
+                            new BudgetLoadSuccessAction(donnees as DonneesBudgetaires, informationsPdc)
                         ),
                         catchError(err => {
                             console.error(err);
@@ -49,15 +49,15 @@ export class BudgetEffects {
         { dispatch: true },
     );
 
-    public loadAnneesDisponibles$ = createEffect(
+    public loadDonneesBudgetairesDisponibles$ = createEffect(
         () => this.actions$
-            .pipe(
-                ofType<BudgetAnneesDisponiblesLoadingAction>(BudgetActionType.LoadingAnneesDisponibles),
-                map(action => action.siren),
-                switchMap(siren => this.budgetService.anneesDisponibles(siren)),
-                map(annees => new BudgetAnneesDisponiblesLoadSuccessAction(annees)),
-                catchError(err => of(new BudgetAnneesDisponiblesLoadFailureAction(err)))
-            ),
-        { dispatch: true },
+        .pipe(
+            ofType<BudgetDisponiblesLoadingAction>(BudgetActionType.LoadingDisponibles),
+            map(action => action.siren),
+            switchMap(siren => this.budgetService.donneesBudgetairesDisponibles(siren)),
+            map(disponibles => new BudgetDisponiblesLoadSuccessAction(disponibles)),
+            catchError(err => of(new BudgetDisponiblesLoadFailureAction(err)))
+        ),
+        {dispatch: true},
     )
 }

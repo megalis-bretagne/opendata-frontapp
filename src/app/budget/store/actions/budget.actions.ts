@@ -1,16 +1,17 @@
 import { Action } from "@ngrx/store";
+import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-disponibles";
 import { Pdc } from "../../models/plan-de-comptes";
 import { EtapeBudgetaire } from "../../services/budget.service";
-import { DonneesBudget } from "../states/budget.state";
+import { DonneesBudgetaires } from "../states/budget.state";
 
 export enum BudgetActionType {
     Loading = '[Budget] Loading',
     LoadSuccess = '[Budget] LoadSuccess',
     LoadFailure = '[Budget] LoadFailure',
 
-    LoadingAnneesDisponibles = '[Budget - années] Loading',
-    LoadAnneesDisponiblesSuccess = '[Budget - années] LoadSuccess',
-    LoadAnneesDisponiblesFailure = '[Budget - années] LoadFailure',
+    LoadingDisponibles = '[Budget - disponibles] Loading',
+    LoadDisponiblesSuccess = '[Budget - disponibles] LoadSuccess',
+    LoadDisponiblesFailure = '[Budget - disponibles] LoadFailure',
 }
 
 export class BudgetLoadingAction implements Action {
@@ -19,29 +20,30 @@ export class BudgetLoadingAction implements Action {
 }
 export class BudgetLoadSuccessAction implements Action {
     public readonly type = BudgetActionType.LoadSuccess;
-    constructor(public donnees: DonneesBudget, public informationPdc: Pdc.InformationPdc) { }
+    constructor(public donnees: DonneesBudgetaires, public informationPdc: Pdc.InformationPdc) { }
 }
 export class BudgetLoadFailureAction implements Action {
     public readonly type = BudgetActionType.LoadFailure;
     constructor(public error: any) { }
 }
 
-export class BudgetAnneesDisponiblesLoadingAction implements Action {
-    public readonly type = BudgetActionType.LoadingAnneesDisponibles;
-    constructor(public siren: string) { }
+export class BudgetDisponiblesLoadingAction implements Action {
+    public readonly type = BudgetActionType.LoadingDisponibles;
+    constructor(public siren: string) {}
 }
-export class BudgetAnneesDisponiblesLoadSuccessAction implements Action {
-    public readonly type = BudgetActionType.LoadAnneesDisponiblesSuccess;
-    constructor(public annees: number[]) { }
+export class BudgetDisponiblesLoadSuccessAction implements Action {
+    public readonly type = BudgetActionType.LoadDisponiblesSuccess;
+    constructor(public disponibles: DonneesBudgetairesDisponibles) {}
 }
-export class BudgetAnneesDisponiblesLoadFailureAction implements Action {
-    public readonly type = BudgetActionType.LoadAnneesDisponiblesFailure;
-    constructor(public error: any) { }
+export class BudgetDisponiblesLoadFailureAction implements Action {
+    public readonly type = BudgetActionType.LoadDisponiblesFailure;
+    constructor(public error: any) {}
 }
 
 export type BudgetAction = BudgetLoadingAction
     | BudgetLoadSuccessAction
     | BudgetLoadFailureAction
-    | BudgetAnneesDisponiblesLoadingAction
-    | BudgetAnneesDisponiblesLoadSuccessAction
-    | BudgetAnneesDisponiblesLoadFailureAction;
+    | BudgetDisponiblesLoadingAction
+    | BudgetDisponiblesLoadSuccessAction
+    | BudgetDisponiblesLoadFailureAction
+    ;

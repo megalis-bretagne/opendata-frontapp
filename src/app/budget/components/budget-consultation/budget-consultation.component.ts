@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from '../../models/plan-de-comptes';
 import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, DonneesBudget, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetState, DonneesBudgetaires, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 
 @Component({
   selector: 'app-budget-consultation',
@@ -18,7 +18,7 @@ export class BudgetConsultationComponent implements OnInit {
   etape: any;
   annee: any;
 
-  donneesBudget: DonneesBudget;
+  donneesBudget: DonneesBudgetaires;
   informationsPdc: Pdc.InformationPdc;
 
   private _stop$: Subject<void> = new Subject<void>();

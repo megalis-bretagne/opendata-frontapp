@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
 import { EtapeBudgetaire } from "../../services/budget.service"
 import { Pdc } from "../../models/plan-de-comptes"
+import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-disponibles"
 
 export interface LigneBudget {
     fonction_code: string,
@@ -9,7 +10,7 @@ export interface LigneBudget {
     montant: number,
 }
 
-export interface DonneesBudget {
+export interface DonneesBudgetaires {
     etape: EtapeBudgetaire,
     annee: number,
     siren: string,
@@ -18,7 +19,10 @@ export interface DonneesBudget {
 }
 
 export interface BudgetState {
-    budgets: DonneesBudget[],
+
+    donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles,
+
+    budgets: DonneesBudgetaires[],
     infoPlanDeComptes: Pdc.InformationPdc[],
     anneesDisponibles: number[],
     loading: boolean,
@@ -26,6 +30,9 @@ export interface BudgetState {
 }
 
 export const initialBudgetState: BudgetState = {
+
+    donneesBudgetairesDisponibles: null,
+
     budgets: [],
     anneesDisponibles: [],
     infoPlanDeComptes: [],

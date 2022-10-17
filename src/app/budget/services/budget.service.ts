@@ -1,10 +1,11 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, InjectionToken } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
-import { tap, map, delay } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { SettingsService } from "src/environments/settings.service";
+import { DonneesBudgetairesDisponibles } from "../models/donnees-budgetaires-disponibles";
 import { Pdc } from "../models/plan-de-comptes";
-import { DonneesBudget } from "../store/states/budget.state";
+import { DonneesBudgetaires } from "../store/states/budget.state";
 
 export enum EtapeBudgetaire {
 
@@ -38,9 +39,10 @@ export class EtapeBudgetaireUtil {
 
 export interface BudgetService {
 
-  anneesDisponibles(siren: string): Observable<number[]>
-  loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudget>
+  loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudgetaires>
   loadInformationsPdc(siren: string, annee: number): Observable<Pdc.InformationPdc>
+
+  donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles>
 }
 
 @Injectable()
@@ -51,26 +53,22 @@ export class RealBudgetService implements BudgetService {
     private settings: SettingsService,
   ) { }
 
-  anneesDisponibles(siren: string): Observable<number[]> {
+  donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles> {
+    this._debug(`Cherche les données budgetaires disponibles pour le siren ${siren}`)
+    this.checkSiren(siren)
 
-    this._debug(`Cherche les années ou des données budget sont disponibles pour le siren ${siren}`);
-    this.checkSiren(siren);
-
-    const url = `${this._getBudgetBaseUrl()}/${siren}/annees_disponibles`;
-    return this.http.get<string[]>(url)
-      .pipe(
-        map(annees => annees.map(annee => Number(annee)))
-      );
+    const url = `${this._getBudgetBaseUrl()}/donnees_budgetaires_disponibles/${siren}`
+    return this.http.get<DonneesBudgetairesDisponibles>(url)
   }
 
-  loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudget> {
+  loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudgetaires> {
 
     this._debug(`Charge les données budgetaires pour le siren ${siren}, l'étape ${etape} et l'année ${annee}`);
     this.checkSiren(siren);
 
     const url = `${this._getBudgetBaseUrl()}/${siren}/${annee}/${etape}`;
     let donnees =
-      this.http.get<DonneesBudget>(url).pipe(
+      this.http.get<DonneesBudgetaires>(url).pipe(
         map(donnees => {
           let etape_str = donnees.etape as string;
           let etape = EtapeBudgetaireUtil.fromApi(etape_str);

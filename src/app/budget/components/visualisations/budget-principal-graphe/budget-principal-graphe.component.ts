@@ -6,7 +6,7 @@ import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
-import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
+import { DonneesBudgetaires } from 'src/app/budget/store/states/budget.state';
 
 export type EchartsViewModel = {
   options: EChartsOption,
@@ -39,7 +39,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   typeNomenclature: Pdc.TypeNomenclature = "fonctions"
 
   @Input()
-  donneesBudget: DonneesBudget
+  donneesBudget: DonneesBudgetaires
 
   @Input()
   informationPlanDeCompte: Pdc.InformationPdc
@@ -82,7 +82,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   toChartsViewModel(
-    donneesBudget: DonneesBudget,
+    donneesBudget: DonneesBudgetaires,
     informationPlanDeCompte: Pdc.InformationPdc,
     typeVue: TypeVue,
     modePresentationMontant: ModePresentationMontant,

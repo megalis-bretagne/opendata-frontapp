@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
 import { Pdc } from "../models/plan-de-comptes";
-import { DonneesBudget, LigneBudget } from "../store/states/budget.state";
+import { DonneesBudgetaires, LigneBudget } from "../store/states/budget.state";
 import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";
 
 
@@ -18,7 +18,7 @@ export class PrepareDonneesVisualisation {
     constructor(private prettyCurrencyFormatter: PrettyCurrencyFormatter) { }
 
     donneesPourDonut(
-        donneesBudget: DonneesBudget, nomenclature: Pdc.Nomenclature,
+        donneesBudget: DonneesBudgetaires, nomenclature: Pdc.Nomenclature,
         rd: 'recette' | 'depense', typeVue: TypeVue,
     ): VisualisationPourDonut {
 

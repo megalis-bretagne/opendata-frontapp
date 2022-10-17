@@ -5,7 +5,7 @@ import { map, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from '../../services/budget.service';
-import { BudgetAnneesDisponiblesLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetState, selectAnneesDisponibles } from '../../store/states/budget.state';
 
 export enum PresentationType {
@@ -44,7 +44,7 @@ export class BudgetParametrageComponentService {
       );
 
     this.siren$.subscribe(siren =>
-      this.budgetStore.dispatch(new BudgetAnneesDisponiblesLoadingAction(siren))
+      this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren))
     )
 
     this.anneesDisponibles$ = this.budgetStore.select(selectAnneesDisponibles)
