@@ -251,6 +251,9 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
       case '5': {
         return 'Budget';
       }
+      case '7': {
+        return 'Hors Préfecture';
+      }
       default: {
         return 'autre';
       }
