@@ -16,7 +16,7 @@ export enum BudgetActionType {
 
 export class BudgetLoadingAction implements Action {
     public readonly type = BudgetActionType.Loading;
-    constructor(public siren: string, public annee: number, public etape: EtapeBudgetaire) { }
+    constructor(public siren: string, public annee: string, public etape: EtapeBudgetaire) { }
 }
 export class BudgetLoadSuccessAction implements Action {
     public readonly type = BudgetActionType.LoadSuccess;

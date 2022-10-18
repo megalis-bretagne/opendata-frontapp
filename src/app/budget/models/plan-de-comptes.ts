@@ -19,7 +19,7 @@ export namespace Pdc {
 
     export interface InformationPdc {
         siren: string
-        annee: number
+        annee: string
 
         references_fonctionnelles: ReferencesFonctionnelles | {}
         comptes_nature: ComptesNature | {}

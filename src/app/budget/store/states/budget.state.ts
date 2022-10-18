@@ -12,7 +12,7 @@ export interface LigneBudget {
 
 export interface DonneesBudgetaires {
     etape: EtapeBudgetaire,
-    annee: number,
+    annee: string,
     siren: string,
     denomination_siege: string,
     lignes: [LigneBudget]
@@ -42,23 +42,28 @@ export const initialBudgetState: BudgetState = {
 
 export const selectBudgetFeatureState = createFeatureSelector<BudgetState>('budget')
 
-export const selectDonnees = (siren: string, annee: number, etape: EtapeBudgetaire) =>
+export const selectDonneesDisponibles = createSelector(
+    selectBudgetFeatureState,
+    (state) => state.donneesBudgetairesDisponibles
+)
+
+export const selectDonnees = (siren: string, annee: string, etape: EtapeBudgetaire) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.budgets.find(budget =>
             (budget.annee == annee && budget.etape == etape && budget.siren == siren)
         )
     });
 
-export const selectInformationsPlanDeCompte = (siren: string, annee: number) =>
+export const selectInformationsPlanDeCompte = (siren: string, annee: string) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.infoPlanDeComptes.find(iPdc =>
             (iPdc.annee == annee && iPdc.siren == siren))
     });
 
-export const selectReferencesFonctionnelles = (siren: string, annee: number) =>
+export const selectReferencesFonctionnelles = (siren: string, annee: string) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.references_fonctionnelles)
 
-export const selectComptesNature = (siren: string, annee: number) =>
+export const selectComptesNature = (siren: string, annee: string) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.comptes_nature)
 
 export const selectAnneesDisponibles = createSelector(

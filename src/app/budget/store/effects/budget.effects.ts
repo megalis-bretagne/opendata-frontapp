@@ -24,11 +24,11 @@ export class BudgetEffects {
                     let loadDonnees = this.budgetService.loadBudgets(
                         siren as string,
                         etape as EtapeBudgetaire,
-                        annee as number,
+                        annee as string,
                     );
                     let loadInformationsPdc = this.budgetService.loadInformationsPdc(
                         siren as string,
-                        annee as number,
+                        annee as string,
                     );
 
                     let zipped = zip(loadDonnees, loadInformationsPdc)

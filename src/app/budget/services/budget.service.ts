@@ -39,8 +39,8 @@ export class EtapeBudgetaireUtil {
 
 export interface BudgetService {
 
-  loadBudgets(siren: string, etape: string, annee: number): Observable<DonneesBudgetaires>
-  loadInformationsPdc(siren: string, annee: number): Observable<Pdc.InformationPdc>
+  loadBudgets(siren: string, etape: string, annee: string): Observable<DonneesBudgetaires>
+  loadInformationsPdc(siren: string, annee: string): Observable<Pdc.InformationPdc>
 
   donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles>
 }
@@ -61,7 +61,7 @@ export class RealBudgetService implements BudgetService {
     return this.http.get<DonneesBudgetairesDisponibles>(url)
   }
 
-  loadBudgets(siren: string, etape: EtapeBudgetaire, annee: number): Observable<DonneesBudgetaires> {
+  loadBudgets(siren: string, etape: EtapeBudgetaire, annee: string): Observable<DonneesBudgetaires> {
 
     this._debug(`Charge les données budgetaires pour le siren ${siren}, l'étape ${etape} et l'année ${annee}`);
     this.checkSiren(siren);
@@ -79,7 +79,7 @@ export class RealBudgetService implements BudgetService {
     return donnees;
   }
 
-  loadInformationsPdc(siren: string, annee: number): Observable<Pdc.InformationPdc> {
+  loadInformationsPdc(siren: string, annee: string): Observable<Pdc.InformationPdc> {
 
     this._debug(`Charge les informations du plan de compte pour le siren ${siren} et l'année ${annee}`)
     this.checkSiren(siren)
