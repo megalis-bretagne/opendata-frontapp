@@ -44,22 +44,22 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     let navigationParamsObs = combineLatest([
-      this.siren$,
       this.componentService.navigation.anneeSelectionnee$,
+      this.componentService.navigation.etablissementSelectionnee$,
       this.componentService.navigation.etapeBudgetaireSelectionnee$,
     ])
 
     navigationParamsObs
       .pipe(
-        tap(([siren, annee, etape]) => {
-          this.store.dispatch(new BudgetLoadingAction(siren, annee, etape));
-          this.iframeFragment = this.compute_iframe_fragment(siren, annee, etape);
+        tap(([annee, siret, etape]) => {
+          this.store.dispatch(new BudgetLoadingAction(annee, siret, etape));
+          this.iframeFragment = this.compute_iframe_fragment(siret, annee, etape);
         }),
 
-        mergeMap(([siren, annee, etape]) => {
+        mergeMap(([annee, siret, etape]) => {
           return zip (
-            this.store.select(selectDonnees(siren, annee, etape)),
-            this.store.select(selectInformationsPlanDeCompte(siren, annee)),
+            this.store.select(selectDonnees(annee, siret, etape)),
+            this.store.select(selectInformationsPlanDeCompte(annee, siret)),
           );
         }),
         tap(([donnees, informationPdc]) => { 
@@ -71,9 +71,9 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
       .subscribe()
   }
 
-  compute_iframe_fragment(siren, annee, etape) {
+  compute_iframe_fragment(annee, siret, etape) {
 
-    let path = this.location.prepareExternalUrl(`/budget/public/${siren}/${annee}/${etape}`)
+    let path = this.location.prepareExternalUrl(`/budget/public/${annee}/${siret}/${etape}`)
     let url = new URL(path, location.origin)
     return `
       <iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" src="${url.href}" 

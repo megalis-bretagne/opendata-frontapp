@@ -9,6 +9,11 @@ export function budgetReducer(state = initialBudgetState, action: BudgetAction):
                 error: false,
                 loading: true
             }
+        case BudgetActionType.AlreadyLoaded:
+            return {
+                ...state,
+                loading: false,
+            }
         case BudgetActionType.LoadSuccess: {
             let donnees = action.donnees;
             let infoPdc = action.informationPdc;
@@ -31,13 +36,18 @@ export function budgetReducer(state = initialBudgetState, action: BudgetAction):
                 ...state,
                 loading: true,
             }
+        case BudgetActionType.LoadDisponiblesAlreadyLoaded:
+            return {
+                ...state,
+                loading: false,
+            }
         case BudgetActionType.LoadDisponiblesSuccess:
             let disponibles = action.disponibles
             return {
                 ...state,
                 loading: false,
                 error: false,
-                donneesBudgetairesDisponibles: disponibles,
+                donneesBudgetairesDisponibles: [...state.donneesBudgetairesDisponibles, disponibles],
             }
         case BudgetActionType.LoadDisponiblesFailure:
             return {

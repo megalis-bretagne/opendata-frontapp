@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { _Etablissement } from '../../models/donnees-budgetaires-disponibles';
 import { EtablissementComboItemViewModel } from '../../models/view-models';
-import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from '../../services/budget.service';
+import { EtapeBudgetaire } from '../../services/budget.service';
 import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState } from '../../store/states/budget.state';
@@ -50,15 +50,13 @@ export class BudgetParametrageComponentService {
         map(user => user.siren),
       );
 
-    this.siren$.subscribe(siren =>
-      this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren))
-    )
+    this.siren$.subscribe(siren => this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren)))
 
-    this.etablissementsDisponibles$ = this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel)
+    this.etablissementsDisponibles$ = this.siren$
       .pipe(
+        mergeMap(siren => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren))),
         tap(etablissementsDisponibles => this.etablissementsDisponiblesSnapshot = etablissementsDisponibles)
-      );
-
+      )
 
     this.anneesDisponibles$ = this.navigation.etablissementSelectionnee$
       .pipe(

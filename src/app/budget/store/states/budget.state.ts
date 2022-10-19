@@ -13,14 +13,14 @@ export interface LigneBudget {
 export interface DonneesBudgetaires {
     etape: EtapeBudgetaire,
     annee: string,
-    siren: string,
+    siret: string,
     denomination_siege: string,
     lignes: [LigneBudget]
 }
 
 export interface BudgetState {
 
-    donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles,
+    donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles[],
 
     budgets: DonneesBudgetaires[],
     infoPlanDeComptes: Pdc.InformationPdc[],
@@ -31,7 +31,7 @@ export interface BudgetState {
 
 export const initialBudgetState: BudgetState = {
 
-    donneesBudgetairesDisponibles: null,
+    donneesBudgetairesDisponibles: [],
 
     budgets: [],
     anneesDisponibles: [],
@@ -42,22 +42,22 @@ export const initialBudgetState: BudgetState = {
 
 export const selectBudgetFeatureState = createFeatureSelector<BudgetState>('budget')
 
-export const selectDonneesDisponibles = createSelector(
+export const selectDonneesDisponibles = (siren: string) => createSelector(
     selectBudgetFeatureState,
-    (state) => state.donneesBudgetairesDisponibles
+    (state) => state.donneesBudgetairesDisponibles.find(disponibles => disponibles.siren == siren)
 )
 
-export const selectDonnees = (siren: string, annee: string, etape: EtapeBudgetaire) =>
+export const selectDonnees = (annee: string, siret: string, etape: EtapeBudgetaire) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.budgets.find(budget =>
-            (budget.annee == annee && budget.etape == etape && budget.siren == siren)
+            (budget.annee == annee && budget.etape == etape && budget.siret == siret)
         )
     });
 
-export const selectInformationsPlanDeCompte = (siren: string, annee: string) =>
+export const selectInformationsPlanDeCompte = (annee: string, siret: string) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.infoPlanDeComptes.find(iPdc =>
-            (iPdc.annee == annee && iPdc.siren == siren))
+            (iPdc.annee == annee && iPdc.siret == siret))
     });
 
 export const selectReferencesFonctionnelles = (siren: string, annee: string) =>

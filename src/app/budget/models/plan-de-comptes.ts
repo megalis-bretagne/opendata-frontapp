@@ -18,7 +18,7 @@ export namespace Pdc {
 
 
     export interface InformationPdc {
-        siren: string
+        siret: string
         annee: string
 
         references_fonctionnelles: ReferencesFonctionnelles | {}

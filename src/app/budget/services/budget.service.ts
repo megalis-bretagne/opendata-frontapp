@@ -39,9 +39,8 @@ export class EtapeBudgetaireUtil {
 
 export interface BudgetService {
 
-  loadBudgets(siren: string, etape: string, annee: string): Observable<DonneesBudgetaires>
-  loadInformationsPdc(siren: string, annee: string): Observable<Pdc.InformationPdc>
-
+  loadInformationPdc(annee: string, siret: string): Observable<Pdc.InformationPdc>
+  loadBudgets(annee: string, siret: string, etape: string): Observable<DonneesBudgetaires>
   donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles>
 }
 
@@ -55,18 +54,33 @@ export class RealBudgetService implements BudgetService {
 
   donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles> {
     this._debug(`Cherche les données budgetaires disponibles pour le siren ${siren}`)
-    this.checkSiren(siren)
 
     const url = `${this._getBudgetBaseUrl()}/donnees_budgetaires_disponibles/${siren}`
     return this.http.get<DonneesBudgetairesDisponibles>(url)
   }
 
-  loadBudgets(siren: string, etape: EtapeBudgetaire, annee: string): Observable<DonneesBudgetaires> {
+  loadInformationPdc(annee: string, siret: string): Observable<Pdc.InformationPdc> {
+      
+    this._debug(`Charge les informations du plan de compte pour l'année ${annee} et le siret ${siret}`)
 
-    this._debug(`Charge les données budgetaires pour le siren ${siren}, l'étape ${etape} et l'année ${annee}`);
-    this.checkSiren(siren);
+    const url = `${this._getBudgetBaseUrl()}/plans_de_comptes/${annee}/${siret}`;
+    let informationsPdc = 
+      this.http.get<Pdc.InformationPdc>(url).pipe(
+        map(informations => {
+          informations.siret = siret;
+          informations.annee = annee;
+          return informations;
+        })
+      );
 
-    const url = `${this._getBudgetBaseUrl()}/${siren}/${annee}/${etape}`;
+    return informationsPdc;
+  }
+
+  loadBudgets(annee: string, siret: string, etape: string): Observable<DonneesBudgetaires> {
+      
+    this._debug(`Charge les données budgetaires pour le siret ${siret}, lors de l'année ${annee} et l'étape ${etape}`);
+
+    const url = `${this._getBudgetBaseUrl()}/donnees_budgetaires/${annee}/${siret}/${etape}`;
     let donnees =
       this.http.get<DonneesBudgetaires>(url).pipe(
         map(donnees => {
@@ -77,29 +91,6 @@ export class RealBudgetService implements BudgetService {
         })
       );
     return donnees;
-  }
-
-  loadInformationsPdc(siren: string, annee: string): Observable<Pdc.InformationPdc> {
-
-    this._debug(`Charge les informations du plan de compte pour le siren ${siren} et l'année ${annee}`)
-    this.checkSiren(siren)
-
-    const url = `${this._getBudgetBaseUrl()}/${siren}/${annee}/pdc`;
-    let informationsPdc = 
-      this.http.get<Pdc.InformationPdc>(url).pipe(
-        map(informations => {
-          informations.siren = siren;
-          informations.annee = annee;
-          return informations;
-        })
-      );
-
-    return informationsPdc;
-  }
-
-  private checkSiren(siren: string) {
-    if (!siren)
-      throw new Error('Le siren est nul');
   }
 
   private _debug(msg: string) {

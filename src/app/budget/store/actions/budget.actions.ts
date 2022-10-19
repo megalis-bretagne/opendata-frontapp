@@ -6,17 +6,22 @@ import { DonneesBudgetaires } from "../states/budget.state";
 
 export enum BudgetActionType {
     Loading = '[Budget] Loading',
+    AlreadyLoaded = '[Budget] AlreadyLoaded',
     LoadSuccess = '[Budget] LoadSuccess',
     LoadFailure = '[Budget] LoadFailure',
 
     LoadingDisponibles = '[Budget - disponibles] Loading',
+    LoadDisponiblesAlreadyLoaded = '[Budget - disponibles] AlreadyLoaded',
     LoadDisponiblesSuccess = '[Budget - disponibles] LoadSuccess',
     LoadDisponiblesFailure = '[Budget - disponibles] LoadFailure',
 }
 
 export class BudgetLoadingAction implements Action {
     public readonly type = BudgetActionType.Loading;
-    constructor(public siren: string, public annee: string, public etape: EtapeBudgetaire) { }
+    constructor(public annee: string, public siret: string, public etape: EtapeBudgetaire) { }
+}
+export class BudgetAlreadyLoadedAction implements Action {
+    public readonly type = BudgetActionType.AlreadyLoaded;
 }
 export class BudgetLoadSuccessAction implements Action {
     public readonly type = BudgetActionType.LoadSuccess;
@@ -31,6 +36,9 @@ export class BudgetDisponiblesLoadingAction implements Action {
     public readonly type = BudgetActionType.LoadingDisponibles;
     constructor(public siren: string) {}
 }
+export class BudgetDisponiblesAlreadyLoadedAction implements Action {
+    public readonly type = BudgetActionType.LoadDisponiblesAlreadyLoaded;
+}
 export class BudgetDisponiblesLoadSuccessAction implements Action {
     public readonly type = BudgetActionType.LoadDisponiblesSuccess;
     constructor(public disponibles: DonneesBudgetairesDisponibles) {}
@@ -41,9 +49,11 @@ export class BudgetDisponiblesLoadFailureAction implements Action {
 }
 
 export type BudgetAction = BudgetLoadingAction
+    | BudgetAlreadyLoadedAction
     | BudgetLoadSuccessAction
     | BudgetLoadFailureAction
     | BudgetDisponiblesLoadingAction
+    | BudgetDisponiblesAlreadyLoadedAction
     | BudgetDisponiblesLoadSuccessAction
     | BudgetDisponiblesLoadFailureAction
     ;
