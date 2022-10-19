@@ -14,7 +14,6 @@ export interface DonneesBudgetaires {
     etape: EtapeBudgetaire,
     annee: string,
     siret: string,
-    denomination_siege: string,
     lignes: [LigneBudget]
 }
 
@@ -24,7 +23,7 @@ export interface BudgetState {
 
     budgets: DonneesBudgetaires[],
     infoPlanDeComptes: Pdc.InformationPdc[],
-    anneesDisponibles: number[],
+    
     loading: boolean,
     error: boolean,
 }
@@ -34,7 +33,6 @@ export const initialBudgetState: BudgetState = {
     donneesBudgetairesDisponibles: [],
 
     budgets: [],
-    anneesDisponibles: [],
     infoPlanDeComptes: [],
     loading: true,
     error: false,
@@ -65,11 +63,6 @@ export const selectReferencesFonctionnelles = (siren: string, annee: string) =>
 
 export const selectComptesNature = (siren: string, annee: string) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.comptes_nature)
-
-export const selectAnneesDisponibles = createSelector(
-    selectBudgetFeatureState,
-    (state) => state.anneesDisponibles,
-)
 
 export const selectBudgetError = createSelector(
     selectBudgetFeatureState,

@@ -4,18 +4,35 @@ import { EtablissementComboItemViewModel } from "../../models/view-models";
 import { extract_siren } from "../../services/siren.functions";
 import { selectDonneesDisponibles } from "../states/budget.state";
 
-function etablissement_vers_comboViewModel(etablissement: _Etablissement): EtablissementComboItemViewModel {
+function etablissement_pretty_name(etablissement: _Etablissement): string {
     let prettyName = etablissement.denomination
     if (etablissement.enseigne) {
         prettyName += `- ${etablissement.enseigne}`
     }
-    return { value: etablissement.siret, viewValue: prettyName }
+    return prettyName
 }
 
+function etablissement_vers_comboViewModel(etablissement: _Etablissement): EtablissementComboItemViewModel {
+    let prettyName = etablissement_pretty_name(etablissement)
+    return { value: etablissement.siret, viewValue: prettyName }
+}
 
 export namespace BudgetViewModelSelectors {
 
     export namespace DonneesDisponibles {
+
+        export const etablissementPrettyname = (siret: string) => {
+            let siren = extract_siren(siret)
+            return createSelector(
+                selectDonneesDisponibles(siren),
+                disponibles => {
+                    if (!disponibles || !disponibles.infos_etablissements || !disponibles.infos_etablissements[siret])
+                        return ''
+                    let etablissement = disponibles.infos_etablissements[siret]
+                    return etablissement_pretty_name(etablissement)
+                }
+            )
+        }
 
         export const etablissementsDisponiblesComboViewModel = (siren: string) => createSelector(
             selectDonneesDisponibles(siren),

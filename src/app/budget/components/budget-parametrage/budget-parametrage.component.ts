@@ -1,12 +1,13 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { concatLatestFrom } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { zip } from "rxjs"
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Pdc } from '../../models/plan-de-comptes';
-import { BudgetLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, DonneesBudgetaires, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
@@ -21,6 +22,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   user$: Observable<User>;
   siren$: Observable<string>;
 
+  etablissementPrettyName: string = ''
   donneesBudget: DonneesBudgetaires
   informationsPlanDeCompte: Pdc.InformationPdc
 
@@ -49,22 +51,31 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
       this.componentService.navigation.etapeBudgetaireSelectionnee$,
     ])
 
+    this.siren$
+      .pipe(
+        tap(siren => this.store.dispatch(new BudgetDisponiblesLoadingAction(siren))),
+        takeUntil(this._stop$),
+      ).subscribe()
+
     navigationParamsObs
       .pipe(
         tap(([annee, siret, etape]) => {
           this.store.dispatch(new BudgetLoadingAction(annee, siret, etape));
-          this.iframeFragment = this.compute_iframe_fragment(siret, annee, etape);
+          this.iframeFragment = this.compute_iframe_fragment(annee, siret, etape);
         }),
 
         mergeMap(([annee, siret, etape]) => {
-          return zip (
+          return combineLatest([
             this.store.select(selectDonnees(annee, siret, etape)),
             this.store.select(selectInformationsPlanDeCompte(annee, siret)),
-          );
+            this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(siret))
+          ])
         }),
-        tap(([donnees, informationPdc]) => { 
-          this.donneesBudget = donnees 
+
+        tap(([donnees, informationPdc, prettyName]) => {
+          this.donneesBudget = donnees
           this.informationsPlanDeCompte = informationPdc;
+          this.etablissementPrettyName = prettyName;
         }),
         takeUntil(this._stop$)
       )

@@ -9,9 +9,8 @@
 
     <div class="visualisations">
         <app-budget-card 
-            titre="Les recettes {{donneesBudget?.annee}} du budget principal pour {{donneesBudget?.denomination_siege}}" 
-            description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal,
-            de la {{donneesBudget?.denomination_siege}}"
+            titre="Les recettes {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyName}}" 
+            description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal - {{etablissementPrettyName}}"
             [parametrable]="true">
             <app-budget-principal-graphe
                 [donneesBudget]="donneesBudget"
@@ -21,9 +20,8 @@
         </app-budget-card>
 
         <app-budget-card 
-            titre="Les dépenses {{donneesBudget?.annee}} du budget principal pour {{donneesBudget?.denomination_siege}}" 
-            description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal,
-            de la {{donneesBudget?.denomination_siege}}"
+            titre="Les dépenses {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyName}}" 
+            description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal - {{etablissementPrettyName}}"
             [parametrable]="true">
             <app-budget-principal-graphe
                 [donneesBudget]="donneesBudget"
