@@ -98,7 +98,7 @@ export class RealBudgetService implements BudgetService {
   }
 
   private _getBudgetBaseUrl() {
-    return `${this.settings.settings.api.url}/api/v1/budgets`
+    return `${this.settings.settings.api.url}/budgets/api/v1`
   }
 }
 
