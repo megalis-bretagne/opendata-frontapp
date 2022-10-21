@@ -1,25 +1,15 @@
 <div class="visualisations">
-    <app-budget-card 
-        titre="Les recettes {{donneesBudget?.annee}} du budget principal pour {{donneesBudget?.denomination_siege}}" 
-        description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal,
-        de la {{donneesBudget?.denomination_siege}}"
+    <app-budget-card titre="Les recettes {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyname}}"
+        description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal - {{etablissementPrettyname}}"
         [parametrable]="true">
-        <app-budget-principal-graphe
-            [donneesBudget]="donneesBudget"
-            [informationPlanDeCompte]="informationsPdc"
-            rd="recette"
-            ></app-budget-principal-graphe>
+        <app-budget-principal-graphe [donneesBudget]="donneesBudget" [informationPlanDeCompte]="informationsPdc"
+            rd="recette"></app-budget-principal-graphe>
     </app-budget-card>
 
-    <app-budget-card 
-        titre="Les dépenses {{donneesBudget?.annee}} du budget principal pour {{donneesBudget?.denomination_siege}}" 
-        description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal,
-        de la {{donneesBudget?.denomination_siege}}"
+    <app-budget-card titre="Les dépenses {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyname}}"
+        description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal - {{etablissementPrettyname}}"
         [parametrable]="true">
-        <app-budget-principal-graphe
-            [donneesBudget]="donneesBudget"
-            [informationPlanDeCompte]="informationsPdc"
-            rd="depense"
-            ></app-budget-principal-graphe>
+        <app-budget-principal-graphe [donneesBudget]="donneesBudget" [informationPlanDeCompte]="informationsPdc"
+            rd="depense"></app-budget-principal-graphe>
     </app-budget-card>
 </div>

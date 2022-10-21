@@ -1,12 +1,16 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
-import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from '../../services/budget.service';
-import { BudgetAnneesDisponiblesLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, selectAnneesDisponibles } from '../../store/states/budget.state';
+import { _Etablissement } from '../../models/donnees-budgetaires-disponibles';
+import { EtablissementComboItemViewModel } from '../../models/view-models';
+import { EtapeBudgetaire } from '../../services/budget.service';
+import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
+import { BudgetState } from '../../store/states/budget.state';
+
 
 export enum PresentationType {
   SIMPLIFIE,
@@ -21,17 +25,20 @@ export class BudgetParametrageComponentService {
   readonly user$: Observable<User>;
   readonly siren$: Observable<string>;
 
-  readonly anneesDisponibles$: Observable<number[]>;
-  anneesDisponiblesSnapshot: number[];
+  readonly anneesDisponibles$: Observable<string[]>;
+  anneesDisponiblesSnapshot: string[];
+
+  readonly etablissementsDisponibles$: Observable<EtablissementComboItemViewModel[]>;
+  etablissementsDisponiblesSnapshot: EtablissementComboItemViewModel[];
 
   readonly navigation: Navigation;
 
   constructor(
     private globalStore: Store<GlobalState>,
     private budgetStore: Store<BudgetState>,
-    @Inject(BUDGET_SERVICE_TOKEN)
-    private budgetService: BudgetService,
   ) {
+
+    this.navigation = new Navigation();
 
     this.user$ = this.globalStore.select(selectAuthState)
       .pipe(
@@ -43,16 +50,19 @@ export class BudgetParametrageComponentService {
         map(user => user.siren),
       );
 
-    this.siren$.subscribe(siren =>
-      this.budgetStore.dispatch(new BudgetAnneesDisponiblesLoadingAction(siren))
-    )
+    this.siren$.subscribe(siren => this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren)))
 
-    this.anneesDisponibles$ = this.budgetStore.select(selectAnneesDisponibles)
+    this.etablissementsDisponibles$ = this.siren$
       .pipe(
+        mergeMap(siren => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren))),
+        tap(etablissementsDisponibles => this.etablissementsDisponiblesSnapshot = etablissementsDisponibles)
+      )
+
+    this.anneesDisponibles$ = this.navigation.etablissementSelectionnee$
+      .pipe(
+        mergeMap(siret => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.anneesDisponibles(siret))),
         tap(annees => this.anneesDisponiblesSnapshot = annees)
       );
-
-    this.navigation = new Navigation(this.budgetService, this);
   }
 
   debug(msg) {
@@ -62,24 +72,24 @@ export class BudgetParametrageComponentService {
 
 class Navigation {
 
-  readonly anneeSelectionnee$: Observable<number>;
+  readonly anneeSelectionnee$: Observable<string>;
   readonly etapeBudgetaireSelectionnee$: Observable<EtapeBudgetaire>;
   readonly presentationSelectionnee$: Observable<PresentationType>;
+  readonly etablissementSelectionnee$: Observable<string>;
 
-  private _anneeSelectionnee: Subject<number> = new ReplaySubject();
-  private _etapeBudgetaireSelectionnee: Subject<EtapeBudgetaire> = new ReplaySubject();
-  private _presentationSelectionnee: Subject<PresentationType> = new ReplaySubject();
+  private _anneeSelectionnee: Subject<string> = new ReplaySubject(1);
+  private _etapeBudgetaireSelectionnee: Subject<EtapeBudgetaire> = new ReplaySubject(1);
+  private _presentationSelectionnee: Subject<PresentationType> = new ReplaySubject(1);
+  private _siretSelectionnee: Subject<string> = new ReplaySubject(1);
 
-  constructor(
-    private budgetService: BudgetService,
-    private budgetParametrageComponentService: BudgetParametrageComponentService
-  ) {
+  constructor() {
     this.anneeSelectionnee$ = this._anneeSelectionnee;
     this.etapeBudgetaireSelectionnee$ = this._etapeBudgetaireSelectionnee;
     this.presentationSelectionnee$ = this._presentationSelectionnee;
+    this.etablissementSelectionnee$ = this._siretSelectionnee;
   }
 
-  public selectionneAnnee(annee: number) {
+  public selectionneAnnee(annee: string) {
 
     this._debug(`Selectionne l'année ${annee}`);
     this._anneeSelectionnee.next(annee);
@@ -93,6 +103,11 @@ class Navigation {
   public selectionnePresentation(presentation: PresentationType) {
     this._debug(`Selectionne la présentation ${PresentationType[presentation]}`);
     this._presentationSelectionnee.next(presentation);
+  }
+
+  public selectionneEtablissement(siret: string) {
+    this._debug(`Selectionne le siret ${siret}`)
+    this._siretSelectionnee.next(siret);
   }
 
   private _debug(msg: string) {

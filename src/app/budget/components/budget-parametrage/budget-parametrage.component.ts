@@ -1,13 +1,14 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { concatLatestFrom } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { zip } from "rxjs"
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Pdc } from '../../models/plan-de-comptes';
-import { BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState, DonneesBudget, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
+import { BudgetState, DonneesBudgetaires, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 @Component({
@@ -21,7 +22,8 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   user$: Observable<User>;
   siren$: Observable<string>;
 
-  donneesBudget: DonneesBudget
+  etablissementPrettyName: string = ''
+  donneesBudget: DonneesBudgetaires
   informationsPlanDeCompte: Pdc.InformationPdc
 
   errorInLoadingBudget$;
@@ -44,36 +46,45 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     let navigationParamsObs = combineLatest([
-      this.siren$,
       this.componentService.navigation.anneeSelectionnee$,
+      this.componentService.navigation.etablissementSelectionnee$,
       this.componentService.navigation.etapeBudgetaireSelectionnee$,
     ])
 
+    this.siren$
+      .pipe(
+        tap(siren => this.store.dispatch(new BudgetDisponiblesLoadingAction(siren))),
+        takeUntil(this._stop$),
+      ).subscribe()
+
     navigationParamsObs
       .pipe(
-        tap(([siren, annee, etape]) => {
-          this.store.dispatch(new BudgetLoadingAction(siren, annee, etape));
-          this.iframeFragment = this.compute_iframe_fragment(siren, annee, etape);
+        tap(([annee, siret, etape]) => {
+          this.store.dispatch(new BudgetLoadingAction(annee, siret, etape));
+          this.iframeFragment = this.compute_iframe_fragment(annee, siret, etape);
         }),
 
-        mergeMap(([siren, annee, etape]) => {
-          return zip (
-            this.store.select(selectDonnees(siren, annee, etape)),
-            this.store.select(selectInformationsPlanDeCompte(siren, annee)),
-          );
+        mergeMap(([annee, siret, etape]) => {
+          return combineLatest([
+            this.store.select(selectDonnees(annee, siret, etape)),
+            this.store.select(selectInformationsPlanDeCompte(annee, siret)),
+            this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(siret))
+          ])
         }),
-        tap(([donnees, informationPdc]) => { 
-          this.donneesBudget = donnees 
+
+        tap(([donnees, informationPdc, prettyName]) => {
+          this.donneesBudget = donnees
           this.informationsPlanDeCompte = informationPdc;
+          this.etablissementPrettyName = prettyName;
         }),
         takeUntil(this._stop$)
       )
       .subscribe()
   }
 
-  compute_iframe_fragment(siren, annee, etape) {
+  compute_iframe_fragment(annee, siret, etape) {
 
-    let path = this.location.prepareExternalUrl(`/budget/public/${siren}/${annee}/${etape}`)
+    let path = this.location.prepareExternalUrl(`/budget/public/${annee}/${siret}/${etape}`)
     let url = new URL(path, location.origin)
     return `
       <iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" src="${url.href}" 
