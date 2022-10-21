@@ -16,7 +16,7 @@ export class AdminServiceService {
   ) {
   }
   createParametragePastell(body): Observable<any> {
-    const url = `${this.settings.settings.api.url}/api/v1/pastell/creation/parametrage`;
+    const url = `${this.settings.settings.api.url}/private_api/v1/pastell/creation/parametrage`;
     return this.http.post<any>(url,body);
   }
 
