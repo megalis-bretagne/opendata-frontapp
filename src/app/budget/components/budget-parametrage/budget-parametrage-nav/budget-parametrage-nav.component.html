@@ -2,7 +2,7 @@
 #selecteurAnnee
 [(selectedIndex)]="anneesSelectedIndex"
 (selectedTabChange)="onSelectionneAnnee($event)">
-  <mat-tab *ngFor="let annee of anneesDisponibles" [label]="annee">
+  <mat-tab *ngFor="let annee of anneesDisponibles" [label]="annee.toString()">
   </mat-tab>
 </mat-tab-group>
 

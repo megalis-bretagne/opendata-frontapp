@@ -8,6 +8,10 @@ import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/bud
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
 
+export type EchartsViewModel = {
+  options: EChartsOption,
+  chartInitOptions: {},
+}
 export type TypeVue = 'general' | 'detaille'
 
 export enum ModePresentationMontant {
@@ -30,7 +34,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   ];
   selectedMontantPresentation: ModePresentationMontant = ModePresentationMontant.MONTANT;
 
-  echartData$ = new BehaviorSubject({});
+  echartData$ = new BehaviorSubject(null);
   typeVue: TypeVue = 'general'
   typeNomenclature: Pdc.TypeNomenclature = "fonctions"
 
@@ -77,12 +81,12 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
       this._stop$.next(null);
   }
 
-  toChartsData(
+  toChartsViewModel(
     donneesBudget: DonneesBudget,
     informationPlanDeCompte: Pdc.InformationPdc,
     typeVue: TypeVue,
     modePresentationMontant: ModePresentationMontant,
-  ) {
+  ): EchartsViewModel {
 
     if (Object.keys(informationPlanDeCompte.references_fonctionnelles).length === 0) {
       console.info(`Aucune donnée provenant de la nomenclature de fontions. On visualise par nature.`);
@@ -184,7 +188,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   refresh() {
-      let chartData = this.toChartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue, this.selectedMontantPresentation);
+      let chartData = this.toChartsViewModel(this.donneesBudget, this.informationPlanDeCompte, this.typeVue, this.selectedMontantPresentation);
       this.echartData$.next(chartData)
   }
 }
