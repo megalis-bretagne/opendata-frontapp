@@ -1,6 +1,13 @@
 # opendata frontapp
 La documentation est disponible ici : https://opendata-megalis.readthedocs.io/fr/latest/
 
+## Documentation développeur
+
+Mettre à jour le projet
+
+```bash
+npx -p @angular/cli ng update
+```
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.3.
 
