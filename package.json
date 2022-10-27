@@ -48,7 +48,6 @@
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
-    "codelyzer": "^6.0.0",
     "eslint": "^8.23.0",
     "ts-node": "^8.3.0",
     "tslint": "^6.1.0",
