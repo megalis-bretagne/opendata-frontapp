@@ -3,7 +3,7 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, map, takeUntil } from 'rxjs/operators';
-import { EtablissementComboItemViewModel } from 'src/app/budget/models/view-models';
+import { EtapeComboItemViewModel, EtablissementComboItemViewModel } from 'src/app/budget/models/view-models';
 import { EtapeBudgetaire, EtapeBudgetaireUtil } from 'src/app/budget/services/budget.service';
 import { BudgetParametrageComponentService, PresentationType } from '../budget-parametrage-component.service';
 
@@ -17,9 +17,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   anneesDisponibles: string[] = [new Date().getFullYear().toString()];
   anneesSelectedIndex: number = 0;
 
-  readonly etapeOptions = [
-    { value: EtapeBudgetaire.COMPTE_ADMINISTRATIF, viewValue: "Compte administratif" },
-  ];
+  etapeOptions: EtapeComboItemViewModel[] = []
   selectedEtape: EtapeBudgetaire = EtapeBudgetaire.COMPTE_ADMINISTRATIF;
 
   etablissementOptions: EtablissementComboItemViewModel[] = []
@@ -101,8 +99,18 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
         distinctUntilChanged(),
         filter(etabs => Boolean(etabs) && etabs.length > 0),
       );
-    let infoEtab$ = combineLatest([siret$, etablissementsDisponibles$])
+    let etapesDisponibles$ = this.componentService.etapesDisponibles$
+      .pipe(
+        distinctUntilChanged(),
+        filter(etapes => Boolean(etapes) && etapes.length > 0),
+      )
+    etapesDisponibles$
+      .pipe(takeUntil(this._stop$))
+      .subscribe((etapes) => {
+        this.etapeOptions = etapes;
+      })
 
+    let infoEtab$ = combineLatest([siret$, etablissementsDisponibles$])
     infoEtab$
       .pipe(takeUntil(this._stop$))
       .subscribe(([siret, etablissements]) => {

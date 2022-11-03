@@ -1,6 +1,7 @@
 import { createSelector } from "@ngrx/store";
-import { _Etablissement } from "../../models/donnees-budgetaires-disponibles";
-import { EtablissementComboItemViewModel } from "../../models/view-models";
+import { DonneesBudgetairesDisponibles, _Etablissement } from "../../models/donnees-budgetaires-disponibles";
+import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "../../models/view-models";
+import { EtapeBudgetaire } from "../../services/budget.service";
 import { extract_siren } from "../../services/siren.functions";
 import { selectDonneesDisponibles } from "../states/budget.state";
 
@@ -15,6 +16,26 @@ function etablissement_pretty_name(etablissement: _Etablissement): string {
 function etablissement_vers_comboViewModel(etablissement: _Etablissement): EtablissementComboItemViewModel {
     let prettyName = etablissement_pretty_name(etablissement)
     return { value: etablissement.siret, viewValue: prettyName }
+}
+
+function etape_pretty_name(etape: EtapeBudgetaire): string {
+    let prettyName = 'Étape inconnue'
+    switch(etape) {
+        case EtapeBudgetaire.BUDGET_PRIMITIF:
+            return "Budget primitif";
+        case EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE:
+            return "Budget supplémentaire";
+        case EtapeBudgetaire.COMPTE_ADMINISTRATIF:
+            return "Compte administratif";
+        case EtapeBudgetaire.DECISION_MODIFICATIVE:
+            return "Décision modificative";
+        default:
+            throw new Error(`${etape} non supportée`)
+    }
+}
+
+export function etape_vers_comboViewModel(etape: EtapeBudgetaire): EtapeComboItemViewModel {
+    return { value: etape, viewValue: etape_pretty_name(etape) }
 }
 
 export namespace BudgetViewModelSelectors {
@@ -42,14 +63,40 @@ export namespace BudgetViewModelSelectors {
 
                 let infos_etab = disponibles.infos_etablissements;
                 let sirets = Object.keys(infos_etab)
-                let etabs = sirets.map(siret => infos_etab[siret])
-                let sorted = etabs.sort((e1, e2) => Number(e1.siret) - Number(e2.siret))
-                let etabsComboViewModel = sorted.map(etab => etablissement_vers_comboViewModel(etab))
-                return etabsComboViewModel;
+
+                return etablissementsComboViewModel(disponibles, sirets);
             }
         )
 
-        export const anneesDisponibles = (siret: string) => {
+        // export const etablissementsDisponiblesComboViewModel = (siren: string, annee: string) => createSelector(
+        //     selectDonneesDisponibles(siren),
+        //     disponibles => {
+        //         if (!disponibles) return []
+
+        //         let ressources_disponibles = disponibles.ressources_disponibles;
+        //         debugger;
+
+        //         let sirets = Object.keys(ressources_disponibles[annee]);
+        //         sirets.sort(sort_siret)
+
+        //         return etablissementsComboViewModel(disponibles, sirets);
+        //     }
+        // )
+
+        export const anneesDisponibles = (siren: string) => {
+            return createSelector(
+                selectDonneesDisponibles(siren),
+                disponibles => {
+                    if (!disponibles || !disponibles.ressources_disponibles) return []
+
+                    let ressources_disponibles = disponibles.ressources_disponibles
+                    let annees = Object.keys(ressources_disponibles)
+                    return [...new Set(annees)].sort().reverse()
+                }
+            )
+        }
+
+        export const anneesDisponiblesPourEtablissement = (siret: string) => {
 
             let siren = extract_siren(siret);
 
@@ -59,7 +106,7 @@ export namespace BudgetViewModelSelectors {
                     let ressources_disponibles = disponibles.ressources_disponibles
                     if (!ressources_disponibles)
                         return []
-                    
+
                     let annees = Object.keys(ressources_disponibles)
 
                     let anneesDisponibles = []
@@ -73,6 +120,24 @@ export namespace BudgetViewModelSelectors {
                 }
             )
         }
+
+        // Utilities
+        function etablissementsComboViewModel(donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles, sirets: string[]): EtablissementComboItemViewModel[] {
+            if (!donneesBudgetairesDisponibles || !donneesBudgetairesDisponibles.infos_etablissements) return [];
+
+            let infos_etab = donneesBudgetairesDisponibles.infos_etablissements;
+            let etabs = sirets.map(siret => infos_etab[siret]);
+            let sorted = etabs.sort(sort_siret);
+            let etabComboViewModel = sorted.map(etab => etablissement_vers_comboViewModel(etab));
+            return etabComboViewModel;
+        }
+
+        function extraire_info_etablissement(donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles, siret: string): _Etablissement {
+            if (!donneesBudgetairesDisponibles || !donneesBudgetairesDisponibles.infos_etablissements) return null;
+            return donneesBudgetairesDisponibles.infos_etablissements[siret]
+        }
+
+        const sort_siret = (s1, s2) => Number(s1) - Number(s2)
     }
 
 }

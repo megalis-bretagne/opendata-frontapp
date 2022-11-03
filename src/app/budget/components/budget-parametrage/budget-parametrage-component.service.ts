@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { _Etablissement } from '../../models/donnees-budgetaires-disponibles';
-import { EtablissementComboItemViewModel } from '../../models/view-models';
+import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from '../../models/view-models';
 import { EtapeBudgetaire } from '../../services/budget.service';
 import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
+import { BudgetViewModelSelectors, etape_vers_comboViewModel } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState } from '../../store/states/budget.state';
 
 
@@ -30,6 +30,9 @@ export class BudgetParametrageComponentService {
 
   readonly etablissementsDisponibles$: Observable<EtablissementComboItemViewModel[]>;
   etablissementsDisponiblesSnapshot: EtablissementComboItemViewModel[];
+
+  readonly etapesDisponibles$: Observable<EtapeComboItemViewModel[]>;
+  etapesDisponiblesSnapshot: EtapeComboItemViewModel[];
 
   readonly navigation: Navigation;
 
@@ -58,9 +61,18 @@ export class BudgetParametrageComponentService {
         tap(etablissementsDisponibles => this.etablissementsDisponiblesSnapshot = etablissementsDisponibles)
       )
 
-    this.anneesDisponibles$ = this.navigation.etablissementSelectionnee$
+    this.etapesDisponiblesSnapshot = Object.keys(EtapeBudgetaire)
+      .map(k => {
+        let etape = EtapeBudgetaire[k]
+        return etape_vers_comboViewModel(etape)
+      })
+    this.etapesDisponibles$ = of(this.etapesDisponiblesSnapshot)
+
+    this.anneesDisponibles$ = this.siren$
       .pipe(
-        mergeMap(siret => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.anneesDisponibles(siret))),
+        mergeMap(siren => this.budgetStore.select(
+          BudgetViewModelSelectors.DonneesDisponibles.anneesDisponibles(siren))
+        ),
         tap(annees => this.anneesDisponiblesSnapshot = annees)
       );
   }
