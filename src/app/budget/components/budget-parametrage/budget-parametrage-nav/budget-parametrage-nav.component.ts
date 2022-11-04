@@ -3,6 +3,7 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, map, takeUntil } from 'rxjs/operators';
+import { Siret } from 'src/app/budget/models/donnees-budgetaires-disponibles';
 import { EtapeComboItemViewModel, EtablissementComboItemViewModel } from 'src/app/budget/models/view-models';
 import { EtapeBudgetaire, EtapeBudgetaireUtil } from 'src/app/budget/services/budget.service';
 import { BudgetParametrageComponentService, PresentationType } from '../budget-parametrage-component.service';
@@ -18,7 +19,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   anneesSelectedIndex: number = 0;
 
   etapeOptions: EtapeComboItemViewModel[] = []
-  selectedEtape: EtapeBudgetaire = EtapeBudgetaire.COMPTE_ADMINISTRATIF;
+  selectedEtape: EtapeBudgetaire = null;
 
   etablissementOptions: EtablissementComboItemViewModel[] = []
   selectedEtablissement: string = ""
@@ -57,7 +58,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
     this._etapeFromRoute$ = this.route.queryParams
       .pipe(
         map(params => params['etape'] as EtapeBudgetaire),
-        filter(etape => EtapeBudgetaireUtil.hasValue(etape)),
+        // filter(etape => EtapeBudgetaireUtil.hasValue(etape)),
       );
     this._presentationFromRoute$ = this.route.queryParams
       .pipe(
@@ -91,7 +92,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
         this.anneesDisponibles = anneesDisponibles;
         this.anneesSelectedIndex = index;
       });
-    
+
     let siret$ = merge(this._etablissementFromRoute$, this.componentService.navigation.etablissementSelectionnee$)
       .pipe(distinctUntilChanged());
     let etablissementsDisponibles$ = this.componentService.etablissementsDisponibles$
@@ -99,33 +100,35 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
         distinctUntilChanged(),
         filter(etabs => Boolean(etabs) && etabs.length > 0),
       );
-    let etapesDisponibles$ = this.componentService.etapesDisponibles$
-      .pipe(
-        distinctUntilChanged(),
-        filter(etapes => Boolean(etapes) && etapes.length > 0),
-      )
-    etapesDisponibles$
-      .pipe(takeUntil(this._stop$))
-      .subscribe((etapes) => {
-        this.etapeOptions = etapes;
-      })
-
     let infoEtab$ = combineLatest([siret$, etablissementsDisponibles$])
     infoEtab$
       .pipe(takeUntil(this._stop$))
       .subscribe(([siret, etablissements]) => {
         // this._debug(`Reçu siret: ${siret} et ${etablissements.length} établissement(s)`);
-        
+
         this.etablissementOptions = etablissements;
-        this.selectedEtablissement = siret;
+        let sane = saneSelectedEtablissement(siret, etablissements)
+        // TODO: juste l'UI
+        this.componentService.navigation.selectionneEtablissement(sane)
+        this.selectedEtablissement = sane;
       });
 
-    merge(this._etapeFromRoute$, this.componentService.navigation.etapeBudgetaireSelectionnee$)
+
+    let etape$ = merge(this._etapeFromRoute$, this.componentService.navigation.etapeBudgetaireSelectionnee$)
+      .pipe(distinctUntilChanged())
+    let etapesDisponibles$ = this.componentService.etapesDisponibles$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this._stop$),
+        filter(etapes => Boolean(etapes) && etapes.length > 0),
       )
-      .subscribe(etape => this.selectedEtape = etape);
+
+    let infoEtape$ = combineLatest([etape$, etapesDisponibles$]);
+    infoEtape$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(([etape, etapesDisponibles]) => {
+        this.etapeOptions = etapesDisponibles;
+        this.selectedEtape = saneSelectedEtape(etape, etapesDisponibles);
+      });
 
     merge(this._presentationFromRoute$, this.componentService.navigation.presentationSelectionnee$)
       .pipe(
@@ -139,9 +142,8 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
       .pipe(first())
       .subscribe(
         ([siret, etablissements]) => {
-          if (!siret && etablissements && etablissements.length > 0)
-            siret = this.etablissementOptions[0].value
-          this.componentService.navigation.selectionneEtablissement(siret)
+          let sane = saneSelectedEtablissement(siret, etablissements)
+          this.componentService.navigation.selectionneEtablissement(sane)
         }
       );
     infoAnnees$
@@ -152,7 +154,14 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
           this.componentService.navigation.selectionneAnnee(anneeOuDefault)
         }
       );
-    this.componentService.navigation.selectionneEtapeBudgetaire(this.selectedEtape);
+    infoEtape$
+      .pipe(first())
+      .subscribe(
+        (([etape, etapesDisponibles]) => {
+          let sane = saneSelectedEtape(etape, etapesDisponibles)
+          this.componentService.navigation.selectionneEtapeBudgetaire(sane)
+        })
+      );
     this.componentService.navigation.selectionnePresentation(this.selectedPresentation);
 
     // Mise à jour de la route selon les paramètres.
@@ -207,4 +216,30 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
     this._stop$.next();
     this._stop$.complete();
   }
+}
+
+function saneSelectedEtape(etape: EtapeBudgetaire, etapesDisponibles: EtapeComboItemViewModel[]): EtapeBudgetaire {
+
+  let enabled_etapes = etapesDisponibles.filter(dispo => !dispo.disabled).map(vm => vm.value)
+  let default_etape_selection = (enabled_etapes.length > 0) ? enabled_etapes[0] : null
+
+  let selected = etape
+  if (!etape || !enabled_etapes.includes(selected))
+    selected = default_etape_selection
+
+  return selected
+}
+
+function saneSelectedEtablissement(siret: Siret, etablissements: EtablissementComboItemViewModel[]): Siret {
+
+  let enabled_etabs = etablissements.filter(e => !e.disabled).map(vm => vm.value)
+  let default_etabs = (enabled_etabs.length > 0) ? enabled_etabs[0] : null
+
+  let selected = siret
+
+  if (!selected || !enabled_etabs.includes(selected))
+    selected = default_etabs
+
+
+  return selected
 }

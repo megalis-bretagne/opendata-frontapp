@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
+import { map, mergeMap, startWith, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
-import { _Etablissement } from '../../models/donnees-budgetaires-disponibles';
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from '../../models/view-models';
 import { EtapeBudgetaire } from '../../services/budget.service';
 import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetViewModelSelectors, etape_vers_comboViewModel } from '../../store/selectors/BudgetViewModelSelectors';
+import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState } from '../../store/states/budget.state';
 
 
@@ -17,6 +16,12 @@ export enum PresentationType {
   AVANCEE,
   PAR_HABITANT,
   PAR_EURO,
+}
+
+export interface NavigationParams {
+  etab: string | null,
+  annee: string | null,
+  etape: EtapeBudgetaire | null,
 }
 
 @Injectable()
@@ -55,19 +60,24 @@ export class BudgetParametrageComponentService {
 
     this.siren$.subscribe(siren => this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren)))
 
-    this.etablissementsDisponibles$ = this.siren$
+    this.etablissementsDisponibles$ = combineLatest([this.siren$, this.navigation.navigationParams$])
       .pipe(
-        mergeMap(siren => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren))),
+        mergeMap(([siren, navigation]) => this.budgetStore.select(
+          BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren, navigation.annee)
+          )),
         tap(etablissementsDisponibles => this.etablissementsDisponiblesSnapshot = etablissementsDisponibles)
       )
 
-    this.etapesDisponiblesSnapshot = Object.keys(EtapeBudgetaire)
-      .map(k => {
-        let etape = EtapeBudgetaire[k]
-        return etape_vers_comboViewModel(etape)
-      })
-    this.etapesDisponibles$ = of(this.etapesDisponiblesSnapshot)
-
+    /* */
+    this.etapesDisponibles$ = combineLatest([this.siren$, this.navigation.navigationParams$])
+      .pipe(
+        // tap(([_0, _1]) => this.debug(`Charge les etapes disponibles`)),
+        mergeMap(([siren, navigation]) => 
+          this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etapesDisponiblesComboViewModel(siren, navigation.annee, navigation.etab))
+        ),
+        tap(etapes => this.etapesDisponiblesSnapshot = etapes),
+      )
+    /* */
     this.anneesDisponibles$ = this.siren$
       .pipe(
         mergeMap(siren => this.budgetStore.select(
@@ -89,6 +99,8 @@ class Navigation {
   readonly presentationSelectionnee$: Observable<PresentationType>;
   readonly etablissementSelectionnee$: Observable<string>;
 
+  readonly navigationParams$: Observable<NavigationParams>;
+
   private _anneeSelectionnee: Subject<string> = new ReplaySubject(1);
   private _etapeBudgetaireSelectionnee: Subject<EtapeBudgetaire> = new ReplaySubject(1);
   private _presentationSelectionnee: Subject<PresentationType> = new ReplaySubject(1);
@@ -99,6 +111,18 @@ class Navigation {
     this.etapeBudgetaireSelectionnee$ = this._etapeBudgetaireSelectionnee;
     this.presentationSelectionnee$ = this._presentationSelectionnee;
     this.etablissementSelectionnee$ = this._siretSelectionnee;
+
+    this.navigationParams$ = combineLatest(
+      [
+        this.anneeSelectionnee$.pipe(startWith(null)),
+        this.etablissementSelectionnee$.pipe(startWith(null)),
+        this.etapeBudgetaireSelectionnee$.pipe(startWith(null)),
+      ]
+    ).pipe(
+      map(([annee, etab, etape]) => { 
+        return { annee: annee, etab: etab, etape: etape } as NavigationParams
+      }),
+    )
   }
 
   public selectionneAnnee(annee: string) {

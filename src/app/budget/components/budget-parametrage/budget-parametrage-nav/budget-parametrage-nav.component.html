@@ -15,14 +15,14 @@
   <mat-form-field>
     <mat-label>Établissement</mat-label>
     <mat-select [(value)]="selectedEtablissement" (valueChange)="onSelectedEtablissementChange($event)">
-      <mat-option [value]="option.value" *ngFor="let option of etablissementOptions"> {{option.viewValue}} </mat-option>
+      <mat-option [value]="option.value" *ngFor="let option of etablissementOptions" [disabled]="option.disabled">{{option.viewValue}} </mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Étape du budget</mat-label>
     <mat-select [(value)]="selectedEtape" (valueChange)="onSelectedEtapeChange($event)">
-      <mat-option [value]="option.value" *ngFor="let option of etapeOptions"> {{option.viewValue}} </mat-option>
+      <mat-option [value]="option.value" *ngFor="let option of etapeOptions" [disabled]="option.disabled"> {{option.viewValue}} </mat-option>
     </mat-select>
   </mat-form-field>
 

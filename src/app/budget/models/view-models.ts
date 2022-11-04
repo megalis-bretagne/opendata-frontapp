@@ -4,6 +4,7 @@ import { EtapeBudgetaire } from "../services/budget.service"
 export interface ComboItemViewModel<T> {
     value: T,
     viewValue: string,
+    disabled: boolean,
 }
 
 /** siret - nom */

@@ -1,0 +1,51 @@
+{
+    "infos_etablissements": {
+        "25351449100047": {
+            "denomination": "MEGALIS BRETAGNE",
+            "est_siege": true,
+            "siret": "25351449100047"
+        },
+        "25351449100054": {
+            "denomination": "MEGALIS BRETAGNE",
+            "enseigne": "BTHD",
+            "est_siege": false,
+            "siret": "25351449100054"
+        }
+    },
+    "ressources_disponibles": {
+        "2020": {
+            "25351449100047": [
+                "compte administratif"
+            ]
+        },
+        "2021": {
+            "25351449100047": [
+                "compte administratif",
+                "décision modificative"
+            ],
+            "25351449100054": [
+                "compte administratif",
+                "décision modificative"
+            ],
+            "25351449100062": [
+                "compte administratif",
+                "décision modificative"
+            ]
+        },
+        "2022": {
+            "25351449100047": [
+                "budget primitif",
+                "décision modificative"
+            ],
+            "25351449100054": [
+                "budget primitif",
+                "décision modificative"
+            ],
+            "25351449100062": [
+                "budget primitif",
+                "décision modificative"
+            ]
+        }
+    },
+    "siren": "253514491"
+}

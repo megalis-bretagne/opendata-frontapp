@@ -7,6 +7,7 @@ import { DonneesBudgetairesDisponibles } from "../models/donnees-budgetaires-dis
 import { Pdc } from "../models/plan-de-comptes";
 import { DonneesBudgetaires } from "../store/states/budget.state";
 
+
 export enum EtapeBudgetaire {
 
   BUDGET_PRIMITIF = "primitif",
@@ -57,14 +58,17 @@ export class RealBudgetService implements BudgetService {
 
     const url = `${this._getBudgetBaseUrl()}/donnees_budgetaires_disponibles/${siren}`
     return this.http.get<DonneesBudgetairesDisponibles>(url)
+      .pipe(
+        map(map_donnees_budgetaires_disponibles_from_wire)
+      )
   }
 
   loadInformationPdc(annee: string, siret: string): Observable<Pdc.InformationPdc> {
-      
+
     this._debug(`Charge les informations du plan de compte pour l'année ${annee} et le siret ${siret}`)
 
     const url = `${this._getBudgetBaseUrl()}/plans_de_comptes/${annee}/${siret}`;
-    let informationsPdc = 
+    let informationsPdc =
       this.http.get<Pdc.InformationPdc>(url).pipe(
         map(informations => {
           informations.siret = siret;
@@ -77,7 +81,7 @@ export class RealBudgetService implements BudgetService {
   }
 
   loadBudgets(annee: string, siret: string, etape: string): Observable<DonneesBudgetaires> {
-      
+
     this._debug(`Charge les données budgetaires pour le siret ${siret}, lors de l'année ${annee} et l'étape ${etape}`);
 
     const url = `${this._getBudgetBaseUrl()}/donnees_budgetaires/${annee}/${siret}/${etape}`;
@@ -103,4 +107,20 @@ export class RealBudgetService implements BudgetService {
 }
 
 export const BUDGET_SERVICE_TOKEN = new InjectionToken<BudgetService>('BudgetService');
-// 
+
+export function map_donnees_budgetaires_disponibles_from_wire(wire: any): DonneesBudgetairesDisponibles {
+
+  let t_wire = wire as DonneesBudgetairesDisponibles;
+
+  for (let annee in t_wire.ressources_disponibles) {
+
+    for (let etab in t_wire.ressources_disponibles[annee]) {
+
+      // Les étapes budgetaires sont des string, on doit les transformer dans notre model
+      let etapes = t_wire.ressources_disponibles[annee][etab]
+      t_wire.ressources_disponibles[annee][etab] = etapes.map(e => EtapeBudgetaireUtil.fromApi(e))
+    }
+  }
+
+  return t_wire;
+}

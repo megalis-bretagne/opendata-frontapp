@@ -1,11 +1,11 @@
 import { createSelector } from "@ngrx/store";
-import { DonneesBudgetairesDisponibles, _Etablissement } from "../../models/donnees-budgetaires-disponibles";
+import { DonneesBudgetairesDisponibles, Etablissement, Annee, Siret, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_annees, donnees_budgetaires_disponibles_sirets } from "../../models/donnees-budgetaires-disponibles";
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "../../models/view-models";
 import { EtapeBudgetaire } from "../../services/budget.service";
 import { extract_siren } from "../../services/siren.functions";
 import { selectDonneesDisponibles } from "../states/budget.state";
 
-function etablissement_pretty_name(etablissement: _Etablissement): string {
+function etablissement_pretty_name(etablissement: Etablissement): string {
     let prettyName = etablissement.denomination
     if (etablissement.enseigne) {
         prettyName += `- ${etablissement.enseigne}`
@@ -13,14 +13,13 @@ function etablissement_pretty_name(etablissement: _Etablissement): string {
     return prettyName
 }
 
-function etablissement_vers_comboViewModel(etablissement: _Etablissement): EtablissementComboItemViewModel {
+function etablissement_vers_comboViewModel(etablissement: Etablissement, disabled?: boolean): EtablissementComboItemViewModel {
     let prettyName = etablissement_pretty_name(etablissement)
-    return { value: etablissement.siret, viewValue: prettyName }
+    return { value: etablissement.siret, viewValue: prettyName, disabled: Boolean(disabled) }
 }
 
 function etape_pretty_name(etape: EtapeBudgetaire): string {
-    let prettyName = 'Étape inconnue'
-    switch(etape) {
+    switch (etape) {
         case EtapeBudgetaire.BUDGET_PRIMITIF:
             return "Budget primitif";
         case EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE:
@@ -34,8 +33,9 @@ function etape_pretty_name(etape: EtapeBudgetaire): string {
     }
 }
 
-export function etape_vers_comboViewModel(etape: EtapeBudgetaire): EtapeComboItemViewModel {
-    return { value: etape, viewValue: etape_pretty_name(etape) }
+export function etape_vers_comboViewModel(etape: EtapeBudgetaire, disabled?: boolean): EtapeComboItemViewModel {
+
+    return { value: etape, viewValue: etape_pretty_name(etape), disabled: Boolean(disabled) }
 }
 
 export namespace BudgetViewModelSelectors {
@@ -55,33 +55,35 @@ export namespace BudgetViewModelSelectors {
             )
         }
 
-        export const etablissementsDisponiblesComboViewModel = (siren: string) => createSelector(
+        export const etablissementsDisponiblesComboViewModel = (siren: string, annee?: Annee) => createSelector(
             selectDonneesDisponibles(siren),
             disponibles => {
                 if (!disponibles)
                     return []
 
-                let infos_etab = disponibles.infos_etablissements;
-                let sirets = Object.keys(infos_etab)
+                let tous_sirets = donnees_budgetaires_disponibles_sirets(disponibles)
+                let sirets_actifs = donnees_budgetaires_disponibles_sirets(disponibles, annee)
 
-                return etablissementsComboViewModel(disponibles, sirets);
+                return etablissementsComboViewModel(disponibles, tous_sirets, sirets_actifs);
             }
         )
 
-        // export const etablissementsDisponiblesComboViewModel = (siren: string, annee: string) => createSelector(
-        //     selectDonneesDisponibles(siren),
-        //     disponibles => {
-        //         if (!disponibles) return []
+        export const etapesDisponiblesComboViewModel = (siren: string, annee?: Annee, siret?: Siret) => createSelector(
+            selectDonneesDisponibles(siren),
+            disponibles => {
+                if (!disponibles) return []
 
-        //         let ressources_disponibles = disponibles.ressources_disponibles;
-        //         debugger;
+                let all_etapes = Object.values(EtapeBudgetaire)
+                let etapes_disponibles = donnees_budgetaires_disponibles_etapes(disponibles, annee, siret)
 
-        //         let sirets = Object.keys(ressources_disponibles[annee]);
-        //         sirets.sort(sort_siret)
+                let etapesvm = all_etapes.map(e => {
+                    let disabled = !etapes_disponibles.includes(e)
+                    return etape_vers_comboViewModel(e, disabled)
+                });
 
-        //         return etablissementsComboViewModel(disponibles, sirets);
-        //     }
-        // )
+                return etapesvm;
+            }
+        )
 
         export const anneesDisponibles = (siren: string) => {
             return createSelector(
@@ -122,19 +124,22 @@ export namespace BudgetViewModelSelectors {
         }
 
         // Utilities
-        function etablissementsComboViewModel(donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles, sirets: string[]): EtablissementComboItemViewModel[] {
+        function etablissementsComboViewModel(
+            donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles,
+            tous_sirets: Siret[],
+            sirets_actifs: Siret[],
+        ): EtablissementComboItemViewModel[] {
             if (!donneesBudgetairesDisponibles || !donneesBudgetairesDisponibles.infos_etablissements) return [];
 
             let infos_etab = donneesBudgetairesDisponibles.infos_etablissements;
-            let etabs = sirets.map(siret => infos_etab[siret]);
+            let etabs = tous_sirets.map(siret => infos_etab[siret]);
             let sorted = etabs.sort(sort_siret);
-            let etabComboViewModel = sorted.map(etab => etablissement_vers_comboViewModel(etab));
+            let etabComboViewModel = sorted.map(etab => {
+                let disabled = !sirets_actifs.includes(etab.siret)
+                return etablissement_vers_comboViewModel(etab, disabled)
+            }
+            );
             return etabComboViewModel;
-        }
-
-        function extraire_info_etablissement(donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles, siret: string): _Etablissement {
-            if (!donneesBudgetairesDisponibles || !donneesBudgetairesDisponibles.infos_etablissements) return null;
-            return donneesBudgetairesDisponibles.infos_etablissements[siret]
         }
 
         const sort_siret = (s1, s2) => Number(s1) - Number(s2)
