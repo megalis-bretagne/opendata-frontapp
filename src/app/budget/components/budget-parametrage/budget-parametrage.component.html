@@ -5,6 +5,9 @@
     </div> -->
     <!-- TODO: handle error -->
 
+    <!-- TODO: disable -->
+    <!-- <p>{{donneesBudget?.lignes?.length}}</p> -->
+
     <app-budget-parametrage-nav></app-budget-parametrage-nav>
 
     <div class="visualisations">
@@ -51,6 +54,11 @@
         <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">
             <mat-icon>code</mat-icon>
             Copier l'iframe
+        </button>
+        <!-- TODO: disable -->
+        <button mat-raised-button (click)="navigate_vers_consultation_url()">
+            <mat-icon>code</mat-icon>
+            Aller vers l'interface de consultation
         </button>
         <!-- <button mat-raised-button disabled (click)="onTelechargerPdfClic()">
             <mat-icon>download</mat-icon>

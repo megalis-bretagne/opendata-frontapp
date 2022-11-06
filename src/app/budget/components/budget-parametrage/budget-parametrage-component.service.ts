@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
-import { map, mergeMap, startWith, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
+import { Annee, Siren } from '../../models/donnees-budgetaires-disponibles';
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from '../../models/view-models';
 import { EtapeBudgetaire } from '../../services/budget.service';
 import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
@@ -11,14 +12,7 @@ import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelS
 import { BudgetState } from '../../store/states/budget.state';
 
 
-export enum PresentationType {
-  SIMPLIFIE,
-  AVANCEE,
-  PAR_HABITANT,
-  PAR_EURO,
-}
-
-export interface NavigationParams {
+interface _NavigationParams {
   etab: string | null,
   annee: string | null,
   etape: EtapeBudgetaire | null,
@@ -30,23 +24,13 @@ export class BudgetParametrageComponentService {
   readonly user$: Observable<User>;
   readonly siren$: Observable<string>;
 
-  readonly anneesDisponibles$: Observable<string[]>;
-  anneesDisponiblesSnapshot: string[];
-
-  readonly etablissementsDisponibles$: Observable<EtablissementComboItemViewModel[]>;
-  etablissementsDisponiblesSnapshot: EtablissementComboItemViewModel[];
-
-  readonly etapesDisponibles$: Observable<EtapeComboItemViewModel[]>;
-  etapesDisponiblesSnapshot: EtapeComboItemViewModel[];
-
   readonly navigation: Navigation;
+  readonly navigationFormulaireService: NavigationFormulaireService;
 
   constructor(
     private globalStore: Store<GlobalState>,
     private budgetStore: Store<BudgetState>,
   ) {
-
-    this.navigation = new Navigation();
 
     this.user$ = this.globalStore.select(selectAuthState)
       .pipe(
@@ -58,60 +42,41 @@ export class BudgetParametrageComponentService {
         map(user => user.siren),
       );
 
+    this.navigation = new Navigation();
+    this.navigationFormulaireService = new NavigationFormulaireService(this.siren$, this.navigation, this.budgetStore);
+
     this.siren$.subscribe(siren => this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren)))
-
-    this.etablissementsDisponibles$ = combineLatest([this.siren$, this.navigation.navigationParams$])
-      .pipe(
-        mergeMap(([siren, navigation]) => this.budgetStore.select(
-          BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren, navigation.annee)
-          )),
-        tap(etablissementsDisponibles => this.etablissementsDisponiblesSnapshot = etablissementsDisponibles)
-      )
-
-    /* */
-    this.etapesDisponibles$ = combineLatest([this.siren$, this.navigation.navigationParams$])
-      .pipe(
-        // tap(([_0, _1]) => this.debug(`Charge les etapes disponibles`)),
-        mergeMap(([siren, navigation]) => 
-          this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etapesDisponiblesComboViewModel(siren, navigation.annee, navigation.etab))
-        ),
-        tap(etapes => this.etapesDisponiblesSnapshot = etapes),
-      )
-    /* */
-    this.anneesDisponibles$ = this.siren$
-      .pipe(
-        mergeMap(siren => this.budgetStore.select(
-          BudgetViewModelSelectors.DonneesDisponibles.anneesDisponibles(siren))
-        ),
-        tap(annees => this.anneesDisponiblesSnapshot = annees)
-      );
   }
 
-  debug(msg) {
-    console.debug(`[BudgetParametrageComponentService] ${msg}`);
+  debug(_) {
+    // console.debug(`[BudgetParametrageComponentService] ${msg}`);
   }
 }
 
-class Navigation {
+export class Navigation {
 
-  readonly anneeSelectionnee$: Observable<string>;
-  readonly etapeBudgetaireSelectionnee$: Observable<EtapeBudgetaire>;
-  readonly presentationSelectionnee$: Observable<PresentationType>;
-  readonly etablissementSelectionnee$: Observable<string>;
+  get anneeSelectionnee$() {
+    return this._distinctAnneeSelectionee
+  }
+  get etapeBudgetaireSelectionnee$() {
+    return this._distinctEtapeBudgetaireSelectionnee
+  }
+  get etablissementSelectionnee$() {
+    return this._distinctSiretSelectionnee
+  }
 
-  readonly navigationParams$: Observable<NavigationParams>;
+  readonly navigationParams$: Observable<_NavigationParams>;
 
   private _anneeSelectionnee: Subject<string> = new ReplaySubject(1);
+  private _distinctAnneeSelectionee = this._anneeSelectionnee.pipe(distinctUntilChanged());
+
   private _etapeBudgetaireSelectionnee: Subject<EtapeBudgetaire> = new ReplaySubject(1);
-  private _presentationSelectionnee: Subject<PresentationType> = new ReplaySubject(1);
+  private _distinctEtapeBudgetaireSelectionnee = this._etapeBudgetaireSelectionnee.pipe(distinctUntilChanged());
+
   private _siretSelectionnee: Subject<string> = new ReplaySubject(1);
+  private _distinctSiretSelectionnee = this._siretSelectionnee.pipe(distinctUntilChanged())
 
   constructor() {
-    this.anneeSelectionnee$ = this._anneeSelectionnee;
-    this.etapeBudgetaireSelectionnee$ = this._etapeBudgetaireSelectionnee;
-    this.presentationSelectionnee$ = this._presentationSelectionnee;
-    this.etablissementSelectionnee$ = this._siretSelectionnee;
-
     this.navigationParams$ = combineLatest(
       [
         this.anneeSelectionnee$.pipe(startWith(null)),
@@ -119,34 +84,82 @@ class Navigation {
         this.etapeBudgetaireSelectionnee$.pipe(startWith(null)),
       ]
     ).pipe(
-      map(([annee, etab, etape]) => { 
-        return { annee: annee, etab: etab, etape: etape } as NavigationParams
+      map(([annee, etab, etape]) => {
+        return { annee: annee, etab: etab, etape: etape } as _NavigationParams
       }),
     )
+
+    // Debug 
+    // this.etablissementSelectionnee$.subscribe(etab => this._debug(`emet etab: ${etab}`))
+    // this.etapeBudgetaireSelectionnee$.subscribe(etape => this._debug(`emet etape: ${etape}`))
+    // this.anneeSelectionnee$.subscribe(annee => this._debug(`emet annee: ${annee}`))
+    //
   }
 
   public selectionneAnnee(annee: string) {
-
-    this._debug(`Selectionne l'année ${annee}`);
     this._anneeSelectionnee.next(annee);
   }
 
   public selectionneEtapeBudgetaire(etape: EtapeBudgetaire) {
-    this._debug(`Selectionne l'étape ${etape}`);
     this._etapeBudgetaireSelectionnee.next(etape);
   }
 
-  public selectionnePresentation(presentation: PresentationType) {
-    this._debug(`Selectionne la présentation ${PresentationType[presentation]}`);
-    this._presentationSelectionnee.next(presentation);
-  }
-
   public selectionneEtablissement(siret: string) {
-    this._debug(`Selectionne le siret ${siret}`)
     this._siretSelectionnee.next(siret);
   }
 
   private _debug(msg: string) {
     console.debug(`[BudgetParametrageComponentService - Navigation] ${msg}`)
+  }
+}
+
+export class NavigationFormulaireService {
+
+  readonly anneesDisponibles$: Observable<Annee[]>;
+  readonly etablissementsDisponibles$: Observable<EtablissementComboItemViewModel[]>;
+  readonly etapesDisponibles$: Observable<EtapeComboItemViewModel[]>;
+
+  constructor(
+    private siren$: Observable<Siren>,
+    private navigation: Navigation,
+    private budgetStore: Store<BudgetState>,
+  ) {
+
+    let _siren$ = this.siren$.pipe(distinctUntilChanged())
+
+    this.etablissementsDisponibles$ = combineLatest([_siren$, this.navigation.navigationParams$])
+      .pipe(
+        switchMap(([siren, navigation]) => this.budgetStore.select(
+          BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren, navigation.annee)
+        ))
+      )
+
+    /* */
+    this.etapesDisponibles$ = combineLatest([_siren$, this.navigation.navigationParams$])
+      .pipe(
+        // tap(([_0, _1]) => this.debug(`Charge les etapes disponibles`)),
+        switchMap(([siren, navigation]) =>
+          this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etapesDisponiblesComboViewModel(siren, navigation.annee, navigation.etab))
+        )
+      )
+    /* */
+    this.anneesDisponibles$ = _siren$
+      .pipe(
+        switchMap(siren => this.budgetStore.select(
+          BudgetViewModelSelectors.DonneesDisponibles.anneesDisponibles(siren))
+        )
+      );
+
+    // Debug
+    // this.etablissementsDisponibles$.subscribe(disp => this.debug(`Emet ${disp.length} etablissements disponibles`))
+    // this.etapesDisponibles$.subscribe(etapes => {
+    //   let enabledEtapes = etapes.filter(e => !e.disabled)
+    //   this.debug(`Emet ${etapes.length} etapes avec ${enabledEtapes.length} d'actives`)
+    // });
+    //
+  }
+
+  debug(msg) {
+    console.debug(`[NavigationFormulaireService] ${msg}`);
   }
 }

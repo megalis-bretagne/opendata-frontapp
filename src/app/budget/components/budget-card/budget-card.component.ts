@@ -68,7 +68,7 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     this.genererImageClic.emit();
   }
 
-  private _debug(msg) {
-    console.debug(`[BudgetCardComponent] ${msg}`);
+  private _debug(_) {
+    // console.debug(`[BudgetCardComponent] ${msg}`);
   }
 }

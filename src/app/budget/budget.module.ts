@@ -20,6 +20,7 @@ import { BudgetConsultationComponent } from './components/budget-consultation/bu
 import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ReactiveFormsModule } from '@angular/forms';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -38,6 +39,7 @@ echarts.registerLocale('FR', langFr);
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     LayoutModule,
     ClipboardModule,
 
