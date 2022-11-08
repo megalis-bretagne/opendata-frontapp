@@ -6,8 +6,12 @@ import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
-import { DonneesBudget } from 'src/app/budget/store/states/budget.state';
+import { DonneesBudgetaires } from 'src/app/budget/store/states/budget.state';
 
+export type EchartsViewModel = {
+  options: EChartsOption,
+  chartInitOptions: {},
+}
 export type TypeVue = 'general' | 'detaille'
 
 export enum ModePresentationMontant {
@@ -30,12 +34,12 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   ];
   selectedMontantPresentation: ModePresentationMontant = ModePresentationMontant.MONTANT;
 
-  echartData$ = new BehaviorSubject({});
+  echartData$ = new BehaviorSubject(null);
   typeVue: TypeVue = 'general'
   typeNomenclature: Pdc.TypeNomenclature = "fonctions"
 
   @Input()
-  donneesBudget: DonneesBudget
+  donneesBudget: DonneesBudgetaires
 
   @Input()
   informationPlanDeCompte: Pdc.InformationPdc
@@ -77,12 +81,12 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
       this._stop$.next(null);
   }
 
-  toChartsData(
-    donneesBudget: DonneesBudget,
+  toChartsViewModel(
+    donneesBudget: DonneesBudgetaires,
     informationPlanDeCompte: Pdc.InformationPdc,
     typeVue: TypeVue,
     modePresentationMontant: ModePresentationMontant,
-  ) {
+  ): EchartsViewModel {
 
     if (Object.keys(informationPlanDeCompte.references_fonctionnelles).length === 0) {
       console.info(`Aucune donnée provenant de la nomenclature de fontions. On visualise par nature.`);
@@ -184,7 +188,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   }
 
   refresh() {
-      let chartData = this.toChartsData(this.donneesBudget, this.informationPlanDeCompte, this.typeVue, this.selectedMontantPresentation);
+      let chartData = this.toChartsViewModel(this.donneesBudget, this.informationPlanDeCompte, this.typeVue, this.selectedMontantPresentation);
       this.echartData$.next(chartData)
   }
 }

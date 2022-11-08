@@ -2,7 +2,7 @@
 #selecteurAnnee
 [(selectedIndex)]="anneesSelectedIndex"
 (selectedTabChange)="onSelectionneAnnee($event)">
-  <mat-tab *ngFor="let annee of anneesDisponibles" [label]="annee">
+  <mat-tab *ngFor="let annee of anneesDisponibles" [label]="annee.toString()">
   </mat-tab>
 </mat-tab-group>
 
@@ -11,6 +11,13 @@
 <br>
 
 <div class="horizontal">
+
+  <mat-form-field>
+    <mat-label>Établissement</mat-label>
+    <mat-select [(value)]="selectedEtablissement" (valueChange)="onSelectedEtablissementChange($event)">
+      <mat-option [value]="option.value" *ngFor="let option of etablissementOptions"> {{option.viewValue}} </mat-option>
+    </mat-select>
+  </mat-form-field>
 
   <mat-form-field>
     <mat-label>Étape du budget</mat-label>

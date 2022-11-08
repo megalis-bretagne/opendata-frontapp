@@ -54,7 +54,7 @@ export class SettingsHttpService {
           },
           bearerPrefix: 'Bearer',
           enableBearerInterceptor: true,
-          bearerExcludedUrls: ['/api/v1/budgets'], // C'est une API publique,
+          bearerExcludedUrls: ['/private_api/v1/budgets'], // C'est une API publique,
                                                    // Il est nécessaire de les whitelister pour ne pas
                                                    // être redirigé vers la page de login de keycloak
         });

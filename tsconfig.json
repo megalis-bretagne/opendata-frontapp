@@ -27,8 +27,6 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates":true,
-    // ligne à retirer quand l'erreur sur le component budget-principal-graphe.component sera fixé
-    "strictInputTypes": false
+    "strictTemplates":true
   }
 }

@@ -17,12 +17,12 @@ export class ParametrageService {
   ) {
   }
   getParametrage(siren): Observable<Parametrage> {
-    const url = `${this.settings.settings.api.url}/api/v1/parametrage/` + siren;
+    const url = `${this.settings.settings.api.url}/private_api/v1/parametrage/` + siren;
     return this.http.get<Parametrage>(url);
   }
 
   updateParametrage(parametrage): Observable<Parametrage> {
-    const url = `${this.settings.settings.api.url}/api/v1/parametrage/` + parametrage.siren;
+    const url = `${this.settings.settings.api.url}/private_api/v1/parametrage/` + parametrage.siren;
     return this.http.post<Parametrage>(url, parametrage);
   }
 

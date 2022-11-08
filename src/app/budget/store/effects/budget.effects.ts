@@ -1,46 +1,63 @@
 import { Inject, Injectable } from "@angular/core";
-import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
+import { createSelector, Store } from "@ngrx/store";
 import { of, zip } from "rxjs";
-import { catchError, map, switchMap } from "rxjs/operators";
+import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from "../../services/budget.service";
-import { BudgetActionType, BudgetAnneesDisponiblesLoadFailureAction, BudgetAnneesDisponiblesLoadingAction, BudgetAnneesDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
-import { DonneesBudget } from "../states/budget.state";
+import { BudgetActionType, BudgetAlreadyLoadedAction, BudgetDisponiblesAlreadyLoadedAction, BudgetDisponiblesLoadFailureAction, BudgetDisponiblesLoadingAction, BudgetDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
+import { BudgetState, DonneesBudgetaires, selectDonnees, selectDonneesDisponibles } from "../states/budget.state";
 
+const donneesDisponiblesAlreadyLoaded = (siren: string) => createSelector(
+    selectDonneesDisponibles(siren),
+    (disponibles) => Boolean(disponibles)
+)
+
+const donneesBudgetAlreadyLoaded = (annee: string, siret: string, etape: EtapeBudgetaire) => createSelector(
+    selectDonnees(annee, siret, etape),
+    (donnees) => Boolean(donnees)
+)
+
+// 
 @Injectable()
 export class BudgetEffects {
     constructor(
         @Inject(BUDGET_SERVICE_TOKEN)
         private budgetService: BudgetService,
-        private actions$: Actions
+        private actions$: Actions,
+        private budgetStore: Store<BudgetState>,
     ) { }
 
     public loadBudgets$ = createEffect(
         () => this.actions$
             .pipe(
                 ofType<BudgetLoadingAction>(BudgetActionType.Loading),
-                map(action => [action.siren, action.etape, action.annee]),
-                switchMap(([siren, etape, annee]) => {
+
+                concatLatestFrom(action => this.budgetStore.select(donneesBudgetAlreadyLoaded(action.annee, action.siret, action.etape))),
+                // tap(([action, loaded]) => console.debug(`${action.siret} - ${action.annee} - ${action.etape} loaded: ${loaded}`)),
+
+                switchMap(([action, alreadyLoaded]) => {
+
+                    if (alreadyLoaded)
+                        return of(new BudgetAlreadyLoadedAction())
 
                     let loadDonnees = this.budgetService.loadBudgets(
-                        siren as string,
-                        etape as EtapeBudgetaire,
-                        annee as number,
-                    );
-                    let loadInformationsPdc = this.budgetService.loadInformationsPdc(
-                        siren as string,
-                        annee as number,
+                        action.annee,
+                        action.siret,
+                        action.etape
                     );
 
+                    let loadInformationsPdc = this.budgetService.loadInformationPdc(action.annee, action.siret);
+
                     let zipped = zip(loadDonnees, loadInformationsPdc)
-                    .pipe(
-                        map(([ donnees, informationsPdc ]) =>
-                            new BudgetLoadSuccessAction(donnees as DonneesBudget, informationsPdc)
-                        ),
-                        catchError(err => {
-                            console.error(err);
-                            return of(new BudgetLoadFailureAction(err))
-                        })
-                    );
+                        .pipe(
+                            map(([donnees, informationsPdc]) =>
+                                new BudgetLoadSuccessAction(donnees as DonneesBudgetaires, informationsPdc)
+                            ),
+                            catchError(err => {
+                                console.error(err);
+                                return of(new BudgetLoadFailureAction(err))
+                            })
+                        );
 
                     return zipped;
                 }
@@ -49,14 +66,26 @@ export class BudgetEffects {
         { dispatch: true },
     );
 
-    public loadAnneesDisponibles$ = createEffect(
+    public loadDonneesBudgetairesDisponibles$ = createEffect(
         () => this.actions$
             .pipe(
-                ofType<BudgetAnneesDisponiblesLoadingAction>(BudgetActionType.LoadingAnneesDisponibles),
+                ofType<BudgetDisponiblesLoadingAction>(BudgetActionType.LoadingDisponibles),
                 map(action => action.siren),
-                switchMap(siren => this.budgetService.anneesDisponibles(siren)),
-                map(annees => new BudgetAnneesDisponiblesLoadSuccessAction(annees)),
-                catchError(err => of(new BudgetAnneesDisponiblesLoadFailureAction(err)))
+
+                concatLatestFrom(siren => this.budgetStore.select(donneesDisponiblesAlreadyLoaded(siren))),
+                // tap(([siren, loaded]) => console.debug(`${siren} loaded: ${loaded}`)),
+
+                switchMap(([siren, alreadyLoaded]) => {
+
+                    if (alreadyLoaded)
+                        return of(new BudgetDisponiblesAlreadyLoadedAction())
+
+                    return this.budgetService.donneesBudgetairesDisponibles(siren)
+                        .pipe(
+                            map(disponibles => new BudgetDisponiblesLoadSuccessAction(disponibles)),
+                            catchError(err => of(new BudgetDisponiblesLoadFailureAction(err))),
+                        )
+                }),
             ),
         { dispatch: true },
     )

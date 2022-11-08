@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
 import { EtapeBudgetaire } from "../../services/budget.service"
 import { Pdc } from "../../models/plan-de-comptes"
+import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-disponibles"
 
 export interface LigneBudget {
     fonction_code: string,
@@ -9,25 +10,29 @@ export interface LigneBudget {
     montant: number,
 }
 
-export interface DonneesBudget {
+export interface DonneesBudgetaires {
     etape: EtapeBudgetaire,
-    annee: number,
-    siren: string,
-    denomination_siege: string,
+    annee: string,
+    siret: string,
     lignes: [LigneBudget]
 }
 
 export interface BudgetState {
-    budgets: DonneesBudget[],
+
+    donneesBudgetairesDisponibles: DonneesBudgetairesDisponibles[],
+
+    budgets: DonneesBudgetaires[],
     infoPlanDeComptes: Pdc.InformationPdc[],
-    anneesDisponibles: number[],
+    
     loading: boolean,
     error: boolean,
 }
 
 export const initialBudgetState: BudgetState = {
+
+    donneesBudgetairesDisponibles: [],
+
     budgets: [],
-    anneesDisponibles: [],
     infoPlanDeComptes: [],
     loading: true,
     error: false,
@@ -35,29 +40,29 @@ export const initialBudgetState: BudgetState = {
 
 export const selectBudgetFeatureState = createFeatureSelector<BudgetState>('budget')
 
-export const selectDonnees = (siren: string, annee: number, etape: EtapeBudgetaire) =>
+export const selectDonneesDisponibles = (siren: string) => createSelector(
+    selectBudgetFeatureState,
+    (state) => state.donneesBudgetairesDisponibles.find(disponibles => disponibles.siren == siren)
+)
+
+export const selectDonnees = (annee: string, siret: string, etape: EtapeBudgetaire) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.budgets.find(budget =>
-            (budget.annee == annee && budget.etape == etape && budget.siren == siren)
+            (budget.annee == annee && budget.etape == etape && budget.siret == siret)
         )
     });
 
-export const selectInformationsPlanDeCompte = (siren: string, annee: number) =>
+export const selectInformationsPlanDeCompte = (annee: string, siret: string) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.infoPlanDeComptes.find(iPdc =>
-            (iPdc.annee == annee && iPdc.siren == siren))
+            (iPdc.annee == annee && iPdc.siret == siret))
     });
 
-export const selectReferencesFonctionnelles = (siren: string, annee: number) =>
+export const selectReferencesFonctionnelles = (siren: string, annee: string) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.references_fonctionnelles)
 
-export const selectComptesNature = (siren: string, annee: number) =>
+export const selectComptesNature = (siren: string, annee: string) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.comptes_nature)
-
-export const selectAnneesDisponibles = createSelector(
-    selectBudgetFeatureState,
-    (state) => state.anneesDisponibles,
-)
 
 export const selectBudgetError = createSelector(
     selectBudgetFeatureState,
