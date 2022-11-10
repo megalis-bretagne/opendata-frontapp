@@ -4,7 +4,7 @@ import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
-import { Annee, Siren } from '../../models/common-types';
+import { Annee, Siren, Siret } from '../../models/common-types';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from '../../models/view-models';
 import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
@@ -13,8 +13,8 @@ import { BudgetState } from '../../store/states/budget.state';
 
 
 interface _NavigationParams {
-  etab: string | null,
-  annee: string | null,
+  etab: Siret | null,
+  annee: Annee | null,
   etape: EtapeBudgetaire | null,
 }
 
@@ -96,7 +96,7 @@ export class Navigation {
     //
   }
 
-  public selectionneAnnee(annee: string) {
+  public selectionneAnnee(annee: Annee) {
     this._anneeSelectionnee.next(annee);
   }
 
@@ -104,7 +104,7 @@ export class Navigation {
     this._etapeBudgetaireSelectionnee.next(etape);
   }
 
-  public selectionneEtablissement(siret: string) {
+  public selectionneEtablissement(siret: Siret) {
     this._siretSelectionnee.next(siret);
   }
 

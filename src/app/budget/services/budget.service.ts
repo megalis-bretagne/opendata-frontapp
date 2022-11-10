@@ -6,14 +6,15 @@ import { SettingsService } from "src/environments/settings.service";
 import { DonneesBudgetairesDisponibles } from "../models/donnees-budgetaires-disponibles";
 import { DonneesBudgetaires } from "../models/donnees-budgetaires";
 import { Pdc } from "../models/plan-de-comptes";
-import { EtapeBudgetaireUtil } from "../models/etape-budgetaire";
+import { EtapeBudgetaire, EtapeBudgetaireUtil } from "../models/etape-budgetaire";
+import { Annee, Siren, Siret } from "../models/common-types";
 
 
 export interface BudgetService {
 
-  loadInformationPdc(annee: string, siret: string): Observable<Pdc.InformationPdc>
-  loadBudgets(annee: string, siret: string, etape: string): Observable<DonneesBudgetaires>
-  donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles>
+  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationPdc>
+  loadBudgets(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DonneesBudgetaires>
+  donneesBudgetairesDisponibles(siren: Siren): Observable<DonneesBudgetairesDisponibles>
 }
 
 @Injectable()
@@ -24,7 +25,7 @@ export class RealBudgetService implements BudgetService {
     private settings: SettingsService,
   ) { }
 
-  donneesBudgetairesDisponibles(siren: string): Observable<DonneesBudgetairesDisponibles> {
+  donneesBudgetairesDisponibles(siren: Siren): Observable<DonneesBudgetairesDisponibles> {
     this._debug(`Cherche les données budgetaires disponibles pour le siren ${siren}`)
 
     const url = `${this._getBudgetBaseUrl()}/donnees_budgetaires_disponibles/${siren}`
@@ -34,7 +35,7 @@ export class RealBudgetService implements BudgetService {
       )
   }
 
-  loadInformationPdc(annee: string, siret: string): Observable<Pdc.InformationPdc> {
+  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationPdc> {
 
     this._debug(`Charge les informations du plan de compte pour l'année ${annee} et le siret ${siret}`)
 
@@ -51,7 +52,7 @@ export class RealBudgetService implements BudgetService {
     return informationsPdc;
   }
 
-  loadBudgets(annee: string, siret: string, etape: string): Observable<DonneesBudgetaires> {
+  loadBudgets(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DonneesBudgetaires> {
 
     this._debug(`Charge les données budgetaires pour le siret ${siret}, lors de l'année ${annee} et l'étape ${etape}`);
 

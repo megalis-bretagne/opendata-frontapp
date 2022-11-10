@@ -3,6 +3,7 @@ import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
 import { Pdc } from "../../models/plan-de-comptes";
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
+import { Annee, Siren, Siret } from "../../models/common-types";
 
 export enum BudgetActionType {
     Loading = '[Budget] Loading',
@@ -18,7 +19,7 @@ export enum BudgetActionType {
 
 export class BudgetLoadingAction implements Action {
     public readonly type = BudgetActionType.Loading;
-    constructor(public annee: string, public siret: string, public etape: EtapeBudgetaire) { }
+    constructor(public annee: Annee, public siret: Siret, public etape: EtapeBudgetaire) { }
 }
 export class BudgetAlreadyLoadedAction implements Action {
     public readonly type = BudgetActionType.AlreadyLoaded;
@@ -34,7 +35,7 @@ export class BudgetLoadFailureAction implements Action {
 
 export class BudgetDisponiblesLoadingAction implements Action {
     public readonly type = BudgetActionType.LoadingDisponibles;
-    constructor(public siren: string) {}
+    constructor(public siren: Siren) {}
 }
 export class BudgetDisponiblesAlreadyLoadedAction implements Action {
     public readonly type = BudgetActionType.LoadDisponiblesAlreadyLoaded;

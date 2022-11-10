@@ -3,18 +3,19 @@ import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
 import { createSelector, Store } from "@ngrx/store";
 import { of, zip } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
+import { Annee, Siren, Siret } from "../../models/common-types";
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
 import { BudgetService, BUDGET_SERVICE_TOKEN } from "../../services/budget.service";
 import { BudgetActionType, BudgetAlreadyLoadedAction, BudgetDisponiblesAlreadyLoadedAction, BudgetDisponiblesLoadFailureAction, BudgetDisponiblesLoadingAction, BudgetDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
 import { BudgetState, selectDonnees, selectDonneesDisponibles } from "../states/budget.state";
 
-const donneesDisponiblesAlreadyLoaded = (siren: string) => createSelector(
+const donneesDisponiblesAlreadyLoaded = (siren: Siren) => createSelector(
     selectDonneesDisponibles(siren),
     (disponibles) => Boolean(disponibles)
 )
 
-const donneesBudgetAlreadyLoaded = (annee: string, siret: string, etape: EtapeBudgetaire) => createSelector(
+const donneesBudgetAlreadyLoaded = (annee: Annee, siret: Siret, etape: EtapeBudgetaire) => createSelector(
     selectDonnees(annee, siret, etape),
     (donnees) => Boolean(donnees)
 )

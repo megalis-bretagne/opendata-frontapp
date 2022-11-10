@@ -3,6 +3,7 @@ import { Pdc } from "../../models/plan-de-comptes"
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires"
 import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-disponibles"
 import { EtapeBudgetaire } from "../../models/etape-budgetaire"
+import { Annee, Siren, Siret } from "../../models/common-types"
 
 
 export interface BudgetState {
@@ -28,28 +29,28 @@ export const initialBudgetState: BudgetState = {
 
 export const selectBudgetFeatureState = createFeatureSelector<BudgetState>('budget')
 
-export const selectDonneesDisponibles = (siren: string) => createSelector(
+export const selectDonneesDisponibles = (siren: Siren) => createSelector(
     selectBudgetFeatureState,
     (state) => state.donneesBudgetairesDisponibles.find(disponibles => disponibles.siren == siren)
 )
 
-export const selectDonnees = (annee: string, siret: string, etape: EtapeBudgetaire) =>
+export const selectDonnees = (annee: Annee, siret: Siret, etape: EtapeBudgetaire) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.budgets.find(budget =>
             (budget.annee == annee && budget.etape == etape && budget.siret == siret)
         )
     });
 
-export const selectInformationsPlanDeCompte = (annee: string, siret: string) =>
+export const selectInformationsPlanDeCompte = (annee: Annee, siret: Siret) =>
     createSelector(selectBudgetFeatureState, (state) => {
         return state.infoPlanDeComptes.find(iPdc =>
             (iPdc.annee == annee && iPdc.siret == siret))
     });
 
-export const selectReferencesFonctionnelles = (siren: string, annee: string) =>
+export const selectReferencesFonctionnelles = (siren: Siren, annee: Annee) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.references_fonctionnelles)
 
-export const selectComptesNature = (siren: string, annee: string) =>
+export const selectComptesNature = (siren: Siren, annee: Annee) =>
     createSelector(selectInformationsPlanDeCompte(siren, annee), iPdc => iPdc.comptes_nature)
 
 export const selectBudgetError = createSelector(

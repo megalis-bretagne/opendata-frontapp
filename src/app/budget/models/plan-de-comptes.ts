@@ -1,3 +1,5 @@
+import { Annee, Siret } from "./common-types"
+
 export namespace Pdc {
     export interface ElementDeNomenclature {
         code: string,
@@ -18,8 +20,8 @@ export namespace Pdc {
 
 
     export interface InformationPdc {
-        siret: string
-        annee: string
+        siret: Siret
+        annee: Annee
 
         references_fonctionnelles: ReferencesFonctionnelles | {}
         comptes_nature: ComptesNature | {}

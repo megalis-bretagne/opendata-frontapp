@@ -1,5 +1,5 @@
 import { createSelector } from "@ngrx/store";
-import { Annee, extract_siren, Siret } from "../../models/common-types";
+import { Annee, extract_siren, Siren, Siret } from "../../models/common-types";
 import { DonneesBudgetairesDisponibles, Etablissement, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_sirets } from "../../models/donnees-budgetaires-disponibles";
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "../../models/view-models";
@@ -42,7 +42,7 @@ export namespace BudgetViewModelSelectors {
 
     export namespace DonneesDisponibles {
 
-        export const etablissementPrettyname = (siret: string) => {
+        export const etablissementPrettyname = (siret: Siret) => {
             let siren = extract_siren(siret)
             return createSelector(
                 selectDonneesDisponibles(siren),
@@ -55,7 +55,7 @@ export namespace BudgetViewModelSelectors {
             )
         }
 
-        export const etablissementsDisponiblesComboViewModel = (siren: string, annee?: Annee) => createSelector(
+        export const etablissementsDisponiblesComboViewModel = (siren: Siren, annee?: Annee) => createSelector(
             selectDonneesDisponibles(siren),
             disponibles => {
                 if (!disponibles)
@@ -68,7 +68,7 @@ export namespace BudgetViewModelSelectors {
             }
         )
 
-        export const etapesDisponiblesComboViewModel = (siren: string, annee?: Annee, siret?: Siret) => createSelector(
+        export const etapesDisponiblesComboViewModel = (siren: Siren, annee?: Annee, siret?: Siret) => createSelector(
             selectDonneesDisponibles(siren),
             disponibles => {
                 if (!disponibles) return []
@@ -85,7 +85,7 @@ export namespace BudgetViewModelSelectors {
             }
         )
 
-        export const anneesDisponibles = (siren: string) => {
+        export const anneesDisponibles = (siren: Siren) => {
             return createSelector(
                 selectDonneesDisponibles(siren),
                 disponibles => {
@@ -98,7 +98,7 @@ export namespace BudgetViewModelSelectors {
             )
         }
 
-        export const anneesDisponiblesPourEtablissement = (siret: string) => {
+        export const anneesDisponiblesPourEtablissement = (siret: Siret) => {
 
             let siren = extract_siren(siret);
 
