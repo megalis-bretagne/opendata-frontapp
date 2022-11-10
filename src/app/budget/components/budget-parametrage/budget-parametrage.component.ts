@@ -11,7 +11,14 @@ import { EtapeBudgetaire } from '../../services/budget.service';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, DonneesBudgetaires, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { IdentifiantVisualisation, VisualisationGraphId } from '../visualisations/visualisation.model';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
+
+export const parametrage_graphes_id: VisualisationGraphId[] = [
+    'budget-principal-depenses',
+    'budget-principal-recettes',
+    'budget-principal-top-3',
+]
 
 @Component({
   selector: 'app-budget-parametrage',
@@ -30,11 +37,13 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   errorInLoadingBudget$;
 
+  id_visualisations: IdentifiantVisualisation[] = []
+
   iframeFragment = '';
 
-  _currAnnee?: Annee
-  _currSiret?: Siret
-  _currEtape?: EtapeBudgetaire
+  private _snapshot_annee?: Annee
+  private _snapshot_siret?: Siret
+  private _snapshot_etape?: EtapeBudgetaire
 
   private _stop$: Subject<void> = new Subject<void>();
 
@@ -68,10 +77,18 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
       .pipe(
         tap(([annee, siret, etape]) => {
           this.store.dispatch(new BudgetLoadingAction(annee, siret, etape));
-          this._currAnnee = annee
-          this._currSiret = siret
-          this._currEtape = etape
-          // this.iframeFragment = this.compute_iframe_fragment(annee, siret, etape);
+          this._snapshot_annee = annee
+          this._snapshot_siret = siret
+          this._snapshot_etape = etape
+
+          this.id_visualisations = []
+          for (const graphe_id of parametrage_graphes_id) {
+            this.id_visualisations.push(
+              { annee, siret, etape, graphe_id }
+            )
+          }
+
+          this.iframeFragment = this.compute_iframe_fragment(annee, siret, etape);
         }),
 
         mergeMap(([annee, siret, etape]) => {
@@ -105,9 +122,9 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   navigate_vers_consultation_url() {
 
-    let annee = this._currAnnee
-    let siret = this._currSiret
-    let etape = this._currEtape
+    let annee = this._snapshot_annee
+    let siret = this._snapshot_siret
+    let etape = this._snapshot_etape
     let path = this.compute_consultation_url(annee, siret, etape)
     this.router.navigateByUrl(path)
   }

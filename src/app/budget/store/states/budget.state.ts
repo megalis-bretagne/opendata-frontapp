@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store"
 import { EtapeBudgetaire } from "../../services/budget.service"
 import { Pdc } from "../../models/plan-de-comptes"
-import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-disponibles"
+import { Annee, DonneesBudgetairesDisponibles, Siret } from "../../models/donnees-budgetaires-disponibles"
 
 export interface LigneBudget {
     fonction_code: string,
@@ -11,9 +11,9 @@ export interface LigneBudget {
 }
 
 export interface DonneesBudgetaires {
+    annee: Annee,
+    siret: Siret,
     etape: EtapeBudgetaire,
-    annee: string,
-    siret: string,
     lignes: [LigneBudget]
 }
 

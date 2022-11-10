@@ -5,50 +5,14 @@
     </div> -->
     <!-- TODO: handle error -->
 
-    <!-- TODO: disable -->
     <!-- <p>{{donneesBudget?.lignes?.length}}</p> -->
 
     <app-budget-parametrage-nav></app-budget-parametrage-nav>
 
-    <div class="visualisations">
-        <app-budget-card 
-            titre="Les recettes {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyName}}" 
-            description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal - {{etablissementPrettyName}}"
-            [parametrable]="true">
-            <app-budget-principal-graphe
-                [donneesBudget]="donneesBudget"
-                [informationPlanDeCompte]="informationsPlanDeCompte"
-                rd="recette"
-                ></app-budget-principal-graphe>
-        </app-budget-card>
-
-        <app-budget-card 
-            titre="Les dépenses {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyName}}" 
-            description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal - {{etablissementPrettyName}}"
-            [parametrable]="true">
-            <app-budget-principal-graphe
-                [donneesBudget]="donneesBudget"
-                [informationPlanDeCompte]="informationsPlanDeCompte"
-                rd="depense"
-                ></app-budget-principal-graphe>
-        </app-budget-card>
-<!-- 
-        <app-budget-card [titre]="'Répartition des recettes'"
-            [description]="'Ceci est une description de la répartition des recettes'" [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
-        </app-budget-card>
-
-
-        <app-budget-card [titre]="'Répartition des dépenses'"
-            [description]="'Ceci est une description de la répartition des dépenses'" [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
-        </app-budget-card>
-
-        <app-budget-card [titre]="'Le top 3 des dépenses'"
-            [description]="'Ceci est une description du top 3 des dépenses'" [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
-        </app-budget-card> -->
-    </div>
+    <app-group-of-visualisations
+        [id_visualisations]="id_visualisations"
+        >
+    </app-group-of-visualisations>
 
     <div class="boutons-bas-de-page">
         <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">

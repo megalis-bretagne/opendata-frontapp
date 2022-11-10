@@ -1,0 +1,57 @@
+<div class="visualisations">
+
+    <ng-container *ngFor="let visualisation of visualisations">
+
+        <!-- <p>Loading: {{visualisation.loading}}</p> -->
+
+        <div *ngIf="visualisation.loading; else loaded">
+            Loading...
+        </div>
+
+        <ng-template #loaded>
+
+            <ng-container [ngSwitch]="visualisation.graphe_id">
+
+                <ng-container *ngSwitchCase="'budget-principal-depenses'">
+
+                    <app-budget-card
+                        titre="Les dépenses {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
+                        description="Les dépenses, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
+                        [parametrable]="parametrable">
+                        <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
+                            [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
+                        </app-budget-principal-graphe>
+                    </app-budget-card>
+
+                </ng-container>
+
+
+                <ng-container *ngSwitchCase="'budget-principal-recettes'">
+
+                    <app-budget-card
+                        titre="Les recettes {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
+                        description="Les recettes, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
+                        [parametrable]="parametrable">
+                        <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
+                            [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
+                        </app-budget-principal-graphe>
+                    </app-budget-card>
+
+                </ng-container>
+
+
+                <ng-container *ngSwitchCase="'budget-principal-top-3'">
+
+                    <!-- TODO: impl -->
+                    <p>Not implemented yet</p>
+
+                </ng-container>
+
+            </ng-container>
+
+        </ng-template>
+
+
+    </ng-container>
+
+</div>

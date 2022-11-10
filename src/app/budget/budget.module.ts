@@ -21,6 +21,7 @@ import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
+import { GroupOfVisualisationsComponent } from './components/visualisations/group-of-visualisations/group-of-visualisations.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -36,6 +37,7 @@ echarts.registerLocale('FR', langFr);
     BudgetCardComponent,
     BudgetPrincipalGrapheComponent,
     BudgetConsultationComponent,
+    GroupOfVisualisationsComponent,
   ],
   imports: [
     CommonModule,

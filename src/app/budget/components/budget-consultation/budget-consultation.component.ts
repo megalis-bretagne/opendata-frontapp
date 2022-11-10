@@ -8,6 +8,9 @@ import { extract_siren } from '../../services/siren.functions';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, DonneesBudgetaires, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { IdentifiantVisualisation } from '../visualisations/visualisation.model';
+
+import { parametrage_graphes_id } from '../budget-parametrage/budget-parametrage.component'
 
 @Component({
   selector: 'app-budget-consultation',
@@ -25,6 +28,7 @@ export class BudgetConsultationComponent implements OnInit {
   informationsPdc: Pdc.InformationPdc;
 
   private _stop$: Subject<void> = new Subject<void>();
+  id_visualisations: IdentifiantVisualisation[];
 
   constructor(private route: ActivatedRoute, private store: Store<BudgetState>) { }
 
@@ -34,6 +38,16 @@ export class BudgetConsultationComponent implements OnInit {
     this.etape = this.route.snapshot.params['etape'];
 
     let siren = extract_siren(this.siret)
+
+    this.id_visualisations = []
+    for (const graphe_id of parametrage_graphes_id) {
+      let annee = this.annee
+      let siret = this.siret
+      let etape = this.etape
+      this.id_visualisations.push(
+        { annee, siret, etape, graphe_id }
+      )
+    }
 
     this.store.dispatch(new BudgetLoadingAction(this.annee, this.siret, this.etape));
     this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(this.siret))
