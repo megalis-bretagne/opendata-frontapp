@@ -1,8 +1,8 @@
 import { Action } from "@ngrx/store";
 import { DonneesBudgetairesDisponibles } from "../../models/donnees-budgetaires-disponibles";
+import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
 import { Pdc } from "../../models/plan-de-comptes";
 import { EtapeBudgetaire } from "../../services/budget.service";
-import { DonneesBudgetaires } from "../states/budget.state";
 
 export enum BudgetActionType {
     Loading = '[Budget] Loading',

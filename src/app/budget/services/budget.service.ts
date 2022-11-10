@@ -4,9 +4,8 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { SettingsService } from "src/environments/settings.service";
 import { DonneesBudgetairesDisponibles } from "../models/donnees-budgetaires-disponibles";
+import { DonneesBudgetaires } from "../models/donnees-budgetaires";
 import { Pdc } from "../models/plan-de-comptes";
-import { DonneesBudgetaires } from "../store/states/budget.state";
-
 
 export enum EtapeBudgetaire {
 

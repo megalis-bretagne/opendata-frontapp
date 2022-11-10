@@ -2,10 +2,11 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { combineLatest, Subject, Subscription } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
+import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { BudgetLoadingAction } from 'src/app/budget/store/actions/budget.actions';
 import { BudgetViewModelSelectors } from 'src/app/budget/store/selectors/BudgetViewModelSelectors';
-import { BudgetState, DonneesBudgetaires, selectDonnees, selectInformationsPlanDeCompte } from 'src/app/budget/store/states/budget.state';
+import { BudgetState, selectDonnees, selectInformationsPlanDeCompte } from 'src/app/budget/store/states/budget.state';
 import { IdentifiantVisualisation, VisualisationUtils } from '../visualisation.model';
 
 interface _DonneesVisualisation extends IdentifiantVisualisation {

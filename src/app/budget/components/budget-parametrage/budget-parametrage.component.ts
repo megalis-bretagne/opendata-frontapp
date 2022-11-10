@@ -6,11 +6,12 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Annee, Siret } from '../../models/donnees-budgetaires-disponibles';
+import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 import { Pdc } from '../../models/plan-de-comptes';
 import { EtapeBudgetaire } from '../../services/budget.service';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState, DonneesBudgetaires, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetState, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 import { IdentifiantVisualisation, VisualisationGraphId } from '../visualisations/visualisation.model';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 

@@ -7,10 +7,11 @@ import { Pdc } from '../../models/plan-de-comptes';
 import { extract_siren } from '../../services/siren.functions';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState, DonneesBudgetaires, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetState, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 import { IdentifiantVisualisation } from '../visualisations/visualisation.model';
 
 import { parametrage_graphes_id } from '../budget-parametrage/budget-parametrage.component'
+import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 
 @Component({
   selector: 'app-budget-consultation',

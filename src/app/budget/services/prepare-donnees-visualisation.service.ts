@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
+import { DonneesBudgetaires, LigneBudget } from "../models/donnees-budgetaires";
 import { Pdc } from "../models/plan-de-comptes";
-import { DonneesBudgetaires, LigneBudget } from "../store/states/budget.state";
 import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";
 
 
