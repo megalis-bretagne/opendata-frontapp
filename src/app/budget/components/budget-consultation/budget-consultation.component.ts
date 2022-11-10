@@ -8,10 +8,10 @@ import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 
-import { parametrage_graphes_id } from '../budget-parametrage/budget-parametrage.component'
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
-import { extract_siren } from '../../models/common-types';
-import { IdentifiantVisualisation } from '../../models/visualisation.model';
+import { Annee, extract_siren, Siret } from '../../models/common-types';
+import { IdentifiantVisualisation, PagesDeVisualisations, VisualisationGraphId } from '../../models/visualisation.model';
+import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 
 @Component({
   selector: 'app-budget-consultation',
@@ -20,9 +20,11 @@ import { IdentifiantVisualisation } from '../../models/visualisation.model';
 })
 export class BudgetConsultationComponent implements OnInit {
 
-  siret
-  annee: any;
-  etape: any;
+  siret: Siret
+  annee: Annee;
+  etape: EtapeBudgetaire;
+  vis_page?: PagesDeVisualisations.PageId;
+  graphe_id?: VisualisationGraphId
 
   etablissementPrettyname: string;
   donneesBudget: DonneesBudgetaires;
@@ -34,21 +36,16 @@ export class BudgetConsultationComponent implements OnInit {
   constructor(private route: ActivatedRoute, private store: Store<BudgetState>) { }
 
   ngOnInit(): void {
-    this.annee = this.route.snapshot.params['annee'];
+    this.annee = this.route.snapshot.params['annee']; // TODO: const route key
     this.siret = this.route.snapshot.params['siret'];
     this.etape = this.route.snapshot.params['etape'];
 
+    this.vis_page = this.route.snapshot.queryParamMap.get('vis_page') as PagesDeVisualisations.PageId;
+    this.graphe_id = this.route.snapshot.queryParamMap.get('graphe_id') as VisualisationGraphId;
+
     let siren = extract_siren(this.siret)
 
-    this.id_visualisations = []
-    for (const graphe_id of parametrage_graphes_id) {
-      let annee = this.annee
-      let siret = this.siret
-      let etape = this.etape
-      this.id_visualisations.push(
-        { annee, siret, etape, graphe_id }
-      )
-    }
+    this.id_visualisations = this.retrieve_visualisations()
 
     this.store.dispatch(new BudgetLoadingAction(this.annee, this.siret, this.etape));
     this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(this.siret))
@@ -74,6 +71,28 @@ export class BudgetConsultationComponent implements OnInit {
       )
       .subscribe();
 
+  }
+  retrieve_visualisations(): IdentifiantVisualisation[] {
+
+    let grapheIds = undefined
+    if (this.vis_page)
+      grapheIds = PagesDeVisualisations.visualisation_pour_pageid(this.vis_page)
+    else if(this.graphe_id)
+      grapheIds = [this.graphe_id]
+
+    if(!grapheIds)
+      grapheIds = PagesDeVisualisations.visualisation_pour_pageid('default')
+
+    let id_visualisations = []
+    for (const graphe_id of grapheIds) {
+      let annee = this.annee
+      let siret = this.siret
+      let etape = this.etape
+      id_visualisations.push(
+        { annee, siret, etape, graphe_id }
+      )
+    }
+    return id_visualisations
   }
 
 }

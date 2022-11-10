@@ -1,6 +1,21 @@
 import { Annee, Siret } from "./common-types";
 import { EtapeBudgetaire } from "./etape-budgetaire";
 
+export namespace PagesDeVisualisations {
+
+    export type PageId = 'default'
+
+    const _pages = new Map<PageId, VisualisationGraphId[]>()
+    _pages.set(
+        'default', 
+        ['budget-principal-depenses', 'budget-principal-recettes', 'budget-principal-top-3']
+    );
+
+    export function visualisation_pour_pageid(id: PageId) {
+        return _pages.get(id)
+    }
+}
+
 /** Identifiant d'une visualisation */
 export type VisualisationGraphId =
     'budget-principal-depenses'   
