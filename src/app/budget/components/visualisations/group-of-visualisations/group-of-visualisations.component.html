@@ -17,7 +17,9 @@
                     <app-budget-card
                         titre="Les dépenses {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
                         description="Les dépenses, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
-                        [parametrable]="parametrable">
+                        [parametrable]="parametrable"
+                        [url_consultation]="url_consultation(visualisation)"
+                        >
                         <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
                             [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
                         </app-budget-principal-graphe>
@@ -31,7 +33,9 @@
                     <app-budget-card
                         titre="Les recettes {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
                         description="Les recettes, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
-                        [parametrable]="parametrable">
+                        [parametrable]="parametrable"
+                        [url_consultation]="url_consultation(visualisation)"
+                        >
                         <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
                             [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
                         </app-budget-principal-graphe>

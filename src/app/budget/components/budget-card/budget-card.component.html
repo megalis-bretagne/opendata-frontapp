@@ -42,7 +42,13 @@
     <mat-card-footer class="horizontal">
         <div></div>
         <div>
-            <button *ngIf="parametrable" disabled (click)="onIframeClic()" class="menu-btn" mat-mini-fab color="basic">
+
+            <!-- TODO: disable -->
+            <button *ngIf="parametrable" (click)="onNavClic()" class="menu-btn" mat-mini-fab color="basic">
+                <mat-icon>open_in_new</mat-icon>
+            </button>
+
+            <button *ngIf="parametrable" [cdkCopyToClipboard]="computeIframeFragment()" class="menu-btn" mat-mini-fab color="basic">
                 <mat-icon>code</mat-icon>
             </button>
 

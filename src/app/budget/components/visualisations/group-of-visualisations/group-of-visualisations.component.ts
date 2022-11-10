@@ -5,6 +5,7 @@ import { takeUntil, filter } from 'rxjs/operators';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { IdentifiantVisualisation, VisualisationUtils } from 'src/app/budget/models/visualisation.model';
+import { RoutingService } from 'src/app/budget/services/routing.service';
 import { BudgetLoadingAction } from 'src/app/budget/store/actions/budget.actions';
 import { BudgetViewModelSelectors } from 'src/app/budget/store/selectors/BudgetViewModelSelectors';
 import { BudgetState, selectDonnees, selectInformationsPlanDeCompte } from 'src/app/budget/store/states/budget.state';
@@ -37,7 +38,10 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
 
   public visualisations: _DonneesVisualisation[] = []
 
-  constructor(private budgetStore: Store<BudgetState>) { }
+  constructor(
+    private budgetStore: Store<BudgetState>,
+    private routingService: RoutingService,
+  ) { }
 
   ngOnInit(): void { }
 
@@ -83,6 +87,15 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     }
 
     this.visualisations = visualisations
+  }
+
+  url_consultation(id_visualisation: IdentifiantVisualisation) {
+    return this.routingService.external_url_consultation_grapheId(
+      id_visualisation.annee,
+      id_visualisation.siret,
+      id_visualisation.etape,
+      id_visualisation.graphe_id,
+    )
   }
 
   // Plumbing

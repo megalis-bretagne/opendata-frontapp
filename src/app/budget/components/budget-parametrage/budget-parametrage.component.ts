@@ -10,6 +10,8 @@ import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { Pdc } from '../../models/plan-de-comptes';
 import { IdentifiantVisualisation, PagesDeVisualisations } from '../../models/visualisation.model';
+import { IframeService } from '../../services/iframe.service';
+import { RoutingService } from '../../services/routing.service';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
@@ -48,6 +50,8 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<BudgetState>,
     private componentService: BudgetParametrageComponentService,
+    private routingService: RoutingService,
+    private iframeService: IframeService,
     private location: Location,
     private router: Router,
   ) {
@@ -108,14 +112,8 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   }
 
   compute_iframe_fragment(annee, siret, etape) {
-
-    let path = this.compute_consultation_url(annee, siret, etape)
-    let url = new URL(path, location.origin)
-    return `
-      <iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" src="${url.href}" 
-       title="Marque blanche budgets" width="100%" height="600">
-      </iframe>
-    `;
+    let path = this.routingService.external_url_consultation(annee, siret, etape)
+    return this.iframeService.make_iframe_from_route_path(path)
   }
 
   navigate_vers_consultation_url() {
@@ -123,13 +121,8 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     let annee = this._snapshot_annee
     let siret = this._snapshot_siret
     let etape = this._snapshot_etape
-    let path = this.compute_consultation_url(annee, siret, etape)
+    let path = this.routingService.external_url_consultation(annee, siret, etape)
     this.router.navigateByUrl(path)
-  }
-
-  compute_consultation_url(annee, siret, etape) {
-    let path = this.location.prepareExternalUrl(`/budget/public/${annee}/${siret}/${etape}`)
-    return path
   }
 
   onEnregistrerClic() {

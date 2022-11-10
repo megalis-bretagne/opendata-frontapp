@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
-import {tap, takeUntil} from 'rxjs/operators';
+import { tap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { BudgetState, selectBudgetError, selectBudgetIsLoading } from '../../store/states/budget.state';
+import { Router } from '@angular/router';
+import { IframeService } from '../../services/iframe.service';
 
 @Component({
   selector: 'app-budget-card',
@@ -13,6 +15,9 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
 
   @Input()
   parametrable = false;
+
+  @Input()
+  url_consultation = ''
 
   @Input()
   titre = 'Titre';
@@ -29,14 +34,17 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   @Output()
   genererImageClic = new EventEmitter();
 
-
   isLoading: boolean = true;
   hasError = false;
   isSuccess = () => !this.isLoading && !this.hasError;
 
   _stop$ = new Subject();
 
-  constructor(private store: Store<BudgetState>) { }
+  constructor(
+    private store: Store<BudgetState>,
+    private iframeService: IframeService,
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
     this.store.select(selectBudgetError)
@@ -52,7 +60,12 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-      this._stop$.next(null);
+    this._stop$.next(null);
+  }
+
+  onNavClic() {
+    let url = this.url_consultation
+    this.router.navigateByUrl(url)
   }
 
   onDeplacerClic() {
@@ -66,6 +79,10 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   }
   onExportClic() {
     this.genererImageClic.emit();
+  }
+
+  computeIframeFragment(): string {
+    return this.iframeService.make_iframe_from_route_path(this.url_consultation)
   }
 
   private _debug(_) {
