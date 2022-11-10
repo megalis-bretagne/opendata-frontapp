@@ -1,9 +1,8 @@
 import { createSelector } from "@ngrx/store";
-import { Annee, Siret } from "../../models/common-types";
+import { Annee, extract_siren, Siret } from "../../models/common-types";
 import { DonneesBudgetairesDisponibles, Etablissement, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_sirets } from "../../models/donnees-budgetaires-disponibles";
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "../../models/view-models";
-import { extract_siren } from "../../services/siren.functions";
 import { selectDonneesDisponibles } from "../states/budget.state";
 
 function etablissement_pretty_name(etablissement: Etablissement): string {

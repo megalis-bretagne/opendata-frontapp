@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from '../../models/plan-de-comptes';
-import { extract_siren } from '../../services/siren.functions';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
@@ -12,6 +11,7 @@ import { IdentifiantVisualisation } from '../visualisations/visualisation.model'
 
 import { parametrage_graphes_id } from '../budget-parametrage/budget-parametrage.component'
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
+import { extract_siren } from '../../models/common-types';
 
 @Component({
   selector: 'app-budget-consultation',
