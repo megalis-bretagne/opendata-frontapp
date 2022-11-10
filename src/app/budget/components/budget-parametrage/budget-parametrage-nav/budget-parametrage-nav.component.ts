@@ -51,6 +51,17 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
         map(params => params[ETAPE_KEY] as EtapeBudgetaire),
         // tap(etape => this._debug(`Reçoit l'étape de la route: ${etape}`)),
       );
+
+    // Branche le formulaire au component service
+    this.formulaire.annee$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(a => this.navigation.selectionneAnnee(a))
+    this.formulaire.etape$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(e => this.navigation.selectionneEtapeBudgetaire(e))
+    this.formulaire.etablissement$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(e => this.navigation.selectionneEtablissement(e))
   }
 
   ngOnInit(): void {
@@ -58,7 +69,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
     /*
      Positionne les options de navigation selon les queryParams ou le component service.
      */
-    let annee$ = merge(this._anneeFromRoute$, this.componentService.navigation.anneeSelectionnee$)
+    let annee$ = merge(this._anneeFromRoute$, this.navigation.anneeSelectionnee$)
     let anneesDisponibles$ = this.navigationFormService.anneesDisponibles$
       .pipe(filter(annees => Boolean(annees) && annees.length > 0));
     let infoAnnees$ = combineLatest([annee$, anneesDisponibles$])
@@ -69,7 +80,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
         this.formulaire.setup_annees(annee, anneesDisponibles)
       });
 
-    let siret$ = merge(this._etablissementFromRoute$, this.componentService.navigation.etablissementSelectionnee$)
+    let siret$ = merge(this._etablissementFromRoute$, this.navigation.etablissementSelectionnee$)
     let etablissementsDisponibles$ = this.navigationFormService.etablissementsDisponibles$
       .pipe( filter(etabs => Boolean(etabs) && etabs.length > 0));
     let infoEtab$ = combineLatest([siret$, etablissementsDisponibles$])
@@ -80,7 +91,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
       });
 
 
-    let etape$ = merge(this._etapeFromRoute$, this.componentService.navigation.etapeBudgetaireSelectionnee$)
+    let etape$ = merge(this._etapeFromRoute$, this.navigation.etapeBudgetaireSelectionnee$)
     let etapesDisponibles$ = this.navigationFormService.etapesDisponibles$
       .pipe(filter(etapes => Boolean(etapes) && etapes.length > 0));
 
@@ -93,9 +104,9 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
     // Mise à jour de la route selon les paramètres.
     combineLatest([
-      this.componentService.navigation.etablissementSelectionnee$,
-      this.componentService.navigation.anneeSelectionnee$,
-      this.componentService.navigation.etapeBudgetaireSelectionnee$,
+      this.navigation.etablissementSelectionnee$,
+      this.navigation.anneeSelectionnee$,
+      this.navigation.etapeBudgetaireSelectionnee$,
     ])
       .pipe(takeUntil(this._stop$))
       .subscribe(([siret, annee, etape]) => {
@@ -114,16 +125,6 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
           })
       });
 
-    // Branche le formulaire au component service
-    this.formulaire.annee$
-      .pipe(takeUntil(this._stop$))
-      .subscribe(a => this.componentService.navigation.selectionneAnnee(a))
-    this.formulaire.etape$
-      .pipe(takeUntil(this._stop$))
-      .subscribe(e => this.componentService.navigation.selectionneEtapeBudgetaire(e))
-    this.formulaire.etablissement$
-      .pipe(takeUntil(this._stop$))
-      .subscribe(e => this.componentService.navigation.selectionneEtablissement(e))
   }
 
   private _debug(msg: string) {

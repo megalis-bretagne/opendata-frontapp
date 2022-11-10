@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -52,7 +51,6 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     private componentService: BudgetParametrageComponentService,
     private routingService: RoutingService,
     private iframeService: IframeService,
-    private location: Location,
     private router: Router,
   ) {
 
