@@ -1,4 +1,4 @@
-import { EtapeBudgetaire } from "../../services/budget.service";
+import { EtapeBudgetaire } from "./etape-budgetaire";
 import { IdentifiantVisualisation, VisualisationUtils } from "./visualisation.model"
 
 describe('pour deux Identifiants de visualisation similaires', () => {

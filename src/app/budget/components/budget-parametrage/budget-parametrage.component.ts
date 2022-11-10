@@ -9,10 +9,10 @@ import { Annee, Siret } from '../../models/common-types';
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { Pdc } from '../../models/plan-de-comptes';
+import { IdentifiantVisualisation, VisualisationGraphId } from '../../models/visualisation.model';
 import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
 import { BudgetState, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
-import { IdentifiantVisualisation, VisualisationGraphId } from '../visualisations/visualisation.model';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 export const parametrage_graphes_id: VisualisationGraphId[] = [

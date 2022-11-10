@@ -1,6 +1,5 @@
-import { identifierName } from "@angular/compiler";
-import { Annee, Siret } from "../../models/common-types";
-import { EtapeBudgetaire } from "../../models/etape-budgetaire";
+import { Annee, Siret } from "./common-types";
+import { EtapeBudgetaire } from "./etape-budgetaire";
 
 /** Identifiant d'une visualisation */
 export type VisualisationGraphId =
