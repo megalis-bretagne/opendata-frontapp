@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
-import { EtapeBudgetaire } from 'src/app/budget/services/budget.service';
+import { EtapeBudgetaire } from 'src/app/budget/models/etape-budgetaire';
 import { BudgetParametrageComponentService, Navigation, NavigationFormulaireService } from '../budget-parametrage-component.service';
 import { ANNEE_KEY, BudgetParametrageNavFormulaireModel, ETAB_KEY, ETAPE_KEY } from './budget-parametrage-nav-formulaire-model';
 

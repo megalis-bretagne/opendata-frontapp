@@ -1,9 +1,9 @@
 import { FormControl, FormGroup } from "@angular/forms";
 import { Observable } from "rxjs";
 import { distinctUntilChanged } from "rxjs/operators";
-import { Annee, Siret } from "src/app/budget/models/donnees-budgetaires-disponibles";
+import { Annee, Siret } from "src/app/budget/models/common-types";
+import { EtapeBudgetaire } from "src/app/budget/models/etape-budgetaire";
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "src/app/budget/models/view-models";
-import { EtapeBudgetaire } from "src/app/budget/services/budget.service";
 
 export const ANNEE_KEY = 'annee'
 export const ETAPE_KEY = 'etape'

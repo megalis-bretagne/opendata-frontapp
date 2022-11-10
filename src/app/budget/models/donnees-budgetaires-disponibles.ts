@@ -1,8 +1,5 @@
-import { EtapeBudgetaire } from "../services/budget.service"
-
-export type Siren = string
-export type Siret = string
-export type Annee = string
+import { Siret, Annee, Siren } from "./common-types"
+import { EtapeBudgetaire } from "./etape-budgetaire"
 
 export interface Etablissement {
     denomination: string,

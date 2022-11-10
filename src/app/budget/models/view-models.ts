@@ -1,4 +1,4 @@
-import { EtapeBudgetaire } from "../services/budget.service"
+import { EtapeBudgetaire } from "./etape-budgetaire"
 
 /** ViewModel pour une combo box */
 export interface ComboItemViewModel<T> {

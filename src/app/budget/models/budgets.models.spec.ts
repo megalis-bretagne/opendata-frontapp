@@ -1,8 +1,8 @@
-import { EtapeBudgetaire } from "../services/budget.service";
 import { map_donnees_budgetaires_disponibles_from_wire } from '../services/budget.service'
 import { donnees_budgetaires_disponibles_annees, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_sirets } from "./donnees-budgetaires-disponibles";
 
 import * as donnees_budgetaires_disponibles_example from './donnees_budgetaires_disponibles.example.json';
+import { EtapeBudgetaire } from './etape-budgetaire';
 
 /* XXX: Bien utiliser cette fonction qui clone le json en entrée */
 function example_donnees_budgetaires_disponibles() {

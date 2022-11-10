@@ -1,5 +1,5 @@
-import { EtapeBudgetaire } from "../services/budget.service";
-import { Annee, Siret } from "./donnees-budgetaires-disponibles";
+import { Annee, Siret } from "./common-types";
+import { EtapeBudgetaire } from "./etape-budgetaire";
 
 export interface LigneBudget {
     fonction_code: string,

@@ -4,7 +4,8 @@ import { createSelector, Store } from "@ngrx/store";
 import { of, zip } from "rxjs";
 import { catchError, map, switchMap, tap } from "rxjs/operators";
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
-import { BudgetService, BUDGET_SERVICE_TOKEN, EtapeBudgetaire } from "../../services/budget.service";
+import { EtapeBudgetaire } from "../../models/etape-budgetaire";
+import { BudgetService, BUDGET_SERVICE_TOKEN } from "../../services/budget.service";
 import { BudgetActionType, BudgetAlreadyLoadedAction, BudgetDisponiblesAlreadyLoadedAction, BudgetDisponiblesLoadFailureAction, BudgetDisponiblesLoadingAction, BudgetDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
 import { BudgetState, selectDonnees, selectDonneesDisponibles } from "../states/budget.state";
 
