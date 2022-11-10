@@ -12,6 +12,7 @@ import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 import { Annee, extract_siren, Siret } from '../../models/common-types';
 import { IdentifiantVisualisation, PagesDeVisualisations, VisualisationGraphId } from '../../models/visualisation.model';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
+import { ROUTE_PARAM_KEY_ANNEE, ROUTE_PARAM_KEY_ETAPE, ROUTE_PARAM_KEY_SIRET, ROUTE_QUERY_PARAM_KEY_IDGRAPHE, ROUTE_QUERY_PARAM_KEY_VISPAGE } from '../../services/routing.service';
 
 @Component({
   selector: 'app-budget-consultation',
@@ -36,12 +37,12 @@ export class BudgetConsultationComponent implements OnInit {
   constructor(private route: ActivatedRoute, private store: Store<BudgetState>) { }
 
   ngOnInit(): void {
-    this.annee = this.route.snapshot.params['annee']; // TODO: const route key
-    this.siret = this.route.snapshot.params['siret'];
-    this.etape = this.route.snapshot.params['etape'];
+    this.annee = this.route.snapshot.params[ROUTE_PARAM_KEY_ANNEE];
+    this.siret = this.route.snapshot.params[ROUTE_PARAM_KEY_SIRET];
+    this.etape = this.route.snapshot.params[ROUTE_PARAM_KEY_ETAPE];
 
-    this.vis_page = this.route.snapshot.queryParamMap.get('vis_page') as PagesDeVisualisations.PageId;
-    this.graphe_id = this.route.snapshot.queryParamMap.get('graphe_id') as VisualisationGraphId;
+    this.vis_page = this.route.snapshot.queryParamMap.get(ROUTE_QUERY_PARAM_KEY_VISPAGE) as PagesDeVisualisations.PageId;
+    this.graphe_id = this.route.snapshot.queryParamMap.get(ROUTE_QUERY_PARAM_KEY_IDGRAPHE) as VisualisationGraphId;
 
     let siren = extract_siren(this.siret)
 
