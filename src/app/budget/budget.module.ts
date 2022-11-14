@@ -22,6 +22,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GroupOfVisualisationsComponent } from './components/visualisations/group-of-visualisations/group-of-visualisations.component';
+import { HttpClientModule } from '@angular/common/http';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -41,6 +42,7 @@ echarts.registerLocale('FR', langFr);
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
     ReactiveFormsModule,
     LayoutModule,
     ClipboardModule,
