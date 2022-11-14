@@ -51,3 +51,5 @@ Thumbs.db
 # Angular
 proxy.conf.json
 settings.json
+cypress/screenshots
+cypress/videos
