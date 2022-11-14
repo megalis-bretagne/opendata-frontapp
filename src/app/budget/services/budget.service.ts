@@ -33,7 +33,7 @@ export class RealBudgetService implements BudgetService {
       .pipe(
         map(map_donnees_budgetaires_disponibles_from_wire),
         map(strip_etapes_except_administratif_from_donnees_disponibles), // TODO: enlever lorsqu'on traitera autres que comptes administratifs
-        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires disponibles (siren: ${siren}): ${err}`)),
+        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires disponibles (siren: ${siren}):`)),
       )
   }
 
@@ -49,7 +49,7 @@ export class RealBudgetService implements BudgetService {
           informations.annee = annee;
           return informations;
         }),
-        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des informations PDC (annee: ${annee}, siret: ${siret}): ${err}`)),
+        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des informations PDC (annee: ${annee}, siret: ${siret}):`)),
       );
 
     return informationsPdc;
@@ -68,7 +68,7 @@ export class RealBudgetService implements BudgetService {
           donnees.etape = etape;
           return donnees;
         }),
-        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires (annee: ${annee}, siret: ${siret}, etape: ${etape}): ${err}`)),
+        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires (annee: ${annee}, siret: ${siret}, etape: ${etape}):`)),
       );
     return donnees;
   }
@@ -78,6 +78,7 @@ export class RealBudgetService implements BudgetService {
     if (_msg === undefined)
       _msg = err
     this._error(_msg)
+    console.error(err)
     return throwError(() => err)
   }
 

@@ -8,7 +8,8 @@
         </mat-form-field>
     </div>
 
-    <div *ngIf="echartData$ | async as echartsData">
+    <div *ngIf="echartData$ | async as echartsData"
+         waResizeBox="content-box" (waResizeObserver)="onResize($event)">
 
         <div echarts [options]="echartsData?.options" [initOpts]="echartsData?.initOptions " [autoResize]="true"
             class="echart-chart"></div>

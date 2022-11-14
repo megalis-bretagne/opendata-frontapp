@@ -23,6 +23,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GroupOfVisualisationsComponent } from './components/visualisations/group-of-visualisations/group-of-visualisations.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ResizeObserverModule } from '@ng-web-apis/resize-observer';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -46,6 +47,7 @@ echarts.registerLocale('FR', langFr);
     ReactiveFormsModule,
     LayoutModule,
     ClipboardModule,
+    ResizeObserverModule,
 
     NgxEchartsModule.forRoot({ echarts }),
 

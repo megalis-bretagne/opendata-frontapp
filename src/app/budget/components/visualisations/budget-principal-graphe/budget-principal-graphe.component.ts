@@ -1,13 +1,13 @@
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { object_is_empty } from 'src/app/utils';
+import { LAYOUT_CONFIGS, LAYOUT_MODE } from './layout-config';
+
 
 export type EchartsViewModel = {
   options: EChartsOption,
@@ -20,33 +20,15 @@ export enum ModePresentationMontant {
   POURCENTAGE = "pourcentage",
 }
 
-let mediumOrLower = [Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium];
+const SMALL_MODE_MAX_WIDTH = 730
+const MEDIUM_MODE_MAX_WIDTH = 1200
 
 @Component({
   selector: 'app-budget-principal-graphe',
   templateUrl: './budget-principal-graphe.component.html',
-  styleUrls: ['./budget-principal-graphe.component.css']
+  styleUrls: ['./budget-principal-graphe.component.css'],
 })
 export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDestroy {
-
-  readonly montantPresentationOptions = [
-    { value: ModePresentationMontant.MONTANT, viewValue: "Montant" },
-    { value: ModePresentationMontant.POURCENTAGE, viewValue: "Pourcentage" },
-  ];
-  selectedMontantPresentation: ModePresentationMontant = ModePresentationMontant.MONTANT;
-
-  echartData$ = new BehaviorSubject(null);
-  typeVue: TypeVue = 'general'
-  typeNomenclature: Pdc.TypeNomenclature = "fonctions"
-
-  get afficherOptionsChoixNomenclatures() {
-    let afficher = true
-    afficher = afficher && Boolean(this.informationPlanDeCompte)
-    afficher = afficher
-      && !object_is_empty(this.informationPlanDeCompte.references_fonctionnelles)
-      && !object_is_empty(this.informationPlanDeCompte.comptes_nature)
-    return afficher
-  }
 
   @Input()
   donneesBudget: DonneesBudgetaires
@@ -57,34 +39,66 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   @Input()
   rd: 'recette' | 'depense';
 
+  readonly montantPresentationOptions = [
+    { value: ModePresentationMontant.MONTANT, viewValue: "Montant" },
+    { value: ModePresentationMontant.POURCENTAGE, viewValue: "Pourcentage" },
+  ];
+  selectedMontantPresentation: ModePresentationMontant = ModePresentationMontant.MONTANT;
+
+  typeVue: TypeVue = 'general'
+  typeNomenclature: Pdc.TypeNomenclature = "fonctions"
+
+  private _layoutMode: LAYOUT_MODE = 'medium'
+  get layoutMode() { return this._layoutMode }
+  set layoutMode(layoutMode: LAYOUT_MODE) {
+    if (this._layoutMode === layoutMode) return
+    this._layoutMode = layoutMode
+    this._debug(`layout mode: ${this._layoutMode}`)
+    this.refresh()
+  }
+  get layoutConfig() { return LAYOUT_CONFIGS.get(this.layoutMode) }
+
+  echartData$ = new BehaviorSubject(null);
+
+  get afficherOptionsChoixNomenclatures() {
+    let afficher = true
+    afficher = afficher && Boolean(this.informationPlanDeCompte)
+    afficher = afficher
+      && !object_is_empty(this.informationPlanDeCompte.references_fonctionnelles)
+      && !object_is_empty(this.informationPlanDeCompte.comptes_nature)
+    return afficher
+  }
+
   private _stop$ = new Subject();
 
   constructor(
     private mapper: PrepareDonneesVisualisation,
-    private prettyCurrencyFormatter: PrettyCurrencyFormatter,
-    private breakpointObserver: BreakpointObserver) { }
+    private prettyCurrencyFormatter: PrettyCurrencyFormatter) {
 
-  ngOnInit(): void {
-
-    this.breakpointObserver.observe(mediumOrLower)
-      .pipe(
-        map(state => state.matches),
-        distinctUntilChanged(),
-        tap(_ => {
-          try {
-            this.refresh()
-          } catch (err) { }
-        }),
-        takeUntil(this._stop$),
-      )
-      .subscribe();
   }
+
+  ngOnInit(): void { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.donneesBudget && changes.informationPlanDeCompte
       && changes.donneesBudget.currentValue && changes.informationPlanDeCompte.currentValue) {
       this.refresh()
     }
+  }
+
+  onResize(evt: ResizeObserverEntry[]) {
+    if (!evt || evt.length === 0
+      || !evt[0].contentBoxSize || evt[0].contentBoxSize.length === 0)
+      return;
+
+    let w = evt[0].contentRect.width
+    // this._debug(`width: ${w}`)
+
+    let _layoutMode: LAYOUT_MODE = 'large'
+    if (w <= SMALL_MODE_MAX_WIDTH) _layoutMode = 'small' 
+    else if (w <= MEDIUM_MODE_MAX_WIDTH) _layoutMode = 'medium'
+
+    this.layoutMode = _layoutMode
   }
 
   ngOnDestroy(): void {
@@ -128,11 +142,9 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
     let data_dict = donneesVisualisation.data_dict;
     let data = donneesVisualisation.data;
 
-    let isMediumOrLower = this.breakpointObserver.isMatched(mediumOrLower)
-
-    let font_size = 20;
-    let show_legend = !isMediumOrLower;
-    let horizontal_positon = isMediumOrLower ? '50%' : '20%';
+    let font_size = this.layoutConfig.chart_font_size;
+    let show_legend = this.layoutConfig.show_legend;
+    let horizontal_positon = this.layoutConfig.donut_horizontal_position;
 
     let legend_formatter = (name) => `${name} - ${this.prettyCurrencyFormatter.format(data_dict[name])}`;
     if (modePresentationMontant == ModePresentationMontant.POURCENTAGE) {
@@ -149,8 +161,18 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
       legend: {
         show: show_legend,
         type: 'scroll',
+        left: this.layoutConfig.legend_left,
         orient: 'vertical',
         formatter: legend_formatter,
+        textStyle: {
+          overflow: 'truncate',
+          width: this.layoutConfig.legend_max_width,
+        },
+        tooltip: {
+          triggerOn: 'mousemove|click',
+          show: true,
+          formatter: (item) => legend_formatter(item.name),
+        }
       },
       series: [
         {
@@ -201,4 +223,10 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
     let chartData = this.toChartsViewModel(this.donneesBudget, this.informationPlanDeCompte, this.typeVue, this.selectedMontantPresentation);
     this.echartData$.next(chartData)
   }
+
+  private _debug(msg: string) {
+    console.debug(`[BUDGET_PRINCIPAL_GRAPHE] ${msg}`);
+  }
+
+
 }
