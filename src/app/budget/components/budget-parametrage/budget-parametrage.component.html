@@ -1,38 +1,52 @@
 <div>
+    <ng-container *ngIf="isLoadingBudget$ | async as loading; else errorOrContenu">
+        <div style="display: flex; justify-content: center;">
+            <div>
+                <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+            </div>
+        </div>
+    </ng-container>
 
-    <!-- <div *ngIf="errorInLoadingBudget$ | async as error">
-        An error occured {{error}}
-    </div> -->
-    <!-- TODO: handle error -->
+    <ng-template #errorOrContenu>
 
-    <!-- <p>{{donneesBudget?.lignes?.length}}</p> -->
+        <div *ngIf="errorInLoadingBudget$ | async as error; else contenu">
+            Oops, une erreur est survenue !
 
-    <app-budget-parametrage-nav></app-budget-parametrage-nav>
+            {{error}}
+        </div>
 
-    <app-group-of-visualisations
-        [id_visualisations]="id_visualisations"
-        [parametrable]="true"
-        >
-    </app-group-of-visualisations>
+        <ng-template #contenu>
 
-    <div class="boutons-bas-de-page">
-        <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">
-            <mat-icon>code</mat-icon>
-            Copier l'iframe
-        </button>
-        <!-- TODO: disable -->
-        <button mat-raised-button (click)="navigate_vers_consultation_url()">
-            <mat-icon>code</mat-icon>
-            Aller vers l'interface de consultation
-        </button>
-        <!-- <button mat-raised-button disabled (click)="onTelechargerPdfClic()">
-            <mat-icon>download</mat-icon>
-            Télécharget le PDF
-        </button> -->
-        <!-- <button mat-raised-button color="primary" disabled (click)="onEnregistrerClic()">
-            <mat-icon>save</mat-icon>
-            Enregistrer
-        </button> -->
-    </div>
+            <app-budget-parametrage-nav></app-budget-parametrage-nav>
+
+            <app-group-of-visualisations [id_visualisations]="id_visualisations" [parametrable]="true">
+            </app-group-of-visualisations>
+
+            <div class="boutons-bas-de-page">
+                <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">
+                    <mat-icon>code</mat-icon>
+                    Copier l'iframe
+                </button>
+                <!-- TODO: disable -->
+                <button mat-raised-button (click)="navigate_vers_consultation_url()">
+                    <mat-icon>code</mat-icon>
+                    Aller vers l'interface de consultation
+                </button>
+                <!-- <button mat-raised-button disabled (click)="onTelechargerPdfClic()">
+                <mat-icon>download</mat-icon>
+                Télécharget le PDF
+            </button> -->
+                <!-- <button mat-raised-button color="primary" disabled (click)="onEnregistrerClic()">
+                <mat-icon>save</mat-icon>
+                Enregistrer
+            </button> -->
+            </div>
+
+        </ng-template>
+
+    </ng-template>
+
+
+
 
 </div>

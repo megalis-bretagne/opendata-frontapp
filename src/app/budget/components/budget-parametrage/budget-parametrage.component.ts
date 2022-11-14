@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { mergeMap, takeUntil, tap, map, switchMap } from 'rxjs/operators';
+import { mergeMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Annee, Siret } from '../../models/common-types';
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
@@ -11,9 +11,9 @@ import { Pdc } from '../../models/plan-de-comptes';
 import { IdentifiantVisualisation, PagesDeVisualisations } from '../../models/visualisation.model';
 import { IframeService } from '../../services/iframe.service';
 import { RoutingService } from '../../services/routing.service';
-import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
+import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
 import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { BudgetState, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte, selectBudgetIsLoading } from '../../store/states/budget.state';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 
@@ -34,6 +34,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   donneesBudget: DonneesBudgetaires
   informationsPlanDeCompte: Pdc.InformationPdc
 
+  isLoadingBudget$;
   errorInLoadingBudget$;
 
   id_visualisations: IdentifiantVisualisation[] = []
@@ -56,6 +57,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
     this.user$ = this.componentService.user$;
     this.siren$ = this.componentService.siren$;
+    this.isLoadingBudget$ = this.store.select(selectBudgetIsLoading)
     this.errorInLoadingBudget$ = this.store.select(selectBudgetError)
   }
 
