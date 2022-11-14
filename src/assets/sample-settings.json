@@ -7,7 +7,7 @@
     "urlLogout": "https://socle-preprod.megalis.bretagne.bzh/singlelogout?logoutSSO=false"
   },
   "api": {
-    "url": "https://data-publication-preprod.megalis.bretagne.bzh"
+    "url": "http://localhost:4200"
   },
   "urlmarqueblanche" :"https://data-preprod.megalis.bretagne.bzh"
 }
