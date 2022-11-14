@@ -48,7 +48,7 @@ export class BudgetConsultationComponent implements OnInit {
 
     this.id_visualisations = this.retrieve_visualisations()
 
-    this.store.dispatch(new BudgetLoadingAction(this.annee, this.siret, this.etape));
+    this.store.dispatch(new BudgetDisponiblesLoadingAction(siren));
     this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(this.siret))
       .pipe(
         tap(prettyName => this.etablissementPrettyname = prettyName),
@@ -56,7 +56,6 @@ export class BudgetConsultationComponent implements OnInit {
       )
       .subscribe()
 
-    this.store.dispatch(new BudgetDisponiblesLoadingAction(siren));
     this.store.select(selectDonneesBudget(this.annee, this.siret, this.etape))
       .pipe(
         // tap(donnees => console.info(`Donnees ${donnees}`)),

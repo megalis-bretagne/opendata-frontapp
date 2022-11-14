@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
-import { filter, map, takeUntil } from 'rxjs/operators';
+import { first, map, takeUntil } from 'rxjs/operators';
 import { EtapeBudgetaire } from 'src/app/budget/models/etape-budgetaire';
-import { BudgetParametrageComponentService, Navigation, NavigationFormulaireService } from '../budget-parametrage-component.service';
+import { BudgetParametrageComponentService, Navigation } from '../budget-parametrage-component.service';
+import { NavigationFormulaireService } from '../navigation-formulaire-service';
 import { ANNEE_KEY, BudgetParametrageNavFormulaireModel, ETAB_KEY, ETAPE_KEY } from './budget-parametrage-nav-formulaire-model';
 
 
@@ -14,7 +15,7 @@ import { ANNEE_KEY, BudgetParametrageNavFormulaireModel, ETAB_KEY, ETAPE_KEY } f
 })
 export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
-  formulaire = new BudgetParametrageNavFormulaireModel()
+  formulaire: BudgetParametrageNavFormulaireModel
 
   private _stop$ = new Subject<void>();
   private _etablissementFromRoute$: Observable<string>;
@@ -30,29 +31,23 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
   ) {
 
+    this.formulaire = new BudgetParametrageNavFormulaireModel()
     this.navigation = componentService.navigation
     this.navigationFormService = componentService.navigationFormulaireService
+    this.navigationFormService.formModel = this.formulaire
 
     this._etablissementFromRoute$ = this.route.queryParams
-      .pipe(
-        map(params => params[ETAB_KEY]),
-        // tap(etablissement => this._debug(`Reçoit l'établissement de la route: ${etablissement}`)),
-      );
+      .pipe(map(params => params[ETAB_KEY]));
     this._anneeFromRoute$ = this.route.queryParams
       .pipe(
         map(params => {
           let annee = params[ANNEE_KEY]
           return annee;
         }),
-        // tap(annee => this._debug(`Reçoit l'annee de la route: ${annee}`)),
       );
     this._etapeFromRoute$ = this.route.queryParams
-      .pipe(
-        map(params => params[ETAPE_KEY] as EtapeBudgetaire),
-        // tap(etape => this._debug(`Reçoit l'étape de la route: ${etape}`)),
-      );
+      .pipe(map(params => params[ETAPE_KEY] as EtapeBudgetaire));
 
-    // Branche le formulaire au component service
     this.formulaire.annee$
       .pipe(takeUntil(this._stop$))
       .subscribe(a => this.navigation.selectionneAnnee(a))
@@ -65,41 +60,42 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.navigationFormService.initialized$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(() => this.setup_navigation_and_queryParams())
+  }
 
+  setup_navigation_and_queryParams() {
     /*
      Positionne les options de navigation selon les queryParams ou le component service.
      */
-    let annee$ = merge(this._anneeFromRoute$, this.navigation.anneeSelectionnee$)
-    let anneesDisponibles$ = this.navigationFormService.anneesDisponibles$
-      .pipe(filter(annees => Boolean(annees) && annees.length > 0));
-    let infoAnnees$ = combineLatest([annee$, anneesDisponibles$])
-
-    infoAnnees$
-      .pipe(takeUntil(this._stop$))
-      .subscribe(([annee, anneesDisponibles]) => {
-        this.formulaire.setup_annees(annee, anneesDisponibles)
+    let fromRoute$ = combineLatest([this._anneeFromRoute$, this._etablissementFromRoute$, this._etapeFromRoute$])
+    fromRoute$
+      .pipe(first())
+      .subscribe(([annee, etab, etape]) => {
+        this.navigationFormService.setup_form({ annee: annee, siret: etab, etape: etape })
       });
 
-    let siret$ = merge(this._etablissementFromRoute$, this.navigation.etablissementSelectionnee$)
-    let etablissementsDisponibles$ = this.navigationFormService.etablissementsDisponibles$
-      .pipe( filter(etabs => Boolean(etabs) && etabs.length > 0));
-    let infoEtab$ = combineLatest([siret$, etablissementsDisponibles$])
-    infoEtab$
+    let annee$ = merge(this.navigation.anneeSelectionnee$)
+    annee$
       .pipe(takeUntil(this._stop$))
-      .subscribe(([siret, etablissements]) => {
-        this.formulaire.setup_etablissement(siret, etablissements)
+      .subscribe(annee => {
+        this.navigationFormService.setup_form_annee(annee)
+      });
+
+    let siret$ = merge(this.navigation.etablissementSelectionnee$)
+    siret$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(siret => {
+        this.navigationFormService.setup_form_etab(siret)
       });
 
 
-    let etape$ = merge(this._etapeFromRoute$, this.navigation.etapeBudgetaireSelectionnee$)
-    let etapesDisponibles$ = this.navigationFormService.etapesDisponibles$
-      .pipe(filter(etapes => Boolean(etapes) && etapes.length > 0));
-
-    let infoEtape$ = combineLatest([etape$, etapesDisponibles$]);
-    infoEtape$
+    let etape$ = merge(this.navigation.etapeBudgetaireSelectionnee$)
+    etape$
       .pipe(takeUntil(this._stop$))
-      .subscribe(([etape, etapesDisponibles]) => {
-        this.formulaire.setup_etapes(etape, etapesDisponibles);
+      .subscribe(etape => {
+        this.navigationFormService.setup_form_etape(etape);
       });
 
     // Mise à jour de la route selon les paramètres.
@@ -124,7 +120,6 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
             queryParamsHandling: 'merge',
           })
       });
-
   }
 
   private _debug(msg: string) {
@@ -132,6 +127,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.componentService.destroy()
     this._stop$.next();
     this._stop$.complete();
   }

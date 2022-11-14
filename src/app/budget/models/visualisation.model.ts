@@ -29,10 +29,17 @@ export interface IdentifiantVisualisation {
     graphe_id: VisualisationGraphId
 }
 
-export namespace VisualisationUtils {
-    export function distinct(identifiants: IdentifiantVisualisation[]) {
+export interface ApiCallDesc {
+    annee: Annee,
+    siret: Siret,
+    etape: EtapeBudgetaire,
+}
 
-        function _unique_reduce_fn(acc: IdentifiantVisualisation[], curr: IdentifiantVisualisation) {
+export namespace VisualisationUtils {
+
+    export function extract_api_call_descs(identifiants: IdentifiantVisualisation[]): ApiCallDesc[] {
+
+        function _unique_reduce_fn(acc: ApiCallDesc[], curr: ApiCallDesc) {
             let found = acc.some(x => _eq(x, curr))
 
             if (found)
@@ -41,16 +48,25 @@ export namespace VisualisationUtils {
                 return acc.concat(curr)
         }
 
-        return identifiants.reduce(
+        return identifiants
+        .map(id => _to_api_call_desc(id))
+        .reduce(
             _unique_reduce_fn,
             []
         )
     }
 
-    export function _eq(id1: IdentifiantVisualisation, id2: IdentifiantVisualisation) {
+    function _to_api_call_desc(id: IdentifiantVisualisation): ApiCallDesc {
+        return {
+            annee: id.annee,
+            siret: id.siret,
+            etape: id.etape
+        }
+    }
+
+    export function _eq(id1: ApiCallDesc, id2: ApiCallDesc) {
         return id1.annee === id2.annee
             && id1.siret === id2.siret
             && id1.etape === id2.etape
-            && id1.graphe_id === id2.graphe_id
     }
 }

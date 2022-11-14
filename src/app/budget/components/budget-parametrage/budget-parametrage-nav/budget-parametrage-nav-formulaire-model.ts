@@ -1,6 +1,6 @@
 import { FormControl, FormGroup } from "@angular/forms";
-import { Observable } from "rxjs";
-import { distinctUntilChanged } from "rxjs/operators";
+import { Observable, Subject } from "rxjs";
+import { distinctUntilChanged, map } from "rxjs/operators";
 import { Annee, Siret } from "src/app/budget/models/common-types";
 import { EtapeBudgetaire } from "src/app/budget/models/etape-budgetaire";
 import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "src/app/budget/models/view-models";
@@ -8,6 +8,12 @@ import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "src/ap
 export const ANNEE_KEY = 'annee'
 export const ETAPE_KEY = 'etape'
 export const ETAB_KEY = 'etab'
+
+export interface FormValues {
+    annee?: Annee
+    siret?: Siret
+    etape?: EtapeBudgetaire
+}
 
 export class BudgetParametrageNavFormulaireModel {
     annees_disponibles: Annee[] = []
@@ -19,14 +25,29 @@ export class BudgetParametrageNavFormulaireModel {
     private _etape$: Observable<EtapeBudgetaire>;
     private _annee$: Observable<Annee>;
 
-    setup_annees(annee: Annee, disponibles: Annee[]) {
+    setup(
+        annee: Annee, annees_disponibles: Annee[],
+        etab: Siret, etablissements_disponibles: EtablissementComboItemViewModel[],
+        etape: EtapeBudgetaire, etapes_disponibles: EtapeComboItemViewModel[],
+    ) {
+
+        let _annee = this.normalize_annee(annee, annees_disponibles)
+        let _etab = this.normalize_etablissement(etab, etablissements_disponibles)
+        let _etape = this.normalize_etape(etape, etapes_disponibles)
+
+        this.setup_annees(_annee, annees_disponibles)
+        this.setup_etablissement(_etab, etablissements_disponibles)
+        this.setup_etapes(_etape, etapes_disponibles)
+    }
+
+    private setup_annees(annee: Annee, disponibles: Annee[]) {
         // this._debug(`Setup annee: ${annee}, ${disponibles.length} disponibles`)
         let _annee = this.normalize_annee(annee, disponibles)
         this.annees_disponibles = disponibles
         this.annee = _annee
     }
 
-    setup_etapes(etape: EtapeBudgetaire, disponibles: EtapeComboItemViewModel[]) {
+    private setup_etapes(etape: EtapeBudgetaire, disponibles: EtapeComboItemViewModel[]) {
         // let enabled = disponibles.filter(e => !e.disabled)
         // this._debug(`Setup etape: ${etape}, ${disponibles.length} disponibles, ${enabled.length} actives`)
         let _etape = this.normalize_etape(etape, disponibles)
@@ -34,31 +55,12 @@ export class BudgetParametrageNavFormulaireModel {
         this.etape = _etape
     }
 
-    setup_etablissement(etab: Siret, disponibles: EtablissementComboItemViewModel[]) {
+    private setup_etablissement(etab: Siret, disponibles: EtablissementComboItemViewModel[]) {
         // this._debug(`Setup etablissements: ${etab}, ${disponibles.length} disponibles`)
         let _etab = this.normalize_etablissement(etab, disponibles);
         this.etablissements_options = disponibles
         this.etablissement = _etab
     }
-
-    // private setup(
-    //     annee: Annee, annees_disp: Annee[],
-    //     etape: EtapeBudgetaire, etapes_disp: EtapeComboItemViewModel[],
-    //     etab: Siret, etab_disp: EtablissementComboItemViewModel[],
-    // ) {
-
-    //     let _annee = this.normalize_annee(annee, annees_disp)
-    //     this.annees_disponibles = annees_disp
-    //     this.annee = _annee
-
-    //     let _etape = this.normalize_etape(etape, etapes_disp)
-    //     this.etapes_options = etapes_disp
-    //     this.etape = _etape
-
-    //     let _etab = this.normalize_etablissement(etab, etab_disp);
-    //     this.etablissements_options = etab_disp
-    //     this.etablissement = _etab
-    // }
 
     constructor() {
 
@@ -114,7 +116,6 @@ export class BudgetParametrageNavFormulaireModel {
     set etape(etape: EtapeBudgetaire) {
         this._fg.get(ETAPE_KEY).setValue(etape)
     }
-
 
     private normalize_etape(etape: EtapeBudgetaire, etapesDisponibles: EtapeComboItemViewModel[]): EtapeBudgetaire {
 

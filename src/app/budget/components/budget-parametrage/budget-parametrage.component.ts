@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { mergeMap, takeUntil, tap, map, switchMap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Annee, Siret } from '../../models/common-types';
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
@@ -61,41 +61,36 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
 
-    let navigationParamsObs = combineLatest([
-      this.componentService.navigation.anneeSelectionnee$,
-      this.componentService.navigation.etablissementSelectionnee$,
-      this.componentService.navigation.etapeBudgetaireSelectionnee$,
-    ])
-
+    let navigationValues$ = this.componentService.navigationFormulaireService.validatedNavigationValues$
     this.siren$
       .pipe(
         tap(siren => this.store.dispatch(new BudgetDisponiblesLoadingAction(siren))),
         takeUntil(this._stop$),
       ).subscribe()
 
-    navigationParamsObs
+    navigationValues$
       .pipe(
-        tap(([annee, siret, etape]) => {
-          this.store.dispatch(new BudgetLoadingAction(annee, siret, etape));
-          this._snapshot_annee = annee
-          this._snapshot_siret = siret
-          this._snapshot_etape = etape
+        tap(navValues => {
+          console.debug(`[NAV VALUES] - ${navValues.annee}, ${navValues.siret}, ${navValues.etape}`)
+          this._snapshot_annee = navValues.annee
+          this._snapshot_siret = navValues.siret
+          this._snapshot_etape = navValues.etape
 
           this.id_visualisations = []
           for (const graphe_id of PagesDeVisualisations.visualisation_pour_pageid(pageid)) {
             this.id_visualisations.push(
-              { annee, siret, etape, graphe_id }
+              { annee: navValues.annee, siret: navValues.siret, etape: navValues.etape, graphe_id }
             )
           }
 
-          this.iframeFragment = this.compute_iframe_fragment(annee, siret, etape);
+          this.iframeFragment = this.compute_iframe_fragment(navValues.annee, navValues.siret, navValues.etape);
         }),
 
-        mergeMap(([annee, siret, etape]) => {
+        mergeMap(navValues => {
           return combineLatest([
-            this.store.select(selectDonnees(annee, siret, etape)),
-            this.store.select(selectInformationsPlanDeCompte(annee, siret)),
-            this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(siret))
+            this.store.select(selectDonnees(navValues.annee, navValues.siret, navValues.etape)),
+            this.store.select(selectInformationsPlanDeCompte(navValues.annee, navValues.siret)),
+            this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(navValues.siret))
           ])
         }),
 

@@ -52,9 +52,9 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
       sub.unsubscribe()
     this._souscriptions = []
 
-    let uniques_ids = VisualisationUtils.distinct(id_visualisations)
-    for (const id_vis of uniques_ids)
-      this.budgetStore.dispatch(new BudgetLoadingAction(id_vis.annee, id_vis.siret, id_vis.etape))
+    let api_call_descs = VisualisationUtils.extract_api_call_descs(id_visualisations)
+    for (const api_call_desc of api_call_descs)
+      this.budgetStore.dispatch(new BudgetLoadingAction(api_call_desc.annee, api_call_desc.siret, api_call_desc.etape))
 
     let visualisations = []
     for (const id_vis of id_visualisations)
