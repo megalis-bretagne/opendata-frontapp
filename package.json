@@ -13,12 +13,10 @@
     "cypress:ct": "cypress open --component"
   },
   "private": true,
-
   "_comment": "TODO: loader-utils 2.0.2 a une faille critique. Mettre à jour angular et supprimer cette ligne lorsque la 2.0.3 sera poussée upstream",
   "overrides": {
     "loader-utils": "2.0.3"
   },
-
   "dependencies": {
     "@angular/animations": "^14.2.10",
     "@angular/cdk": "^14.2.7",
@@ -30,6 +28,8 @@
     "@angular/platform-browser": "^14.2.10",
     "@angular/platform-browser-dynamic": "^14.2.10",
     "@angular/router": "^14.2.10",
+    "@ng-web-apis/common": "^2.0.1",
+    "@ng-web-apis/resize-observer": "^2.0.0",
     "@ngrx/effects": "^14.3.2",
     "@ngrx/entity": "^14.3.2",
     "@ngrx/schematics": "^14.3.2",
