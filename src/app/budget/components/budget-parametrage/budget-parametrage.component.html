@@ -1,5 +1,5 @@
 <div>
-    <ng-container *ngIf="isLoadingBudget$ | async as loading; else errorOrContenu">
+    <ng-container *ngIf="isLoadingDisponibles$ | async as loading; else errorOrContenu">
         <div style="display: flex; justify-content: center;">
             <div>
                 <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
@@ -9,7 +9,7 @@
 
     <ng-template #errorOrContenu>
 
-        <div *ngIf="errorInLoadingBudget$ | async as error; else contenu">
+        <div *ngIf="errorInLoadingDisponibles$ | async as error; else contenu">
             Oops, une erreur est survenue !
 
             {{error}}

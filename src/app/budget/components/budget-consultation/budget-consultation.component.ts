@@ -1,18 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
 import { Pdc } from '../../models/plan-de-comptes';
-import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState, selectDonnees as selectDonneesBudget, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
 
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 import { Annee, extract_siren, Siret } from '../../models/common-types';
 import { IdentifiantVisualisation, PagesDeVisualisations, VisualisationGraphId } from '../../models/visualisation.model';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { ROUTE_PARAM_KEY_ANNEE, ROUTE_PARAM_KEY_ETAPE, ROUTE_PARAM_KEY_SIRET, ROUTE_QUERY_PARAM_KEY_IDGRAPHE, ROUTE_QUERY_PARAM_KEY_VISPAGE } from '../../services/routing.service';
+import { BudgetsStoresService } from '../../services/budgets-store.service';
 
 @Component({
   selector: 'app-budget-consultation',
@@ -29,12 +26,14 @@ export class BudgetConsultationComponent implements OnInit {
 
   etablissementPrettyname: string;
   donneesBudget: DonneesBudgetaires;
-  informationsPdc: Pdc.InformationPdc;
+  informationsPdc: Pdc.InformationsPdc;
 
   private _stop$: Subject<void> = new Subject<void>();
   id_visualisations: IdentifiantVisualisation[];
 
-  constructor(private route: ActivatedRoute, private store: Store<BudgetState>) { }
+  constructor(
+    private route: ActivatedRoute, 
+    private budgetsStoresService: BudgetsStoresService) { }
 
   ngOnInit(): void {
     this.annee = this.route.snapshot.params[ROUTE_PARAM_KEY_ANNEE];
@@ -48,29 +47,20 @@ export class BudgetConsultationComponent implements OnInit {
 
     this.id_visualisations = this.retrieve_visualisations()
 
-    this.store.dispatch(new BudgetDisponiblesLoadingAction(siren));
-    this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(this.siret))
+    this.budgetsStoresService.load_budgets_disponibles_pour(siren)
+    this.budgetsStoresService.select_etabname(this.siret)
       .pipe(
         tap(prettyName => this.etablissementPrettyname = prettyName),
         takeUntil(this._stop$)
       )
       .subscribe()
 
-    this.store.select(selectDonneesBudget(this.annee, this.siret, this.etape))
-      .pipe(
-        // tap(donnees => console.info(`Donnees ${donnees}`)),
-        tap(donnees => this.donneesBudget = donnees),
-        takeUntil(this._stop$),
-      )
-      .subscribe();
-    this.store.select(selectInformationsPlanDeCompte(this.annee, this.siret))
-      .pipe(
-        tap(infoPdc => console.info(`Informations plan de comptes ${infoPdc}`)),
-        tap(infoPdc => this.informationsPdc = infoPdc),
-        takeUntil(this._stop$),
-      )
-      .subscribe();
-
+    this.budgetsStoresService.select_donnees(this.annee, this.siret, this.etape)
+      .pipe( takeUntil(this._stop$))
+      .subscribe(([donnees, pdc]) => {
+        this.donneesBudget = donnees
+        this.informationsPdc = pdc
+      });
   }
   retrieve_visualisations(): IdentifiantVisualisation[] {
 

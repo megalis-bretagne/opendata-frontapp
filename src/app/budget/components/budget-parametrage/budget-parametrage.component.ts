@@ -1,19 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { combineLatest, Observable, Subject } from 'rxjs';
-import { mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { map, mergeMap, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { Annee, Siret } from '../../models/common-types';
 import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { Pdc } from '../../models/plan-de-comptes';
 import { IdentifiantVisualisation, PagesDeVisualisations } from '../../models/visualisation.model';
+import { BudgetsStoresService } from '../../services/budgets-store.service';
 import { IframeService } from '../../services/iframe.service';
 import { RoutingService } from '../../services/routing.service';
-import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte, selectBudgetIsLoading } from '../../store/states/budget.state';
+import { isInError, LoadingState } from '../../store/states/call-states';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 
@@ -32,10 +30,10 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   etablissementPrettyName: string = ''
   donneesBudget: DonneesBudgetaires
-  informationsPlanDeCompte: Pdc.InformationPdc
+  informationsPlanDeCompte: Pdc.InformationsPdc
 
-  isLoadingBudget$;
-  errorInLoadingBudget$;
+  isLoadingDisponibles$;
+  errorInLoadingDisponibles$;
 
   id_visualisations: IdentifiantVisualisation[] = []
 
@@ -48,7 +46,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   private _stop$: Subject<void> = new Subject<void>();
 
   constructor(
-    private store: Store<BudgetState>,
+    private budgetsStoresService: BudgetsStoresService,
     private componentService: BudgetParametrageComponentService,
     private routingService: RoutingService,
     private iframeService: IframeService,
@@ -57,8 +55,20 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
     this.user$ = this.componentService.user$;
     this.siren$ = this.componentService.siren$;
-    this.isLoadingBudget$ = this.store.select(selectBudgetIsLoading)
-    this.errorInLoadingBudget$ = this.store.select(selectBudgetError)
+
+
+    let callState$ = this.siren$.pipe(
+      switchMap(siren => this.budgetsStoresService.select_donnees_disponibles_callstate(siren))
+    )
+
+    this.isLoadingDisponibles$ = callState$
+      .pipe(
+        map(cs => !cs || cs === LoadingState.LOADING)
+      )
+    this.errorInLoadingDisponibles$ = callState$
+      .pipe(
+        map(cs => isInError(cs))
+      )
   }
 
   ngOnInit(): void {
@@ -66,9 +76,10 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     let navigationValues$ = this.componentService.navigationFormulaireService.validatedNavigationValues$
     this.siren$
       .pipe(
-        tap(siren => this.store.dispatch(new BudgetDisponiblesLoadingAction(siren))),
+        tap(siren => this.budgetsStoresService.load_budgets_disponibles_pour(siren)),
         takeUntil(this._stop$),
-      ).subscribe()
+      )
+      .subscribe()
 
     navigationValues$
       .pipe(
@@ -89,11 +100,11 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
         }),
 
         mergeMap(navValues => {
-          return combineLatest([
-            this.store.select(selectDonnees(navValues.annee, navValues.siret, navValues.etape)),
-            this.store.select(selectInformationsPlanDeCompte(navValues.annee, navValues.siret)),
-            this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(navValues.siret))
-          ])
+          return this.budgetsStoresService.select_donnees_et_etabname(
+            navValues.annee,
+            navValues.siret,
+            navValues.etape,
+          )
         }),
 
         tap(([donnees, informationPdc, prettyName]) => {

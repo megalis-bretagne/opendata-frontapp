@@ -1,61 +1,59 @@
-
-<ng-container *ngIf="isLoading">
-    Loading...
+<ng-container *ngIf="isLoading; else contenu">
+    Card Loading...
 </ng-container>
 
-<ng-container *ngIf="hasError">
-    Error occured!
-</ng-container>
+<ng-template #contenu>
+    <mat-card>
 
-<mat-card *ngIf="isSuccess()">
+        <mat-card-title class="horizontal">
+            <div>
+                {{titre}}
+            </div>
 
-    <mat-card-title class="horizontal">
-        <div>
-            {{titre}}
-        </div>
+            <div *ngIf="parametrable">
 
-        <div *ngIf="parametrable">
-
-            <!-- <button disabled (click)="onDeplacerClic()" class="menu-btn" mat-mini-fab color="basic">
+                <!-- <button disabled (click)="onDeplacerClic()" class="menu-btn" mat-mini-fab color="basic">
                 <mat-icon>open_with</mat-icon>
             </button>
 
             <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
                 <mat-icon>edit</mat-icon>
             </button> -->
-            <!-- <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
+                <!-- <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
                     <mat-icon>edit</mat-icon>
             </button> -->
 
-        </div>
+            </div>
 
-    </mat-card-title>
+        </mat-card-title>
 
-    <mat-card-subtitle>
-        {{description}}
-    </mat-card-subtitle>
+        <mat-card-subtitle>
+            {{description}}
+        </mat-card-subtitle>
 
-    <mat-card-content>
-        <ng-content></ng-content>
-    </mat-card-content>
+        <mat-card-content>
+            <ng-content></ng-content>
+        </mat-card-content>
 
-    <mat-card-footer class="horizontal">
-        <div></div>
-        <div>
+        <mat-card-footer class="horizontal">
+            <div></div>
+            <div>
 
-            <!-- TODO: disable -->
-            <button *ngIf="parametrable" (click)="onNavClic()" class="menu-btn" mat-mini-fab color="basic">
-                <mat-icon>open_in_new</mat-icon>
-            </button>
+                <!-- TODO: disable -->
+                <button *ngIf="parametrable" (click)="onNavClic()" class="menu-btn" mat-mini-fab color="basic">
+                    <mat-icon>open_in_new</mat-icon>
+                </button>
 
-            <button *ngIf="parametrable" [cdkCopyToClipboard]="computeIframeFragment()" class="menu-btn" mat-mini-fab color="basic">
-                <mat-icon>code</mat-icon>
-            </button>
+                <button *ngIf="parametrable" [cdkCopyToClipboard]="computeIframeFragment()" class="menu-btn"
+                    mat-mini-fab color="basic">
+                    <mat-icon>code</mat-icon>
+                </button>
 
-            <button disabled (click)="onExportClic()" class="menu-btn" mat-mini-fab color="basic">
-                <mat-icon>upload</mat-icon>
-            </button>
-        </div>
-    </mat-card-footer>
+                <button disabled (click)="onExportClic()" class="menu-btn" mat-mini-fab color="basic">
+                    <mat-icon>upload</mat-icon>
+                </button>
+            </div>
+        </mat-card-footer>
 
-</mat-card>
+    </mat-card>
+</ng-template>

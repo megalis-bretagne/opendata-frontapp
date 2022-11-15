@@ -6,8 +6,7 @@ import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { Annee, Siret } from '../../models/common-types';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
-import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetState } from '../../store/states/budget.state';
+import { BudgetsStoresService } from '../../services/budgets-store.service';
 import { NavigationFormulaireService } from './navigation-formulaire-service';
 
 @Injectable()
@@ -21,7 +20,7 @@ export class BudgetParametrageComponentService {
 
   constructor(
     private globalStore: Store<GlobalState>,
-    private budgetStore: Store<BudgetState>,
+    private budgetStoresServices: BudgetsStoresService,
   ) {
 
     this.user$ = this.globalStore.select(selectAuthState)
@@ -37,10 +36,8 @@ export class BudgetParametrageComponentService {
     this.navigation = new Navigation();
     this.navigationFormulaireService = new NavigationFormulaireService(
       this.siren$, 
-      this.budgetStore,
+      this.budgetStoresServices,
     );
-
-    this.siren$.subscribe(siren => this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren)))
   }
 
   destroy() {

@@ -9,8 +9,8 @@ export function exemple_donnees_budgetaires(): DonneesBudgetaires {
 }
 
 
-export function exemple_infos_pdc(): Pdc.InformationPdc {
-    return poor_man_clone(info_pdc_json) as Pdc.InformationPdc
+export function exemple_infos_pdc(): Pdc.InformationsPdc {
+    return poor_man_clone(info_pdc_json) as Pdc.InformationsPdc
 }
 
 function poor_man_clone(json) {

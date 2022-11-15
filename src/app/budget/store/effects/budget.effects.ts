@@ -1,95 +1,145 @@
 import { Inject, Injectable } from "@angular/core";
 import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
-import { createSelector, Store } from "@ngrx/store";
-import { of, zip } from "rxjs";
-import { catchError, map, switchMap, tap } from "rxjs/operators";
-import { Annee, Siren, Siret } from "../../models/common-types";
+import { Store } from "@ngrx/store";
+import { of } from "rxjs";
+import { catchError, map, startWith, switchMap } from "rxjs/operators";
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
-import { EtapeBudgetaire } from "../../models/etape-budgetaire";
 import { BudgetService, BUDGET_SERVICE_TOKEN } from "../../services/budget.service";
-import { BudgetActionType, BudgetAlreadyLoadedAction, BudgetDisponiblesAlreadyLoadedAction, BudgetDisponiblesLoadFailureAction, BudgetDisponiblesLoadingAction, BudgetDisponiblesLoadSuccessAction, BudgetLoadFailureAction, BudgetLoadingAction, BudgetLoadSuccessAction } from "../actions/budget.actions";
-import { BudgetState, selectDonnees, selectDonneesDisponibles } from "../states/budget.state";
+import { BudgetDisponiblesNoopAction, BudgetDisponiblesInitAction, BudgetDisponiblesLoadFailureAction, BudgetDisponiblesLoadingAction, BudgetDisponiblesLoadSuccessAction, DonneesBudgetairesDisponiblesActionType } from "../actions/donnees-budgetaires-disponibles.actions";
+import { DonneesBudgetairesActionType, DonnneesBudgetairesNoopAction, DonnneesBudgetairesLoadFailureAction, DonnneesBudgetairesLoadingAction, DonnneesBudgetairesLoadSuccessAction, DonnneesBudgetairesInitAction } from "../actions/donnees-budgetaires.actions";
+import { InformationsPdcActionType, InformationsPdcNoopAction, InformationsPdcLoadFailureAction, InformationsPdcLoadingAction, InformationsPdcLoadSuccessAction, InformationsPdcInitAction } from "../actions/informations-pdc.actions";
+import { selectDonneesBudgetairesDisponiblesCallStatePour } from "../selectors/donnees-budgetaires-disponibles.selectors";
+import { selectDonneesBudgtetairesCallStatePour } from "../selectors/donnees-budgetaires.selectors";
+import { selectInformationsPdcCallStatePour } from "../selectors/informations-pdc.selectors";
+import { LoadingState } from "../states/call-states";
+import { DonneesBudgetairesDisponiblesState } from "../states/donnees-budgetaires-disponibles.state";
+import { DonneesBudgetairesState } from "../states/donnees-budgetaires.state";
+import { InformationsPdcState } from "../states/informations-pdc.state";
 
-const donneesDisponiblesAlreadyLoaded = (siren: Siren) => createSelector(
-    selectDonneesDisponibles(siren),
-    (disponibles) => Boolean(disponibles)
-)
-
-const donneesBudgetAlreadyLoaded = (annee: Annee, siret: Siret, etape: EtapeBudgetaire) => createSelector(
-    selectDonnees(annee, siret, etape),
-    (donnees) => Boolean(donnees)
-)
-
-// 
 @Injectable()
 export class BudgetEffects {
     constructor(
         @Inject(BUDGET_SERVICE_TOKEN)
         private budgetService: BudgetService,
         private actions$: Actions,
-        private budgetStore: Store<BudgetState>,
+        private donneesBudgetairesStore: Store<DonneesBudgetairesState>,
+        private informationsPdcStore: Store<InformationsPdcState>,
+        private donneesBudgetairesDisponiblesStore: Store<DonneesBudgetairesDisponiblesState>,
     ) { }
 
-    public loadBudgets$ = createEffect(
+    public initBudgets$ = createEffect(
         () => this.actions$
             .pipe(
-                ofType<BudgetLoadingAction>(BudgetActionType.Loading),
+                ofType<DonnneesBudgetairesInitAction>(DonneesBudgetairesActionType.Init),
 
-                concatLatestFrom(action => this.budgetStore.select(donneesBudgetAlreadyLoaded(action.annee, action.siret, action.etape))),
-                // tap(([action, loaded]) => console.debug(`${action.siret} - ${action.annee} - ${action.etape} loaded: ${loaded}`)),
+                concatLatestFrom(action => this.donneesBudgetairesStore.select(selectDonneesBudgtetairesCallStatePour(action.annee, action.siret, action.etape))),
 
-                switchMap(([action, alreadyLoaded]) => {
+                switchMap(([action, callState]) => {
+                    if (callState === LoadingState.LOADED || callState === LoadingState.LOADING)
+                        return of(new DonnneesBudgetairesNoopAction(action.annee, action.siret, action.etape))
 
-                    if (alreadyLoaded)
-                        return of(new BudgetAlreadyLoadedAction())
-
-                    let loadDonnees = this.budgetService.loadBudgets(
-                        action.annee,
-                        action.siret,
-                        action.etape
-                    );
-
-                    let loadInformationsPdc = this.budgetService.loadInformationPdc(action.annee, action.siret);
-
-                    let zipped = zip(loadDonnees, loadInformationsPdc)
-                        .pipe(
-                            map(([donnees, informationsPdc]) =>
-                                new BudgetLoadSuccessAction(donnees as DonneesBudgetaires, informationsPdc)
-                            ),
-                            catchError(err => {
-                                console.error(err);
-                                return of(new BudgetLoadFailureAction(err))
-                            })
-                        );
-
-                    return zipped;
+                    return of(new DonnneesBudgetairesLoadingAction(action.annee, action.siret, action.etape))
                 }
                 )
             ),
         { dispatch: true },
     );
 
-    public loadDonneesBudgetairesDisponibles$ = createEffect(
+    public loadBudgets$ = createEffect(
         () => this.actions$
             .pipe(
-                ofType<BudgetDisponiblesLoadingAction>(BudgetActionType.LoadingDisponibles),
+                ofType<DonnneesBudgetairesLoadingAction>(DonneesBudgetairesActionType.Loading),
+
+                switchMap(action => {
+
+                    let annee = action.annee
+                    let siret = action.siret
+                    let etape = action.etape
+
+                    return this.budgetService.loadBudgets(annee, siret, etape)
+                        .pipe(
+                            map((donnees) =>
+                                new DonnneesBudgetairesLoadSuccessAction(
+                                    annee, siret, etape,
+                                    donnees as DonneesBudgetaires
+                                )
+                            ),
+                            catchError(err => {
+                                console.error(err);
+                                return of(new DonnneesBudgetairesLoadFailureAction(annee, siret, etape, err))
+                            }),
+                        );
+                }
+                )
+            ),
+        { dispatch: true },
+    );
+
+    public initPdc$ = createEffect(
+        () => this.actions$
+            .pipe(
+                ofType<InformationsPdcInitAction>(InformationsPdcActionType.Init),
+
+                concatLatestFrom(action => this.informationsPdcStore.select(selectInformationsPdcCallStatePour(action.annee, action.siret))),
+
+                switchMap(([action, callState]) => {
+
+                    if (callState === LoadingState.LOADED || callState === LoadingState.LOADING)
+                        return of(new InformationsPdcNoopAction(action.annee, action.siret, 'Chargement en cours ou déjà réalisé'))
+
+                    return of(new InformationsPdcLoadingAction(action.annee, action.siret))
+                })
+            ),
+        { dispatch: true }
+    )
+
+    public loadPdc$ = createEffect(
+        () => this.actions$
+            .pipe(
+                ofType<InformationsPdcLoadingAction>(InformationsPdcActionType.Loading),
+                switchMap(action => {
+                    return this.budgetService.loadInformationPdc(action.annee, action.siret)
+                        .pipe(
+                            map(pdc => new InformationsPdcLoadSuccessAction(action.annee, action.siret, pdc)),
+                            catchError(err => of(new InformationsPdcLoadFailureAction(action.annee, action.siret, err))),
+                        )
+                })
+            ),
+        { dispatch: true }
+    )
+
+    public initDonneesBudgetairesDisponibles$ = createEffect(
+        () => this.actions$
+            .pipe(
+                ofType<BudgetDisponiblesInitAction>(DonneesBudgetairesDisponiblesActionType.Init),
                 map(action => action.siren),
 
-                concatLatestFrom(siren => this.budgetStore.select(donneesDisponiblesAlreadyLoaded(siren))),
-                // tap(([siren, loaded]) => console.debug(`${siren} loaded: ${loaded}`)),
+                concatLatestFrom(siren => this.donneesBudgetairesDisponiblesStore.select(selectDonneesBudgetairesDisponiblesCallStatePour(siren))),
 
-                switchMap(([siren, alreadyLoaded]) => {
+                switchMap(([siren, callState]) => {
 
-                    if (alreadyLoaded)
-                        return of(new BudgetDisponiblesAlreadyLoadedAction())
-
-                    return this.budgetService.donneesBudgetairesDisponibles(siren)
-                        .pipe(
-                            map(disponibles => new BudgetDisponiblesLoadSuccessAction(disponibles)),
-                            catchError(err => of(new BudgetDisponiblesLoadFailureAction(err))),
-                        )
+                    if (callState === LoadingState.LOADED || callState === LoadingState.LOADING)
+                        return of(new BudgetDisponiblesNoopAction(siren))
+                    
+                    return of(new BudgetDisponiblesLoadingAction(siren))
                 }),
             ),
         { dispatch: true },
+    )
+
+    public loadDonneesBudgetairesDisponibles$ = createEffect(
+        () => this.actions$
+        .pipe(
+            ofType<BudgetDisponiblesLoadingAction>(DonneesBudgetairesDisponiblesActionType.Loading),
+            map(action => action.siren),
+            switchMap(siren => {
+                return this.budgetService.donneesBudgetairesDisponibles(siren)
+                    .pipe(
+                        map(disponibles => new BudgetDisponiblesLoadSuccessAction(siren, disponibles)),
+                        catchError(err => of(new BudgetDisponiblesLoadFailureAction(siren, err))),
+                    )
+            } )
+        ),
+        { dispatch: true }
     )
 }

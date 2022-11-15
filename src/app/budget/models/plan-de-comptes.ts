@@ -19,7 +19,7 @@ export namespace Pdc {
     export type ComptesNature = DonneesNomenclature<CompteNature>
 
 
-    export interface InformationPdc {
+    export interface InformationsPdc {
         siret: Siret
         annee: Annee
 
@@ -49,7 +49,7 @@ export namespace Pdc {
      * @returns     Une nomenclature
      * @throws      Error si les informations du plan de compte sont inexploitables
      */
-    export function extraire_nomenclature(informationPdc: InformationPdc, type: TypeNomenclature | null = null) {
+    export function extraire_nomenclature(informationPdc: InformationsPdc, type: TypeNomenclature | null = null) {
 
         if (informationPdc.references_fonctionnelles && (type == null || type == "fonctions"))
             return new Nomenclature(informationPdc.references_fonctionnelles, "fonctions");

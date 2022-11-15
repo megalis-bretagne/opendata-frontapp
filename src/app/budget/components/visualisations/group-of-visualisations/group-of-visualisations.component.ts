@@ -1,18 +1,15 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { combineLatest, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { IdentifiantVisualisation, VisualisationUtils } from 'src/app/budget/models/visualisation.model';
+import { BudgetsStoresService } from 'src/app/budget/services/budgets-store.service';
 import { RoutingService } from 'src/app/budget/services/routing.service';
-import { BudgetLoadingAction } from 'src/app/budget/store/actions/budget.actions';
-import { BudgetViewModelSelectors } from 'src/app/budget/store/selectors/BudgetViewModelSelectors';
-import { BudgetState, selectDonnees, selectInformationsPlanDeCompte } from 'src/app/budget/store/states/budget.state';
 
 interface _DonneesVisualisation extends IdentifiantVisualisation {
   donnees_budgetaires?: DonneesBudgetaires
-  informations_pdc?: Pdc.InformationPdc
+  informations_pdc?: Pdc.InformationsPdc
   nom_etablissement?: string
   loading: boolean
 }
@@ -39,7 +36,7 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
   public visualisations: _DonneesVisualisation[] = []
 
   constructor(
-    private budgetStore: Store<BudgetState>,
+    private storesServices: BudgetsStoresService,
     private routingService: RoutingService,
   ) { }
 
@@ -54,7 +51,7 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
 
     let api_call_descs = VisualisationUtils.extract_api_call_descs(id_visualisations)
     for (const api_call_desc of api_call_descs)
-      this.budgetStore.dispatch(new BudgetLoadingAction(api_call_desc.annee, api_call_desc.siret, api_call_desc.etape))
+      this.storesServices.load_budgets_pour(api_call_desc.annee, api_call_desc.siret, api_call_desc.etape)
 
     let visualisations = []
     for (const id_vis of id_visualisations)
@@ -66,11 +63,8 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
       let siret = id_vis.siret
       let etape = id_vis.etape
 
-      let sub = combineLatest([
-        this.budgetStore.select(selectDonnees(annee, siret, etape)),
-        this.budgetStore.select(selectInformationsPlanDeCompte(annee, siret)),
-        this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(siret))
-      ])
+      this.storesServices
+        .select_donnees_et_etabname(annee, siret, etape)
         .pipe(
           filter(([donnnes_budgetaires, info_pdc, nom_etab]) => Boolean(donnnes_budgetaires) && Boolean(info_pdc) && Boolean(nom_etab)),
           takeUntil(this._stop$),
@@ -123,7 +117,7 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
   toVisualisation(
     id: IdentifiantVisualisation,
     donnees_budgetaires: DonneesBudgetaires,
-    informations_pdc: Pdc.InformationPdc,
+    informations_pdc: Pdc.InformationsPdc,
     nom_etablissement: string,
   ): _DonneesVisualisation {
     return {

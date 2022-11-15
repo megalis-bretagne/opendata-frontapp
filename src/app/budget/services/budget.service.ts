@@ -12,7 +12,7 @@ import { Annee, Siren, Siret } from "../models/common-types";
 
 export interface BudgetService {
 
-  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationPdc>
+  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationsPdc>
   loadBudgets(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DonneesBudgetaires>
   donneesBudgetairesDisponibles(siren: Siren): Observable<DonneesBudgetairesDisponibles>
 }
@@ -37,13 +37,13 @@ export class RealBudgetService implements BudgetService {
       )
   }
 
-  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationPdc> {
+  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationsPdc> {
 
     this._debug(`Charge les informations du plan de compte pour l'année ${annee} et le siret ${siret}`)
 
     const url = `${this._getBudgetBaseUrl()}/plans_de_comptes/${annee}/${siret}`;
     let informationsPdc =
-      this.http.get<Pdc.InformationPdc>(url).pipe(
+      this.http.get<Pdc.InformationsPdc>(url).pipe(
         map(informations => {
           informations.siret = siret;
           informations.annee = annee;

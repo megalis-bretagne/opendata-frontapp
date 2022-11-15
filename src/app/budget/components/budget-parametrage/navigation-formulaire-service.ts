@@ -2,12 +2,12 @@ import { Store } from "@ngrx/store";
 import { Observable, ReplaySubject, Subject } from "rxjs";
 import { Annee, Siren, Siret } from "../../models/common-types";
 import { DonneesBudgetairesDisponibles, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_sirets, Etablissement } from "../../models/donnees-budgetaires-disponibles";
-import { EtablissementComboItemViewModel, EtapeComboItemViewModel } from "../../models/view-models";
-import { BudgetState, selectDonneesDisponibles } from "../../store/states/budget.state";
 import { BudgetParametrageNavFormulaireModel } from "./budget-parametrage-nav/budget-parametrage-nav-formulaire-model";
 import { distinctUntilChanged, first, map, mergeMap, takeUntil, tap } from "rxjs/operators";
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
 import { etablissements_vers_comboViewModel, etablissement_pretty_name, etablissement_vers_comboViewModel, etape_pretty_name, etape_vers_comboViewModel } from "../../models/view-models.functions";
+import { selectDonneesBudgetairesDisponiblesPour } from "../../store/selectors/donnees-budgetaires-disponibles.selectors";
+import { BudgetsStoresService } from "../../services/budgets-store.service";
 
 export interface NavigationValues {
     annee?: Annee
@@ -50,14 +50,14 @@ export class NavigationFormulaireService {
 
     constructor(
         private siren$: Observable<Siren>,
-        private budgetStore: Store<BudgetState>,
+        private budgetsStoreServices: BudgetsStoresService,
     ) {
 
         let _siren$ = this.siren$.pipe(distinctUntilChanged())
 
         _siren$.pipe(
             tap(siren => this.siren = siren),
-            mergeMap(siren => this.budgetStore.select(selectDonneesDisponibles(siren))),
+            mergeMap(siren => this.budgetsStoreServices.select_donnees_disponibles_pour(siren)),
             takeUntil(this._stop$),
         ).subscribe(disponibles => {
             this.donnees_disponibles = disponibles

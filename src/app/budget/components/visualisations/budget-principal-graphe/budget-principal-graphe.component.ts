@@ -34,7 +34,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
   donneesBudget: DonneesBudgetaires
 
   @Input()
-  informationPlanDeCompte: Pdc.InformationPdc
+  informationPlanDeCompte: Pdc.InformationsPdc
 
   @Input()
   rd: 'recette' | 'depense';
@@ -107,7 +107,7 @@ export class BudgetPrincipalGrapheComponent implements OnInit, OnChanges, OnDest
 
   toChartsViewModel(
     donneesBudget: DonneesBudgetaires,
-    informationPlanDeCompte: Pdc.InformationPdc,
+    informationPlanDeCompte: Pdc.InformationsPdc,
     typeVue: TypeVue,
     modePresentationMontant: ModePresentationMontant,
   ): EchartsViewModel {
