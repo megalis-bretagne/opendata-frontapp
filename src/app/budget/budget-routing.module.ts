@@ -4,6 +4,7 @@ import { NavigationComponent } from "../components/navigation/navigation.compone
 import { AuthGuard } from "../services/auth-guard.service";
 import { BudgetConsultationComponent } from "./components/budget-consultation/budget-consultation.component";
 import { BudgetParametrageComponent } from "./components/budget-parametrage/budget-parametrage.component";
+import { ROUTE_CONSULTATION_PATH } from "./services/routing.service";
 
 const routes: Routes = [
     {
@@ -18,7 +19,7 @@ const routes: Routes = [
         ]
     },
     {
-        path: 'public/:annee/:siret/:etape',
+        path: `${ROUTE_CONSULTATION_PATH}`,
         component: BudgetConsultationComponent,
     },
 ]

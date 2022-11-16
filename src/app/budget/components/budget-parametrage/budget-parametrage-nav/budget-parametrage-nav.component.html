@@ -1,36 +1,31 @@
-<mat-tab-group
-#selecteurAnnee
-[(selectedIndex)]="anneesSelectedIndex"
-(selectedTabChange)="onSelectionneAnnee($event)">
-  <mat-tab *ngFor="let annee of anneesDisponibles" [label]="annee.toString()">
-  </mat-tab>
-</mat-tab-group>
+<div [formGroup]="formulaire.fg">
 
-<!-- <p>Selected index: {{anneesSelectedIndex}} </p> -->
+  <mat-tab-group #selecteurAnnee [(selectedIndex)]="formulaire.annee_selected_index">
+    <mat-tab *ngFor="let annee of formulaire.annees_disponibles" [label]="annee.toString()">
+    </mat-tab>
+  </mat-tab-group>
 
-<br>
+  <!-- <p>Selected index: {{anneesSelectedIndex}} </p> -->
 
-<div class="horizontal">
+  <br>
 
-  <mat-form-field>
-    <mat-label>Établissement</mat-label>
-    <mat-select [(value)]="selectedEtablissement" (valueChange)="onSelectedEtablissementChange($event)">
-      <mat-option [value]="option.value" *ngFor="let option of etablissementOptions"> {{option.viewValue}} </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="horizontal">
 
-  <mat-form-field>
-    <mat-label>Étape du budget</mat-label>
-    <mat-select [(value)]="selectedEtape" (valueChange)="onSelectedEtapeChange($event)">
-      <mat-option [value]="option.value" *ngFor="let option of etapeOptions"> {{option.viewValue}} </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <mat-form-field>
+      <mat-label>Établissement</mat-label>
+      <mat-select [(value)]="this.formulaire.etablissement">
+        <mat-option [value]="option.value" *ngFor="let option of this.formulaire.etablissements_options" [disabled]="option.disabled">
+          {{option.viewValue}} </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <!-- <mat-form-field>
-    <mat-label>Présentation</mat-label>
-    <mat-select [(value)]="selectedPresentation" (valueChange)="onPresentationChange($event)">
-      <mat-option [value]="option.value" *ngFor="let option of presentationOptions"> {{option.viewValue}} </mat-option>
-    </mat-select>
-  </mat-form-field> -->
+    <mat-form-field>
+      <mat-label>Étape du budget</mat-label>
+      <mat-select [(value)]="this.formulaire.etape">
+        <mat-option [value]="option.value" *ngFor="let option of this.formulaire.etapes_options" [disabled]="option.disabled">
+          {{option.viewValue}} </mat-option>
+      </mat-select>
+    </mat-form-field>
 
+  </div>
 </div>

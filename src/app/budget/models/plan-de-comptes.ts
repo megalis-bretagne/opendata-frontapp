@@ -1,3 +1,5 @@
+import { Annee, Siret } from "./common-types"
+
 export namespace Pdc {
     export interface ElementDeNomenclature {
         code: string,
@@ -17,9 +19,9 @@ export namespace Pdc {
     export type ComptesNature = DonneesNomenclature<CompteNature>
 
 
-    export interface InformationPdc {
-        siret: string
-        annee: string
+    export interface InformationsPdc {
+        siret: Siret
+        annee: Annee
 
         references_fonctionnelles: ReferencesFonctionnelles | {}
         comptes_nature: ComptesNature | {}
@@ -47,7 +49,7 @@ export namespace Pdc {
      * @returns     Une nomenclature
      * @throws      Error si les informations du plan de compte sont inexploitables
      */
-    export function extraire_nomenclature(informationPdc: InformationPdc, type: TypeNomenclature | null = null) {
+    export function extraire_nomenclature(informationPdc: InformationsPdc, type: TypeNomenclature | null = null) {
 
         if (informationPdc.references_fonctionnelles && (type == null || type == "fonctions"))
             return new Nomenclature(informationPdc.references_fonctionnelles, "fonctions");

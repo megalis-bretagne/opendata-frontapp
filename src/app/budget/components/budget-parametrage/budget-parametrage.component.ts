@@ -1,15 +1,21 @@
-import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { concatLatestFrom } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { combineLatest, Observable, Subject } from 'rxjs';
-import { mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
+import { map, mergeMap, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
+import { Annee, Siret } from '../../models/common-types';
+import { DonneesBudgetaires } from '../../models/donnees-budgetaires';
+import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { Pdc } from '../../models/plan-de-comptes';
-import { BudgetDisponiblesLoadingAction, BudgetLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState, DonneesBudgetaires, selectDonnees, selectBudgetError, selectInformationsPlanDeCompte } from '../../store/states/budget.state';
+import { IdentifiantVisualisation, PagesDeVisualisations } from '../../models/visualisation.model';
+import { BudgetsStoresService } from '../../services/budgets-store.service';
+import { IframeService } from '../../services/iframe.service';
+import { RoutingService } from '../../services/routing.service';
+import { isInError, LoadingState } from '../../store/states/call-states';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
+
+
+const pageid: PagesDeVisualisations.PageId = 'default'
 
 @Component({
   selector: 'app-budget-parametrage',
@@ -24,52 +30,81 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   etablissementPrettyName: string = ''
   donneesBudget: DonneesBudgetaires
-  informationsPlanDeCompte: Pdc.InformationPdc
+  informationsPlanDeCompte: Pdc.InformationsPdc
 
-  errorInLoadingBudget$;
+  isLoadingDisponibles$;
+  errorInLoadingDisponibles$;
+
+  id_visualisations: IdentifiantVisualisation[] = []
 
   iframeFragment = '';
+
+  private _snapshot_annee?: Annee
+  private _snapshot_siret?: Siret
+  private _snapshot_etape?: EtapeBudgetaire
 
   private _stop$: Subject<void> = new Subject<void>();
 
   constructor(
-    private store: Store<BudgetState>,
+    private budgetsStoresService: BudgetsStoresService,
     private componentService: BudgetParametrageComponentService,
-    private location: Location,
+    private routingService: RoutingService,
+    private iframeService: IframeService,
+    private router: Router,
   ) {
 
     this.user$ = this.componentService.user$;
     this.siren$ = this.componentService.siren$;
-    this.errorInLoadingBudget$ = this.store.select(selectBudgetError)
+
+
+    let callState$ = this.siren$.pipe(
+      switchMap(siren => this.budgetsStoresService.select_donnees_disponibles_callstate(siren))
+    )
+
+    this.isLoadingDisponibles$ = callState$
+      .pipe(
+        map(cs => !cs || cs === LoadingState.LOADING)
+      )
+    this.errorInLoadingDisponibles$ = callState$
+      .pipe(
+        map(cs => isInError(cs))
+      )
   }
 
   ngOnInit(): void {
 
-    let navigationParamsObs = combineLatest([
-      this.componentService.navigation.anneeSelectionnee$,
-      this.componentService.navigation.etablissementSelectionnee$,
-      this.componentService.navigation.etapeBudgetaireSelectionnee$,
-    ])
-
+    let navigationValues$ = this.componentService.navigationFormulaireService.validatedNavigationValues$
     this.siren$
       .pipe(
-        tap(siren => this.store.dispatch(new BudgetDisponiblesLoadingAction(siren))),
+        tap(siren => this.budgetsStoresService.load_budgets_disponibles_pour(siren)),
         takeUntil(this._stop$),
-      ).subscribe()
+      )
+      .subscribe()
 
-    navigationParamsObs
+    navigationValues$
       .pipe(
-        tap(([annee, siret, etape]) => {
-          this.store.dispatch(new BudgetLoadingAction(annee, siret, etape));
-          this.iframeFragment = this.compute_iframe_fragment(annee, siret, etape);
+        tap(navValues => {
+          console.debug(`[NAV VALUES] - ${navValues.annee}, ${navValues.siret}, ${navValues.etape}`)
+          this._snapshot_annee = navValues.annee
+          this._snapshot_siret = navValues.siret
+          this._snapshot_etape = navValues.etape
+
+          this.id_visualisations = []
+          for (const graphe_id of PagesDeVisualisations.visualisation_pour_pageid(pageid)) {
+            this.id_visualisations.push(
+              { annee: navValues.annee, siret: navValues.siret, etape: navValues.etape, graphe_id }
+            )
+          }
+
+          this.iframeFragment = this.compute_iframe_fragment(navValues.annee, navValues.siret, navValues.etape);
         }),
 
-        mergeMap(([annee, siret, etape]) => {
-          return combineLatest([
-            this.store.select(selectDonnees(annee, siret, etape)),
-            this.store.select(selectInformationsPlanDeCompte(annee, siret)),
-            this.store.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementPrettyname(siret))
-          ])
+        mergeMap(navValues => {
+          return this.budgetsStoresService.select_donnees_et_etabname(
+            navValues.annee,
+            navValues.siret,
+            navValues.etape,
+          )
         }),
 
         tap(([donnees, informationPdc, prettyName]) => {
@@ -83,14 +118,17 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   }
 
   compute_iframe_fragment(annee, siret, etape) {
+    let path = this.routingService.external_url_consultation(annee, siret, etape)
+    return this.iframeService.make_iframe_from_route_path(path)
+  }
 
-    let path = this.location.prepareExternalUrl(`/budget/public/${annee}/${siret}/${etape}`)
-    let url = new URL(path, location.origin)
-    return `
-      <iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" src="${url.href}" 
-       title="Marque blanche budgets" width="100%" height="600">
-      </iframe>
-    `;
+  navigate_vers_consultation_url() {
+
+    let annee = this._snapshot_annee
+    let siret = this._snapshot_siret
+    let etape = this._snapshot_etape
+    let path = this.routingService.external_url_consultation(annee, siret, etape)
+    this.router.navigateByUrl(path)
   }
 
   onEnregistrerClic() {

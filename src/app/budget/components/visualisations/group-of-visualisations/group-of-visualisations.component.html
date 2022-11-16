@@ -1,0 +1,76 @@
+<div class="visualisations">
+
+    <ng-container *ngFor="let visualisation of visualisations">
+
+        <!-- <p>Loading: {{visualisation.loading}}</p> -->
+
+        <ng-container *ngIf="visualisation.loading; else loaded">
+            <div class="visualisation">
+                <mat-card>
+                    <div class="loading">
+                        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                </mat-card>
+            </div>
+        </ng-container>
+
+        <ng-template #loaded>
+
+            <ng-container [ngSwitch]="visualisation.graphe_id">
+
+                <div class="visualisation">
+
+                    <ng-container *ngSwitchCase="'budget-principal-depenses'">
+
+                        <app-budget-card
+                            titre="Les dépenses {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
+                            description="Les dépenses, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
+                            [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
+
+                            <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
+                                [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
+                            </app-budget-principal-graphe>
+                        </app-budget-card>
+
+                    </ng-container>
+
+
+                    <ng-container *ngSwitchCase="'budget-principal-recettes'">
+
+                        <app-budget-card
+                            titre="Les recettes {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
+                            description="Les recettes, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
+                            [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
+
+                            <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
+                                [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
+                            </app-budget-principal-graphe>
+                        </app-budget-card>
+
+                    </ng-container>
+
+
+                    <ng-container *ngSwitchCase="'top-3-depenses'">
+
+                        <app-budget-card titre="Le top 3 des dépenses"
+                            description="Top 3 des dépenses pour l'année {{visualisation.annee}}"
+                            [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
+
+                            <app-top-trois-depenses [donneesBudget]="visualisation.donnees_budgetaires"
+                                [informationsPlanDeCompte]="visualisation.informations_pdc">
+
+                            </app-top-trois-depenses>
+
+                        </app-budget-card>
+
+                    </ng-container>
+                </div>
+
+            </ng-container>
+
+        </ng-template>
+
+
+    </ng-container>
+
+</div>

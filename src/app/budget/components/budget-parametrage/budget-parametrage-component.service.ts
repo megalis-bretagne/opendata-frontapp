@@ -1,23 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
-import { _Etablissement } from '../../models/donnees-budgetaires-disponibles';
-import { EtablissementComboItemViewModel } from '../../models/view-models';
-import { EtapeBudgetaire } from '../../services/budget.service';
-import { BudgetDisponiblesLoadingAction } from '../../store/actions/budget.actions';
-import { BudgetViewModelSelectors } from '../../store/selectors/BudgetViewModelSelectors';
-import { BudgetState } from '../../store/states/budget.state';
-
-
-export enum PresentationType {
-  SIMPLIFIE,
-  AVANCEE,
-  PAR_HABITANT,
-  PAR_EURO,
-}
+import { Annee, Siret } from '../../models/common-types';
+import { EtapeBudgetaire } from '../../models/etape-budgetaire';
+import { BudgetsStoresService } from '../../services/budgets-store.service';
+import { NavigationFormulaireService } from './navigation-formulaire-service';
 
 @Injectable()
 export class BudgetParametrageComponentService {
@@ -25,20 +15,13 @@ export class BudgetParametrageComponentService {
   readonly user$: Observable<User>;
   readonly siren$: Observable<string>;
 
-  readonly anneesDisponibles$: Observable<string[]>;
-  anneesDisponiblesSnapshot: string[];
-
-  readonly etablissementsDisponibles$: Observable<EtablissementComboItemViewModel[]>;
-  etablissementsDisponiblesSnapshot: EtablissementComboItemViewModel[];
-
   readonly navigation: Navigation;
+  readonly navigationFormulaireService: NavigationFormulaireService;
 
   constructor(
     private globalStore: Store<GlobalState>,
-    private budgetStore: Store<BudgetState>,
+    private budgetStoresServices: BudgetsStoresService,
   ) {
-
-    this.navigation = new Navigation();
 
     this.user$ = this.globalStore.select(selectAuthState)
       .pipe(
@@ -50,63 +33,60 @@ export class BudgetParametrageComponentService {
         map(user => user.siren),
       );
 
-    this.siren$.subscribe(siren => this.budgetStore.dispatch(new BudgetDisponiblesLoadingAction(siren)))
-
-    this.etablissementsDisponibles$ = this.siren$
-      .pipe(
-        mergeMap(siren => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.etablissementsDisponiblesComboViewModel(siren))),
-        tap(etablissementsDisponibles => this.etablissementsDisponiblesSnapshot = etablissementsDisponibles)
-      )
-
-    this.anneesDisponibles$ = this.navigation.etablissementSelectionnee$
-      .pipe(
-        mergeMap(siret => this.budgetStore.select(BudgetViewModelSelectors.DonneesDisponibles.anneesDisponibles(siret))),
-        tap(annees => this.anneesDisponiblesSnapshot = annees)
-      );
+    this.navigation = new Navigation();
+    this.navigationFormulaireService = new NavigationFormulaireService(
+      this.siren$, 
+      this.budgetStoresServices,
+    );
   }
 
-  debug(msg) {
-    console.debug(`[BudgetParametrageComponentService] ${msg}`);
+  destroy() {
+    this.navigationFormulaireService.destroy()
+  }
+
+  debug(_) {
+    // console.debug(`[BudgetParametrageComponentService] ${msg}`);
   }
 }
 
-class Navigation {
+export class Navigation {
 
-  readonly anneeSelectionnee$: Observable<string>;
-  readonly etapeBudgetaireSelectionnee$: Observable<EtapeBudgetaire>;
-  readonly presentationSelectionnee$: Observable<PresentationType>;
-  readonly etablissementSelectionnee$: Observable<string>;
-
-  private _anneeSelectionnee: Subject<string> = new ReplaySubject(1);
-  private _etapeBudgetaireSelectionnee: Subject<EtapeBudgetaire> = new ReplaySubject(1);
-  private _presentationSelectionnee: Subject<PresentationType> = new ReplaySubject(1);
-  private _siretSelectionnee: Subject<string> = new ReplaySubject(1);
-
-  constructor() {
-    this.anneeSelectionnee$ = this._anneeSelectionnee;
-    this.etapeBudgetaireSelectionnee$ = this._etapeBudgetaireSelectionnee;
-    this.presentationSelectionnee$ = this._presentationSelectionnee;
-    this.etablissementSelectionnee$ = this._siretSelectionnee;
+  get anneeSelectionnee$() {
+    return this._distinctAnneeSelectionee
+  }
+  get etapeBudgetaireSelectionnee$() {
+    return this._distinctEtapeBudgetaireSelectionnee
+  }
+  get etablissementSelectionnee$() {
+    return this._distinctSiretSelectionnee
   }
 
-  public selectionneAnnee(annee: string) {
+  private _anneeSelectionnee: Subject<string> = new ReplaySubject(1);
+  private _distinctAnneeSelectionee = this._anneeSelectionnee.pipe(distinctUntilChanged());
 
-    this._debug(`Selectionne l'année ${annee}`);
+  private _etapeBudgetaireSelectionnee: Subject<EtapeBudgetaire> = new ReplaySubject(1);
+  private _distinctEtapeBudgetaireSelectionnee = this._etapeBudgetaireSelectionnee.pipe(distinctUntilChanged());
+
+  private _siretSelectionnee: Subject<string> = new ReplaySubject(1);
+  private _distinctSiretSelectionnee = this._siretSelectionnee.pipe(distinctUntilChanged())
+
+  constructor() {
+    // Debug 
+    // this.etablissementSelectionnee$.subscribe(etab => this._debug(`emet etab: ${etab}`))
+    // this.etapeBudgetaireSelectionnee$.subscribe(etape => this._debug(`emet etape: ${etape}`))
+    // this.anneeSelectionnee$.subscribe(annee => this._debug(`emet annee: ${annee}`))
+    //
+  }
+
+  public selectionneAnnee(annee: Annee) {
     this._anneeSelectionnee.next(annee);
   }
 
   public selectionneEtapeBudgetaire(etape: EtapeBudgetaire) {
-    this._debug(`Selectionne l'étape ${etape}`);
     this._etapeBudgetaireSelectionnee.next(etape);
   }
 
-  public selectionnePresentation(presentation: PresentationType) {
-    this._debug(`Selectionne la présentation ${PresentationType[presentation]}`);
-    this._presentationSelectionnee.next(presentation);
-  }
-
-  public selectionneEtablissement(siret: string) {
-    this._debug(`Selectionne le siret ${siret}`)
+  public selectionneEtablissement(siret: Siret) {
     this._siretSelectionnee.next(siret);
   }
 

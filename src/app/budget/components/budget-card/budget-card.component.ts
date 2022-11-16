@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { Store } from '@ngrx/store';
-import {tap, takeUntil} from 'rxjs/operators';
+import { tap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { BudgetState, selectBudgetError, selectBudgetIsLoading } from '../../store/states/budget.state';
+import { Router } from '@angular/router';
+import { IframeService } from '../../services/iframe.service';
+import { BudgetsStoresService } from '../../services/budgets-store.service';
 
 @Component({
   selector: 'app-budget-card',
@@ -15,10 +16,13 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   parametrable = false;
 
   @Input()
-  titre = 'Titre';
+  url_consultation = ''
 
   @Input()
-  description = 'Description';
+  titre?;
+
+  @Input()
+  description?: string;
 
   @Output()
   deplacerClic = new EventEmitter();
@@ -29,30 +33,26 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   @Output()
   genererImageClic = new EventEmitter();
 
-
-  isLoading: boolean = true;
-  hasError = false;
-  isSuccess = () => !this.isLoading && !this.hasError;
-
   _stop$ = new Subject();
 
-  constructor(private store: Store<BudgetState>) { }
-
-  ngOnInit(): void {
-    this.store.select(selectBudgetError)
-      .pipe(
-        tap(hasError => this.hasError = hasError),
-        takeUntil(this._stop$)
-      ).subscribe()
-    this.store.select(selectBudgetIsLoading)
-      .pipe(
-        tap(isLoading => this.isLoading = isLoading),
-        takeUntil(this._stop$)
-      ).subscribe()
+  get isLoading() {
+    return !Boolean(this.titre) && !Boolean(this.description)
   }
 
+  constructor(
+    private iframeService: IframeService,
+    private router: Router,
+  ) { }
+
+  ngOnInit(): void { }
+
   ngOnDestroy(): void {
-      this._stop$.next(null);
+    this._stop$.next(null);
+  }
+
+  onNavClic() {
+    let url = this.url_consultation
+    this.router.navigateByUrl(url)
   }
 
   onDeplacerClic() {
@@ -68,7 +68,11 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     this.genererImageClic.emit();
   }
 
-  private _debug(msg) {
-    console.debug(`[BudgetCardComponent] ${msg}`);
+  computeIframeFragment(): string {
+    return this.iframeService.make_iframe_from_route_path(this.url_consultation)
+  }
+
+  private _debug(_) {
+    // console.debug(`[BudgetCardComponent] ${msg}`);
   }
 }

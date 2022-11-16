@@ -20,6 +20,11 @@ import { BudgetConsultationComponent } from './components/budget-consultation/bu
 import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ReactiveFormsModule } from '@angular/forms';
+import { GroupOfVisualisationsComponent } from './components/visualisations/group-of-visualisations/group-of-visualisations.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ResizeObserverModule } from '@ng-web-apis/resize-observer';
+import { TopTroisDepensesComponent } from './components/visualisations/top-trois-depenses/top-trois-depenses.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -35,11 +40,16 @@ echarts.registerLocale('FR', langFr);
     BudgetCardComponent,
     BudgetPrincipalGrapheComponent,
     BudgetConsultationComponent,
+    GroupOfVisualisationsComponent,
+    TopTroisDepensesComponent,
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
+    ReactiveFormsModule,
     LayoutModule,
     ClipboardModule,
+    ResizeObserverModule,
 
     NgxEchartsModule.forRoot({ echarts }),
 
