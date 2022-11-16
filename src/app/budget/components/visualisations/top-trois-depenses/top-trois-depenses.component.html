@@ -1,0 +1,8 @@
+<ng-container>
+
+    <div *ngIf="echartsVm" >
+        <div echarts [options]="echartsVm?.options" [initOpts]="echartsVm?.chartInitOptions " [autoResize]="true"
+            class="echart-chart"></div>
+    </div>
+
+</ng-container>

@@ -8,10 +8,10 @@
         </mat-form-field>
     </div>
 
-    <div *ngIf="echartData$ | async as echartsData"
+    <div *ngIf="echartsVm"
          waResizeBox="content-box" (waResizeObserver)="onResize($event)">
 
-        <div echarts [options]="echartsData?.options" [initOpts]="echartsData?.initOptions " [autoResize]="true"
+        <div echarts [options]="echartsVm?.options" [initOpts]="echartsVm?.chartInitOptions " [autoResize]="true"
             class="echart-chart"></div>
         <!-- Pour forcer le moteur de rendu -->
         <!-- [initOpts]="{ renderer: 'svg' }" -->
@@ -30,7 +30,7 @@
             id="command_nomenclatures_par_fonctions"  
             queryParamsHandling="preserve" 
             [ngClass]="{ 'link-active': typeNomenclature ==='fonctions' }"
-            (click)="onClicNomenclatureFonctions()">Nomenclature par fonctions</a> |
+            (click)="onClicNomenclatureFonctions()">Nomenclature par fonction</a> |
         <a [routerLink]="[]" 
             id="command_nomenclatures_par_nature" 
             queryParamsHandling="preserve" 

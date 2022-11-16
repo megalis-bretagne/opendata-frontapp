@@ -24,6 +24,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { GroupOfVisualisationsComponent } from './components/visualisations/group-of-visualisations/group-of-visualisations.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ResizeObserverModule } from '@ng-web-apis/resize-observer';
+import { TopTroisDepensesComponent } from './components/visualisations/top-trois-depenses/top-trois-depenses.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -40,6 +41,7 @@ echarts.registerLocale('FR', langFr);
     BudgetPrincipalGrapheComponent,
     BudgetConsultationComponent,
     GroupOfVisualisationsComponent,
+    TopTroisDepensesComponent,
   ],
   imports: [
     CommonModule,

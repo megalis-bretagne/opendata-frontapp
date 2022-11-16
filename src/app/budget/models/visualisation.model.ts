@@ -7,8 +7,8 @@ export namespace PagesDeVisualisations {
 
     const _pages = new Map<PageId, VisualisationGraphId[]>()
     _pages.set(
-        'default', 
-        ['budget-principal-depenses', 'budget-principal-recettes', 'budget-principal-top-3']
+        'default',
+        ['budget-principal-depenses', 'budget-principal-recettes', 'top-3-depenses'],
     );
 
     export function visualisation_pour_pageid(id: PageId) {
@@ -18,9 +18,9 @@ export namespace PagesDeVisualisations {
 
 /** Identifiant d'une visualisation */
 export type VisualisationGraphId =
-    'budget-principal-depenses'   
+    'budget-principal-depenses'
     | 'budget-principal-recettes'
-    | 'budget-principal-top-3';
+    | 'top-3-depenses';
 
 export interface IdentifiantVisualisation {
     annee: Annee
@@ -49,11 +49,11 @@ export namespace VisualisationUtils {
         }
 
         return identifiants
-        .map(id => _to_api_call_desc(id))
-        .reduce(
-            _unique_reduce_fn,
-            []
-        )
+            .map(id => _to_api_call_desc(id))
+            .reduce(
+                _unique_reduce_fn,
+                []
+            )
     }
 
     function _to_api_call_desc(id: IdentifiantVisualisation): ApiCallDesc {
