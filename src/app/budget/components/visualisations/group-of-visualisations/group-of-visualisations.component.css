@@ -1,3 +1,12 @@
 .visualisation {
     margin-bottom: 2em;
 }
+
+.loading {
+    /* XXX: Hauteur par défaut des encarts de visualisation*/
+    height: 400px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -4,9 +4,15 @@
 
         <!-- <p>Loading: {{visualisation.loading}}</p> -->
 
-        <div *ngIf="visualisation.loading; else loaded">
-            Loading...
-        </div>
+        <ng-container *ngIf="visualisation.loading; else loaded">
+            <div class="visualisation">
+                <mat-card>
+                    <div class="loading">
+                        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+                    </div>
+                </mat-card>
+            </div>
+        </ng-container>
 
         <ng-template #loaded>
 
