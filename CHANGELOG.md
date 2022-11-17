@@ -23,6 +23,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Réutilisation budgets: graphe principal réactif à la taille.
 - Réutilisation budgets: meilleure gestion des écrans de chargement.
+- Technique: CVE-2022-37603 loader-utils 2.0.4
 
 
 ## [1.0.7] - 2022-09-22

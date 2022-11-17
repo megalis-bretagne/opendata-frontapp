@@ -13,9 +13,9 @@
     "cypress:ct": "cypress open --component"
   },
   "private": true,
-  "_comment": "TODO: loader-utils 2.0.2 a une faille critique. Mettre à jour angular et supprimer cette ligne lorsque la 2.0.3 sera poussée upstream",
+  "_comment": "TODO: loader-utils 2.0.2 a une faille critique. Mettre à jour angular et supprimer cette ligne lorsque la 2.0.4 sera poussée upstream",
   "overrides": {
-    "loader-utils": "2.0.3"
+    "loader-utils": "2.0.4"
   },
   "dependencies": {
     "@angular/animations": "^14.2.10",
