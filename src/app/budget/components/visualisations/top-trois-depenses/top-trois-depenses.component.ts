@@ -2,18 +2,25 @@ import { Component, Input } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
+import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.service';
 import { PrepareDonneesVisualisation, VisualisationPourTop3 } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { object_is_empty } from 'src/app/utils';
 import { EchartsViewModel } from '../EchartsViewModel';
-import { VisualisationComponent } from '../visualisation-component.interface';
+import { VisualisationComponent } from '../visualisation-component.component';
 
 @Component({
   selector: 'app-top-trois-depenses',
   templateUrl: './top-trois-depenses.component.html',
-  styleUrls: ['./top-trois-depenses.component.css']
+  styleUrls: ['./top-trois-depenses.component.css'],
+  providers: [
+    {
+      provide: VisualisationComponent,
+      useExisting: TopTroisDepensesComponent,
+    }
+  ]
 })
-export class TopTroisDepensesComponent implements VisualisationComponent {
+export class TopTroisDepensesComponent extends VisualisationComponent {
 
   echartsVm?: EchartsViewModel;
 
@@ -32,7 +39,10 @@ export class TopTroisDepensesComponent implements VisualisationComponent {
   constructor(
     private mapper: PrepareDonneesVisualisation,
     private prettyCurrencyFormatter: PrettyCurrencyFormatter,
-  ) { }
+    echartsUtilsService: EchartsUtilsService,
+  ) {
+    super(echartsUtilsService);
+  }
 
   toChartsViewModel(donnees: DonneesBudgetaires, _: Pdc.InformationsPdc): EchartsViewModel {
 
@@ -90,7 +100,11 @@ export class TopTroisDepensesComponent implements VisualisationComponent {
       }
     })
 
-    let option = {
+    let option: EChartsOption = {
+      title: {
+        text: this.titre,
+        show: false,
+      },
       tooltip: {
         trigger: 'item',
         formatter: (item) => { 

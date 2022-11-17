@@ -11,7 +11,7 @@ import { BudgetStorageModule } from './store/budget-storage.module';
 import * as echarts from 'echarts/core';
 import { BarChart, PieChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components';
-import { SVGRenderer } from 'echarts/renderers';
+import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
 import langFr from 'echarts/lib/i18n/langFR';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { BudgetPrincipalGrapheComponent } from './components/visualisations/budget-principal-graphe/budget-principal-graphe.component';
@@ -29,7 +29,7 @@ import { TopTroisDepensesComponent } from './components/visualisations/top-trois
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
   BarChart, PieChart,
-  SVGRenderer,
+  SVGRenderer, CanvasRenderer,
 ]);
 echarts.registerLocale('FR', langFr);
 

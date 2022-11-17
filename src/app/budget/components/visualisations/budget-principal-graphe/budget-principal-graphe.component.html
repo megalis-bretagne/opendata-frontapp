@@ -8,13 +8,10 @@
         </mat-form-field>
     </div>
 
-    <div *ngIf="echartsVm"
-         waResizeBox="content-box" (waResizeObserver)="onResize($event)">
+    <div *ngIf="echartsVm" waResizeBox="content-box" (waResizeObserver)="onResize($event)">
 
         <div echarts [options]="echartsVm?.options" [initOpts]="echartsVm?.chartInitOptions " [autoResize]="true"
             class="echart-chart"></div>
-        <!-- Pour forcer le moteur de rendu -->
-        <!-- [initOpts]="{ renderer: 'svg' }" -->
     </div>
     <div class="bottom-links">
         <a [routerLink]="[]" queryParamsHandling="preserve" [ngClass]="{ 'link-active': typeVue ==='general' }"
@@ -26,14 +23,10 @@
         </a>
     </div>
     <div class="debug" *ngIf="afficherOptionsChoixNomenclatures">
-        <a [routerLink]="[]" 
-            id="command_nomenclatures_par_fonctions"  
-            queryParamsHandling="preserve" 
+        <a [routerLink]="[]" id="command_nomenclatures_par_fonctions" queryParamsHandling="preserve"
             [ngClass]="{ 'link-active': typeNomenclature ==='fonctions' }"
             (click)="onClicNomenclatureFonctions()">Nomenclature par fonction</a> |
-        <a [routerLink]="[]" 
-            id="command_nomenclatures_par_nature" 
-            queryParamsHandling="preserve" 
+        <a [routerLink]="[]" id="command_nomenclatures_par_nature" queryParamsHandling="preserve"
             [ngClass]="{ 'link-active': typeNomenclature === 'nature' }"
             (click)="onClicNomenclatureNature()">Nomenclature par nature</a>
     </div>

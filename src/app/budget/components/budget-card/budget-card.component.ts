@@ -1,9 +1,8 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { tap, takeUntil } from 'rxjs/operators';
+import { Component, ContentChild, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { IframeService } from '../../services/iframe.service';
-import { BudgetsStoresService } from '../../services/budgets-store.service';
+import { VisualisationComponent } from '../visualisations/visualisation-component.component';
 
 @Component({
   selector: 'app-budget-card',
@@ -35,6 +34,9 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
 
   _stop$ = new Subject();
 
+  @ContentChild(VisualisationComponent)
+  visualisationComponent: VisualisationComponent
+
   get isLoading() {
     return !Boolean(this.titre) && !Boolean(this.description)
   }
@@ -64,8 +66,19 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   onIframeClic() {
     this.copierIframeClic.emit();
   }
+
   onExportClic() {
+    // Export comme pdf
     this.genererImageClic.emit();
+
+    let data_url = this.visualisationComponent.visualisationDataUrlPourPdf()
+
+    let link = document.createElement('a');
+    link.download = 'graphe.png'
+    link.href = data_url
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   }
 
   computeIframeFragment(): string {

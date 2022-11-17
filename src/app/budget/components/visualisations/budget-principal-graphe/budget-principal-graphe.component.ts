@@ -6,8 +6,10 @@ import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/bud
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { object_is_empty } from 'src/app/utils';
 import { EchartsViewModel } from '../EchartsViewModel';
-import { VisualisationComponent } from '../visualisation-component.interface';
+import { VisualisationComponent } from '../visualisation-component.component';
 import { LAYOUT_CONFIGS, LAYOUT_MODE } from './layout-config';
+
+import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.service';
 
 export type TypeVue = 'general' | 'detaille'
 
@@ -28,8 +30,14 @@ const MEDIUM_MODE_MAX_WIDTH = 1200
   selector: 'app-budget-principal-graphe',
   templateUrl: './budget-principal-graphe.component.html',
   styleUrls: ['./budget-principal-graphe.component.css'],
+  providers: [
+    {
+      provide: VisualisationComponent,
+      useExisting: BudgetPrincipalGrapheComponent,
+    }
+  ]
 })
-export class BudgetPrincipalGrapheComponent implements VisualisationComponent {
+export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
 
   echartsVm?: EchartsViewModel
 
@@ -78,7 +86,11 @@ export class BudgetPrincipalGrapheComponent implements VisualisationComponent {
 
   constructor(
     private mapper: PrepareDonneesVisualisation,
-    private prettyCurrencyFormatter: PrettyCurrencyFormatter) { }
+    private prettyCurrencyFormatter: PrettyCurrencyFormatter,
+    echartsUtilsService: EchartsUtilsService,
+  ) { 
+    super(echartsUtilsService);
+  }
 
   get afficherOptionsChoixNomenclatures() {
     let afficher = true
@@ -108,7 +120,7 @@ export class BudgetPrincipalGrapheComponent implements VisualisationComponent {
     donneesBudget: DonneesBudgetaires,
     informationPlanDeCompte: Pdc.InformationsPdc,
   ): EchartsViewModel {
-    
+
     let typeVue = this.typeVue
     let modePresentationMontant = this.selectedMontantPresentation
 
@@ -118,7 +130,7 @@ export class BudgetPrincipalGrapheComponent implements VisualisationComponent {
     let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
     let chartOption: EChartsOption = this.echartsOptions(intitule, donneesVisualisation, modePresentationMontant);
 
-    let chartInitOptions = {}
+    let chartInitOptions = { renderer: 'svg' }
 
     let chartData = {
       options: chartOption,
@@ -147,7 +159,10 @@ export class BudgetPrincipalGrapheComponent implements VisualisationComponent {
     }
 
     let chartOption: EChartsOption = {
-      name: ``,
+      title: {
+        text: this.titre,
+        show: false,
+      },
       tooltip: {
         trigger: 'item',
         formatter: (item) => `${item.name}: <b> ${this.prettyCurrencyFormatter.format(item.value)}</b>`,
@@ -155,6 +170,7 @@ export class BudgetPrincipalGrapheComponent implements VisualisationComponent {
       legend: {
         show: show_legend,
         type: 'scroll',
+        top: '10%',
         left: this.layoutConfig.legend_left,
         orient: 'vertical',
         formatter: legend_formatter,

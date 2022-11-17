@@ -20,12 +20,13 @@
 
                     <ng-container *ngSwitchCase="'budget-principal-depenses'">
 
-                        <app-budget-card
-                            titre="Les dépenses {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
-                            description="Les dépenses, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
-                            [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
+                        <app-budget-card [titre]="titre_pour(visualisation)"
+                            [description]="description_pour(visualisation)" [parametrable]="parametrable"
+                            [url_consultation]="url_consultation(visualisation)">
 
-                            <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
+                            <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
+                                [description]="description_pour(visualisation)"
+                                [donneesBudget]="visualisation.donnees_budgetaires"
                                 [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
                             </app-budget-principal-graphe>
                         </app-budget-card>
@@ -35,12 +36,13 @@
 
                     <ng-container *ngSwitchCase="'budget-principal-recettes'">
 
-                        <app-budget-card
-                            titre="Les recettes {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
-                            description="Les recettes, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
-                            [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
+                        <app-budget-card [titre]="titre_pour(visualisation)"
+                            [description]="description_pour(visualisation)" [parametrable]="parametrable"
+                            [url_consultation]="url_consultation(visualisation)">
 
-                            <app-budget-principal-graphe [donneesBudget]="visualisation.donnees_budgetaires"
+                            <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
+                                [description]="description_pour(visualisation)"
+                                [donneesBudget]="visualisation.donnees_budgetaires"
                                 [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
                             </app-budget-principal-graphe>
                         </app-budget-card>
@@ -50,12 +52,13 @@
 
                     <ng-container *ngSwitchCase="'top-3-depenses'">
 
-                        <app-budget-card 
-                            titre="Le top 3 des dépenses {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
-                            description="Le top 3 des dépenses, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
-                            [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
+                        <app-budget-card [titre]="titre_pour(visualisation)"
+                            [description]="description_pour(visualisation)" [parametrable]="parametrable"
+                            [url_consultation]="url_consultation(visualisation)">
 
-                            <app-top-trois-depenses [donneesBudget]="visualisation.donnees_budgetaires"
+                            <app-top-trois-depenses [titre]="titre_pour(visualisation)"
+                                [description]="description_pour(visualisation)"
+                                [donneesBudget]="visualisation.donnees_budgetaires"
                                 [informationsPlanDeCompte]="visualisation.informations_pdc">
 
                             </app-top-trois-depenses>

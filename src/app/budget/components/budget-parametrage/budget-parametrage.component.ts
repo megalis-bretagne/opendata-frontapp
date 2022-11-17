@@ -14,7 +14,6 @@ import { RoutingService } from '../../services/routing.service';
 import { isInError, LoadingState } from '../../store/states/call-states';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
-
 const pageid: PagesDeVisualisations.PageId = 'default'
 
 @Component({
@@ -115,6 +114,10 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
         takeUntil(this._stop$)
       )
       .subscribe()
+  }
+
+  rendre_pdf() {
+    // TODO: impl
   }
 
   compute_iframe_fragment(annee, siret, etape) {

@@ -42,6 +42,31 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void { }
 
+  titre_pour(visualisation: _DonneesVisualisation) {
+    let annee = visualisation.annee
+    let nom_etab = visualisation.nom_etablissement
+    switch(visualisation.graphe_id) {
+      case 'budget-principal-depenses':
+        return `Les dépenses ${annee} du budget principal - ${nom_etab}`
+      case 'budget-principal-recettes':
+        return `Les recettes ${annee} du budget principal - ${nom_etab}`
+      case 'top-3-depenses':
+        return `Le top 3 des dépenses ${annee} du budget principal - ${nom_etab}`
+    }
+  }
+
+  description_pour(visualisation: _DonneesVisualisation) {
+    let annee = visualisation.annee
+    let nom_etab = visualisation.nom_etablissement
+    switch(visualisation.graphe_id) {
+      case 'budget-principal-depenses':
+        return `Les dépenses, pour l'année ${annee}  et pour le budget principal - ${nom_etab}`
+      case 'budget-principal-recettes':
+        return `Les recettes, pour l'année ${annee}  et pour le budget principal - ${nom_etab}`
+      case 'top-3-depenses':
+        return `Le top 3 des dépenses, pour l'année ${annee}  et pour le budget principal - ${nom_etab}`
+    }
+  }
 
   compute_visualisations(id_visualisations: IdentifiantVisualisation[]) {
 

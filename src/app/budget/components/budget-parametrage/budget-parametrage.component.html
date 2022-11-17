@@ -19,10 +19,20 @@
 
             <app-budget-parametrage-nav></app-budget-parametrage-nav>
 
-            <app-group-of-visualisations [id_visualisations]="id_visualisations" [parametrable]="true">
-            </app-group-of-visualisations>
+            <div>
+                <app-group-of-visualisations 
+                    [id_visualisations]="id_visualisations"
+                    [parametrable]="true">
+                </app-group-of-visualisations>
+            </div>
 
             <div class="boutons-bas-de-page">
+
+                <button disabled mat-raised-button (click)="rendre_pdf()">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    Rendre en PDF
+                </button>
+
                 <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">
                     <mat-icon>code</mat-icon>
                     Copier l'iframe
