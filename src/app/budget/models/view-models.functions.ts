@@ -11,6 +11,14 @@ export function etablissement_pretty_name(etablissement: Etablissement): string 
     return prettyName
 }
 
+export function etablissement_combobox_pretty_name(etablissement: Etablissement): string {
+    let prettyName = etablissement.denomination
+    if (etablissement.enseigne) {
+        prettyName = etablissement.enseigne
+    }
+    return prettyName
+}
+
 export function etape_pretty_name(etape: EtapeBudgetaire): string {
     switch (etape) {
         case EtapeBudgetaire.BUDGET_PRIMITIF:
@@ -27,7 +35,7 @@ export function etape_pretty_name(etape: EtapeBudgetaire): string {
 }
 
 export function etablissement_vers_comboViewModel(etablissement: Etablissement, disabled?: boolean): EtablissementComboItemViewModel {
-    let prettyName = etablissement_pretty_name(etablissement)
+    let prettyName = etablissement_combobox_pretty_name(etablissement)
     return { value: etablissement.siret, viewValue: prettyName, disabled: Boolean(disabled) }
 }
 
@@ -40,7 +48,7 @@ export function etablissements_vers_comboViewModel(
 
     let infos_etab = donneesBudgetairesDisponibles.infos_etablissements;
     let etabs = tous_sirets.map(siret => infos_etab[siret]);
-    let sorted = etabs.sort(sort_siret);
+    let sorted = etabs.sort(sort_etabs);
     let etabComboViewModel = sorted.map(etab => {
         let disabled = !sirets_actifs.includes(etab.siret)
         return etablissement_vers_comboViewModel(etab, disabled)
@@ -54,4 +62,11 @@ export function etape_vers_comboViewModel(etape: EtapeBudgetaire, disabled?: boo
     return { value: etape, viewValue: etape_pretty_name(etape), disabled: Boolean(disabled) }
 }
 
-const sort_siret = (s1, s2) => Number(s1) - Number(s2)
+function sort_etabs(e1: Etablissement, e2: Etablissement) {
+
+    let siret_ou_0 = (e: Etablissement) => (e.est_siege)? 0 : Number(e.siret)
+    let s1 = siret_ou_0(e1)
+    let s2 = siret_ou_0(e2)
+
+    return s1 - s2
+}

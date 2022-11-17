@@ -2,8 +2,6 @@
 
     <ng-container *ngFor="let visualisation of visualisations">
 
-        <!-- <p>Loading: {{visualisation.loading}}</p> -->
-
         <ng-container *ngIf="visualisation.loading; else loaded">
             <div class="visualisation">
                 <mat-card>
