@@ -50,8 +50,9 @@
 
                     <ng-container *ngSwitchCase="'top-3-depenses'">
 
-                        <app-budget-card titre="Le top 3 des dépenses"
-                            description="Top 3 des dépenses pour l'année {{visualisation.annee}}"
+                        <app-budget-card 
+                            titre="Le top 3 des dépenses {{visualisation.annee}} du budget principal - {{visualisation.nom_etablissement}}"
+                            description="Le top 3 des dépenses, pour l'année {{visualisation.annee}}  et pour le budget principal - {{visualisation.nom_etablissement}}"
                             [parametrable]="parametrable" [url_consultation]="url_consultation(visualisation)">
 
                             <app-top-trois-depenses [donneesBudget]="visualisation.donnees_budgetaires"
