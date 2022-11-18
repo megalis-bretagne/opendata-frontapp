@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Optional } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
@@ -6,10 +6,11 @@ import { PrepareDonneesVisualisation, VisualisationPourDonut } from 'src/app/bud
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { object_is_empty } from 'src/app/utils';
 import { EchartsViewModel } from '../EchartsViewModel';
-import { VisualisationComponent } from '../visualisation-component.component';
-import { LAYOUT_CONFIGS, LAYOUT_MODE } from './layout-config';
+import { VisualisationComponent } from '../visualisation.component';
+import { LayoutConfig, LAYOUT_CONFIGS, LAYOUT_MODE } from './layout-config';
 
 import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.service';
+import { BudgetParametrageComponentService } from '../../budget-parametrage/budget-parametrage-component.service';
 
 export type TypeVue = 'general' | 'detaille'
 
@@ -88,8 +89,10 @@ export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
     private mapper: PrepareDonneesVisualisation,
     private prettyCurrencyFormatter: PrettyCurrencyFormatter,
     echartsUtilsService: EchartsUtilsService,
+    @Optional()
+    componentService?: BudgetParametrageComponentService,
   ) { 
-    super(echartsUtilsService);
+    super(echartsUtilsService, componentService);
   }
 
   get afficherOptionsChoixNomenclatures() {
@@ -128,7 +131,14 @@ export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
 
     let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
-    let chartOption: EChartsOption = this.echartsOptions(intitule, donneesVisualisation, modePresentationMontant);
+    let chartOption: EChartsOption = this.compute_echarts_options(intitule, donneesVisualisation, modePresentationMontant, this.layoutConfig);
+
+    this.pdf_echarts_options = this.compute_echarts_options(
+      intitule, 
+      donneesVisualisation, 
+      modePresentationMontant, 
+      this.pdfLayoutConfig
+    );
 
     let chartInitOptions = { renderer: 'svg' }
 
@@ -140,17 +150,18 @@ export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
     return chartData;
   }
 
-  echartsOptions(
+  compute_echarts_options(
     intitule: string,
     donneesVisualisation: VisualisationPourDonut,
     modePresentationMontant: ModePresentationMontant,
+    layoutConfig: LayoutConfig,
   ) {
     let data_dict = donneesVisualisation.data_dict;
     let data = donneesVisualisation.data;
 
-    let font_size = this.layoutConfig.chart_font_size;
-    let show_legend = this.layoutConfig.show_legend;
-    let horizontal_positon = this.layoutConfig.donut_horizontal_position;
+    let font_size = layoutConfig.chart_font_size;
+    let show_legend = layoutConfig.show_legend;
+    let horizontal_positon = layoutConfig.donut_horizontal_position;
 
     let legend_formatter = (name) => `${name} - ${this.prettyCurrencyFormatter.format(data_dict[name])}`;
     if (modePresentationMontant == ModePresentationMontant.POURCENTAGE) {
@@ -170,13 +181,18 @@ export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
       legend: {
         show: show_legend,
         type: 'scroll',
-        top: '10%',
-        left: this.layoutConfig.legend_left,
+        top: layoutConfig.legend_top,
+        left: layoutConfig.legend_left,
+        right: layoutConfig.legend_right,
+
+        pageIconSize: layoutConfig.page_icon_size,
+        pageFormatter: layoutConfig.page_formatter,
+
         orient: 'vertical',
         formatter: legend_formatter,
         textStyle: {
           overflow: 'truncate',
-          width: this.layoutConfig.legend_max_width,
+          width: layoutConfig.legend_max_width,
         },
         tooltip: {
           triggerOn: 'mousemove|click',
@@ -241,6 +257,8 @@ export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
   get layoutMode() { return this._layoutMode }
 
   get layoutConfig() { return LAYOUT_CONFIGS.get(this.layoutMode) }
+
+  get pdfLayoutConfig() { return LAYOUT_CONFIGS.get('pdf') }
 
   get montantPresentationOptions() {
     return montantPresentationOptions

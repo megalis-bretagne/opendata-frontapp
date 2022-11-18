@@ -39,10 +39,9 @@
             <div></div>
             <div>
 
-                <!-- TODO: disable -->
-                <button *ngIf="parametrable" (click)="onNavClic()" class="menu-btn" mat-mini-fab color="basic">
+                <!-- <button *ngIf="parametrable" (click)="onNavClic()" class="menu-btn" mat-mini-fab color="basic">
                     <mat-icon>open_in_new</mat-icon>
-                </button>
+                </button> -->
 
                 <button *ngIf="parametrable" [cdkCopyToClipboard]="computeIframeFragment()" class="menu-btn"
                     mat-mini-fab color="basic">

@@ -127,7 +127,6 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.componentService.destroy()
     this._stop$.next();
     this._stop$.complete();
   }

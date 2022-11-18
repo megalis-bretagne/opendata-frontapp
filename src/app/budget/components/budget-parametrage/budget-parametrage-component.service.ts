@@ -7,6 +7,7 @@ import { GlobalState, selectAuthState } from 'src/app/store/states/global.state'
 import { Annee, Siret } from '../../models/common-types';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { BudgetsStoresService } from '../../services/budgets-store.service';
+import { VisualisationComponent } from '../visualisations/visualisation.component';
 import { NavigationFormulaireService } from './navigation-formulaire-service';
 
 @Injectable()
@@ -17,6 +18,8 @@ export class BudgetParametrageComponentService {
 
   readonly navigation: Navigation;
   readonly navigationFormulaireService: NavigationFormulaireService;
+
+  private _graphe_exporters: VisualisationComponent[] = []
 
   constructor(
     private globalStore: Store<GlobalState>,
@@ -38,6 +41,17 @@ export class BudgetParametrageComponentService {
       this.siren$, 
       this.budgetStoresServices,
     );
+  }
+
+  get graphe_exporters() { return this._graphe_exporters }
+
+  register_graphe_exporter(visualisation_component: VisualisationComponent) {
+    this._graphe_exporters.push(visualisation_component)
+  }
+
+  unregister_graphe_exporter(visualisation_component: VisualisationComponent) {
+    let index = this._graphe_exporters.indexOf(visualisation_component)
+    if (index > -1) this._graphe_exporters.splice(index, 1)
   }
 
   destroy() {

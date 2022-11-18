@@ -14,6 +14,8 @@ import { RoutingService } from '../../services/routing.service';
 import { isInError, LoadingState } from '../../store/states/call-states';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
+import { jsPDF } from 'jspdf'
+
 const pageid: PagesDeVisualisations.PageId = 'default'
 
 @Component({
@@ -117,7 +119,31 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   }
 
   rendre_pdf() {
-    // TODO: impl
+    let doc = new jsPDF()
+
+    for (let i = 0; i < this.componentService.graphe_exporters.length; i++) {
+      let graphe_exporter = this.componentService.graphe_exporters[i]
+      let imageDesc = graphe_exporter.visualisationDataUrlPourPdf()
+
+      let pos_x = 0
+      let pos_y = doc.internal.pageSize.getHeight() / 4
+
+      let w = doc.internal.pageSize.getWidth()
+      let ratio = w / imageDesc.width
+      let h = imageDesc.height * ratio
+
+      doc.addImage(
+        imageDesc.data_url, 
+        'PNG', 
+        pos_x, pos_y, 
+        w, h,
+      )
+      
+      if ((i+1) < this.componentService.graphe_exporters.length)
+        doc.addPage()
+    }
+
+    doc.save('graphes.pdf')
   }
 
   compute_iframe_fragment(annee, siret, etape) {
@@ -134,20 +160,9 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(path)
   }
 
-  onEnregistrerClic() {
-    // TODO: impl
-  }
-
-  onTelechargerPdfClic() {
-    // TODO impl
-  }
-
-  onCopierIframeClic() {
-    // TODO impl
-  }
-
   ngOnDestroy(): void {
     this._stop$.next();
     this._stop$.complete();
+    this.componentService.destroy()
   }
 }

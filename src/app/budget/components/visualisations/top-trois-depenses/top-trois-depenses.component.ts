@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Optional } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
@@ -6,8 +6,9 @@ import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.servi
 import { PrepareDonneesVisualisation, VisualisationPourTop3 } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { object_is_empty } from 'src/app/utils';
+import { BudgetParametrageComponentService } from '../../budget-parametrage/budget-parametrage-component.service';
 import { EchartsViewModel } from '../EchartsViewModel';
-import { VisualisationComponent } from '../visualisation-component.component';
+import { VisualisationComponent } from '../visualisation.component';
 
 @Component({
   selector: 'app-top-trois-depenses',
@@ -40,8 +41,10 @@ export class TopTroisDepensesComponent extends VisualisationComponent {
     private mapper: PrepareDonneesVisualisation,
     private prettyCurrencyFormatter: PrettyCurrencyFormatter,
     echartsUtilsService: EchartsUtilsService,
+    @Optional()
+    componentService: BudgetParametrageComponentService,
   ) {
-    super(echartsUtilsService);
+    super(echartsUtilsService, componentService);
   }
 
   toChartsViewModel(donnees: DonneesBudgetaires, _: Pdc.InformationsPdc): EchartsViewModel {
@@ -142,6 +145,7 @@ export class TopTroisDepensesComponent extends VisualisationComponent {
       }
     }
 
+    this.pdf_echarts_options = option
     return option as EChartsOption
   }
 

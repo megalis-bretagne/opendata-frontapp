@@ -31,4 +31,23 @@ export class EchartsUtilsService {
     });
     return dataUrl
   }
+
+  render_chart_as_svg(
+    width: number,
+    height: number,
+    options: EChartsOption
+  ): string {
+    
+    const chart = echarts.init(null, null, {
+      renderer: 'svg',
+      ssr: true,
+      width,
+      height,
+    })
+
+    chart.setOption(options)
+
+    const svgStr = chart.renderToSVGString()
+    return svgStr
+  }
 }

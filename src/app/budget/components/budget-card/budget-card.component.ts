@@ -2,7 +2,7 @@ import { Component, ContentChild, EventEmitter, Input, OnDestroy, OnInit, Output
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { IframeService } from '../../services/iframe.service';
-import { VisualisationComponent } from '../visualisations/visualisation-component.component';
+import { VisualisationComponent } from '../visualisations/visualisation.component';
 
 @Component({
   selector: 'app-budget-card',
@@ -71,11 +71,11 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     // Export comme pdf
     this.genererImageClic.emit();
 
-    let data_url = this.visualisationComponent.visualisationDataUrlPourPdf()
+    let imageDesc = this.visualisationComponent.visualisationDataUrlPourPdf()
 
     let link = document.createElement('a');
     link.download = 'graphe.png'
-    link.href = data_url
+    link.href = imageDesc.data_url
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

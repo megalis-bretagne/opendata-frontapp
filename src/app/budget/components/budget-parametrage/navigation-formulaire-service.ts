@@ -1,12 +1,10 @@
-import { Store } from "@ngrx/store";
 import { Observable, ReplaySubject, Subject } from "rxjs";
 import { Annee, Siren, Siret } from "../../models/common-types";
-import { DonneesBudgetairesDisponibles, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_sirets, Etablissement } from "../../models/donnees-budgetaires-disponibles";
+import { DonneesBudgetairesDisponibles, donnees_budgetaires_disponibles_etapes, donnees_budgetaires_disponibles_sirets } from "../../models/donnees-budgetaires-disponibles";
 import { BudgetParametrageNavFormulaireModel } from "./budget-parametrage-nav/budget-parametrage-nav-formulaire-model";
 import { distinctUntilChanged, first, map, mergeMap, takeUntil, tap } from "rxjs/operators";
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
-import { etablissements_vers_comboViewModel, etablissement_pretty_name, etablissement_vers_comboViewModel, etape_pretty_name, etape_vers_comboViewModel } from "../../models/view-models.functions";
-import { selectDonneesBudgetairesDisponiblesPour } from "../../store/selectors/donnees-budgetaires-disponibles.selectors";
+import { etablissements_vers_comboViewModel, etape_vers_comboViewModel } from "../../models/view-models.functions";
 import { BudgetsStoresService } from "../../services/budgets-store.service";
 
 export interface NavigationValues {
