@@ -47,11 +47,11 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     let nom_etab = visualisation.nom_etablissement
     switch(visualisation.graphe_id) {
       case 'budget-principal-depenses':
-        return `Les dépenses ${annee} du budget principal - ${nom_etab}`
+        return `${nom_etab} - Les dépenses ${annee} du budget principal`
       case 'budget-principal-recettes':
-        return `Les recettes ${annee} du budget principal - ${nom_etab}`
+        return `${nom_etab} - Les recettes ${annee} du budget principal`
       case 'top-3-depenses':
-        return `Le top 3 des dépenses ${annee} du budget principal - ${nom_etab}`
+        return `${nom_etab} - Le top 3 des dépenses ${annee} du budget principal`
     }
   }
 
@@ -60,11 +60,11 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     let nom_etab = visualisation.nom_etablissement
     switch(visualisation.graphe_id) {
       case 'budget-principal-depenses':
-        return `Les dépenses, pour l'année ${annee}  et pour le budget principal - ${nom_etab}`
+        return `${nom_etab} - Les dépenses, pour l'année ${annee}  et pour le budget principal`
       case 'budget-principal-recettes':
-        return `Les recettes, pour l'année ${annee}  et pour le budget principal - ${nom_etab}`
+        return `${nom_etab} - Les recettes, pour l'année ${annee}  et pour le budget principal`
       case 'top-3-depenses':
-        return `Le top 3 des dépenses, pour l'année ${annee}  et pour le budget principal - ${nom_etab}`
+        return `${nom_etab} - Le top 3 des dépenses, pour l'année ${annee}  et pour le budget principal`
     }
   }
 
