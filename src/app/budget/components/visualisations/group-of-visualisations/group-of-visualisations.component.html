@@ -2,7 +2,7 @@
 
     <ng-container *ngFor="let visualisation of visualisations">
 
-        <ng-container *ngIf="visualisation.loading; else loaded">
+        <ng-container *ngIf="is_loading$(visualisation) | async">
             <div class="visualisation">
                 <mat-card>
                     <div class="loading">
@@ -12,66 +12,73 @@
             </div>
         </ng-container>
 
-        <ng-template #loaded>
+        <ng-container *ngIf="is_in_error$(visualisation) | async">
+            <div class="visualisation">
+                <mat-card>
+                    <div class="in_error">
+                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
+                        Une erreur est survenue, veuillez recharger la page.
+                    </div>
+                </mat-card>
+            </div>
+        </ng-container>
 
-            <ng-container [ngSwitch]="visualisation.graphe_id">
+        <ng-container [ngSwitch]="visualisation.graphe_id"
+            *ngIf="is_successfully_loaded$(visualisation)| async">
 
-                <div class="visualisation">
+            <div class="visualisation">
 
-                    <ng-container *ngSwitchCase="'budget-principal-depenses'">
+                <ng-container *ngSwitchCase="'budget-principal-depenses'">
 
-                        <app-budget-card [titre]="titre_pour(visualisation)"
-                            [description]="description_pour(visualisation)" [parametrable]="parametrable"
-                            [url_consultation]="url_consultation(visualisation)">
+                    <app-budget-card [titre]="titre_pour(visualisation)"
+                        [description]="description_pour(visualisation)" [parametrable]="parametrable"
+                        [url_consultation]="url_consultation(visualisation)">
 
-                            <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
-                                [description]="description_pour(visualisation)"
-                                [donneesBudget]="visualisation.donnees_budgetaires"
-                                [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
-                            </app-budget-principal-graphe>
-                        </app-budget-card>
+                        <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
+                            [description]="description_pour(visualisation)"
+                            [donneesBudget]="visualisation.donnees_budgetaires"
+                            [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
+                        </app-budget-principal-graphe>
+                    </app-budget-card>
 
-                    </ng-container>
-
-
-                    <ng-container *ngSwitchCase="'budget-principal-recettes'">
-
-                        <app-budget-card [titre]="titre_pour(visualisation)"
-                            [description]="description_pour(visualisation)" [parametrable]="parametrable"
-                            [url_consultation]="url_consultation(visualisation)">
-
-                            <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
-                                [description]="description_pour(visualisation)"
-                                [donneesBudget]="visualisation.donnees_budgetaires"
-                                [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
-                            </app-budget-principal-graphe>
-                        </app-budget-card>
-
-                    </ng-container>
+                </ng-container>
 
 
-                    <ng-container *ngSwitchCase="'top-3-depenses'">
+                <ng-container *ngSwitchCase="'budget-principal-recettes'">
 
-                        <app-budget-card [titre]="titre_pour(visualisation)"
-                            [description]="description_pour(visualisation)" [parametrable]="parametrable"
-                            [url_consultation]="url_consultation(visualisation)">
+                    <app-budget-card [titre]="titre_pour(visualisation)"
+                        [description]="description_pour(visualisation)" [parametrable]="parametrable"
+                        [url_consultation]="url_consultation(visualisation)">
 
-                            <app-top-trois-depenses [titre]="titre_pour(visualisation)"
-                                [description]="description_pour(visualisation)"
-                                [donneesBudget]="visualisation.donnees_budgetaires"
-                                [informationsPlanDeCompte]="visualisation.informations_pdc">
+                        <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
+                            [description]="description_pour(visualisation)"
+                            [donneesBudget]="visualisation.donnees_budgetaires"
+                            [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
+                        </app-budget-principal-graphe>
+                    </app-budget-card>
 
-                            </app-top-trois-depenses>
+                </ng-container>
 
-                        </app-budget-card>
 
-                    </ng-container>
-                </div>
+                <ng-container *ngSwitchCase="'top-3-depenses'">
 
-            </ng-container>
+                    <app-budget-card [titre]="titre_pour(visualisation)"
+                        [description]="description_pour(visualisation)" [parametrable]="parametrable"
+                        [url_consultation]="url_consultation(visualisation)">
 
-        </ng-template>
+                        <app-top-trois-depenses [titre]="titre_pour(visualisation)"
+                            [description]="description_pour(visualisation)"
+                            [donneesBudget]="visualisation.donnees_budgetaires"
+                            [informationsPlanDeCompte]="visualisation.informations_pdc">
 
+                        </app-top-trois-depenses>
+
+                    </app-budget-card>
+
+                </ng-container>
+            </div>
+
+        </ng-container>
 
     </ng-container>
 

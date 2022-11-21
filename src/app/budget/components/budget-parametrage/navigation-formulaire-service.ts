@@ -55,7 +55,7 @@ export class NavigationFormulaireService {
 
         _siren$.pipe(
             tap(siren => this.siren = siren),
-            mergeMap(siren => this.budgetsStoreServices.select_donnees_disponibles_pour(siren)),
+            mergeMap(siren => this.budgetsStoreServices.select_donnees_disponibles(siren)),
             takeUntil(this._stop$),
         ).subscribe(disponibles => {
             this.donnees_disponibles = disponibles

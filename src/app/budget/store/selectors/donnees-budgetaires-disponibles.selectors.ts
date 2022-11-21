@@ -1,7 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { Siren } from "../../models/common-types";
 import { donneesBudgetairesDisponiblesAdapter, DonneesBudgetairesDisponiblesState } from "../states/donnees-budgetaires-disponibles.state";
-import { selectDonneesBudgetairesState } from "./donnees-budgetaires.selectors";
 
 export const {
     selectAll: dbdSelectAll,

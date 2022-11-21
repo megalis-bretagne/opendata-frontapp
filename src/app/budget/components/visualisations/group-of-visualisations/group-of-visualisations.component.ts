@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil, filter, combineLatestWith, map } from 'rxjs/operators';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { IdentifiantVisualisation, VisualisationUtils } from 'src/app/budget/models/visualisation.model';
@@ -11,7 +11,6 @@ interface _DonneesVisualisation extends IdentifiantVisualisation {
   donnees_budgetaires?: DonneesBudgetaires
   informations_pdc?: Pdc.InformationsPdc
   nom_etablissement?: string
-  loading: boolean
 }
 
 @Component({
@@ -22,7 +21,6 @@ interface _DonneesVisualisation extends IdentifiantVisualisation {
 export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
 
   private _stop$ = new Subject<void>()
-  private _souscriptions: Subscription[] = []
 
   @Input()
   set id_visualisations(id_visualisations: IdentifiantVisualisation[]) {
@@ -70,17 +68,11 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
 
   compute_visualisations(id_visualisations: IdentifiantVisualisation[]) {
 
-    for (const sub of this._souscriptions)
-      sub.unsubscribe()
-    this._souscriptions = []
-
     let api_call_descs = VisualisationUtils.extract_api_call_descs(id_visualisations)
     for (const api_call_desc of api_call_descs)
       this.storesServices.load_budgets_pour(api_call_desc.annee, api_call_desc.siret, api_call_desc.etape)
 
-    let visualisations = []
-    for (const id_vis of id_visualisations)
-      visualisations.push(this.toLoadingVisualisation(id_vis))
+    let visualisations = id_visualisations
 
     for (const i in id_visualisations) {
       let id_vis = id_visualisations[i]
@@ -88,8 +80,8 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
       let siret = id_vis.siret
       let etape = id_vis.etape
 
-      this.storesServices
-        .select_donnees_et_etabname(annee, siret, etape)
+      this.storesServices.viewModels
+        .select_budget_et_etabname(annee, siret, etape)
         .pipe(
           filter(([donnnes_budgetaires, info_pdc, nom_etab]) => Boolean(donnnes_budgetaires) && Boolean(info_pdc) && Boolean(nom_etab)),
           takeUntil(this._stop$),
@@ -118,6 +110,30 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
   }
 
   // Plumbing
+  is_loading$(visualisation: IdentifiantVisualisation) {
+    return this.storesServices.viewModels.select_is_budget_loading(
+      visualisation.annee,
+      visualisation.siret,
+      visualisation.etape
+    )
+  }
+
+  is_in_error$(visualisation: IdentifiantVisualisation) {
+    return this.storesServices.viewModels.select_is_budget_in_error(
+      visualisation.annee,
+      visualisation.siret,
+      visualisation.etape
+    )
+  }
+
+  is_successfully_loaded$(visualisation) {
+    return this.is_loading$(visualisation)
+      .pipe(
+        combineLatestWith(this.is_in_error$(visualisation)),
+        map(([loading, inError]) => !loading && !inError)
+      )
+  }
+
   private _id_visualisations: IdentifiantVisualisation[]
   get id_visualisations() {
     return this._id_visualisations
@@ -126,17 +142,6 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._stop$.next(null)
     this._stop$.complete()
-  }
-
-  toLoadingVisualisation(id: IdentifiantVisualisation): _DonneesVisualisation {
-    return {
-      annee: id.annee,
-      siret: id.siret,
-      etape: id.etape,
-      graphe_id: id.graphe_id,
-
-      loading: true,
-    }
   }
 
   toVisualisation(
@@ -154,8 +159,6 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
       donnees_budgetaires,
       informations_pdc,
       nom_etablissement,
-
-      loading: false,
     }
   }
 }

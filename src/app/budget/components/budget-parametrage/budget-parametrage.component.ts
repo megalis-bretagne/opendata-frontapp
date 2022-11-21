@@ -101,7 +101,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
         }),
 
         mergeMap(navValues => {
-          return this.budgetsStoresService.select_donnees_et_etabname(
+          return this.budgetsStoresService.viewModels.select_budget_et_etabname(
             navValues.annee,
             navValues.siret,
             navValues.etape,

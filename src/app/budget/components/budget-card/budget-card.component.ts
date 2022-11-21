@@ -37,10 +37,6 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   @ContentChild(VisualisationComponent)
   visualisationComponent: VisualisationComponent
 
-  get isLoading() {
-    return !Boolean(this.titre) && !Boolean(this.description)
-  }
-
   constructor(
     private iframeService: IframeService,
     private router: Router,
@@ -85,7 +81,7 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     return this.iframeService.make_iframe_from_route_path(this.url_consultation)
   }
 
-  private _debug(_) {
-    // console.debug(`[BudgetCardComponent] ${msg}`);
+  private _debug(msg) {
+    console.debug(`[BudgetCardComponent] ${msg}`);
   }
 }

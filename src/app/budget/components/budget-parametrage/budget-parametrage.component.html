@@ -10,9 +10,10 @@
     <ng-template #errorOrContenu>
 
         <div *ngIf="errorInLoadingDisponibles$ | async as error; else contenu">
-            Oops, une erreur est survenue !
-
-            {{error}}
+            <div class="in_error">
+                <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
+                Une erreur est survenue, veuillez recharger la page.
+            </div>
         </div>
 
         <ng-template #contenu>

@@ -48,14 +48,15 @@ export class BudgetConsultationComponent implements OnInit {
     this.id_visualisations = this.retrieve_visualisations()
 
     this.budgetsStoresService.load_budgets_disponibles_pour(siren)
-    this.budgetsStoresService.select_etabname(this.siret)
+    this.budgetsStoresService.viewModels.select_etablissement_pretty_name(this.siret)
       .pipe(
         tap(prettyName => this.etablissementPrettyname = prettyName),
         takeUntil(this._stop$)
       )
       .subscribe()
 
-    this.budgetsStoresService.select_donnees(this.annee, this.siret, this.etape)
+    this.budgetsStoresService.viewModels
+      .select_budget(this.annee, this.siret, this.etape)
       .pipe( takeUntil(this._stop$))
       .subscribe(([donnees, pdc]) => {
         this.donneesBudget = donnees
