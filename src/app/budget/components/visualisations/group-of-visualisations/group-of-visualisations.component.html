@@ -34,11 +34,11 @@
                         [description]="description_pour(visualisation)" [parametrable]="parametrable"
                         [url_consultation]="url_consultation(visualisation)">
 
-                        <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
+                        <app-visualisation-donut [titre]="titre_pour(visualisation)"
                             [description]="description_pour(visualisation)"
                             [donneesBudget]="visualisation.donnees_budgetaires"
                             [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
-                        </app-budget-principal-graphe>
+                        </app-visualisation-donut>
                     </app-budget-card>
 
                 </ng-container>
@@ -50,11 +50,11 @@
                         [description]="description_pour(visualisation)" [parametrable]="parametrable"
                         [url_consultation]="url_consultation(visualisation)">
 
-                        <app-budget-principal-graphe [titre]="titre_pour(visualisation)"
+                        <app-visualisation-donut [titre]="titre_pour(visualisation)"
                             [description]="description_pour(visualisation)"
                             [donneesBudget]="visualisation.donnees_budgetaires"
                             [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
-                        </app-budget-principal-graphe>
+                        </app-visualisation-donut>
                     </app-budget-card>
 
                 </ng-container>

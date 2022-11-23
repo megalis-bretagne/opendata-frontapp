@@ -14,7 +14,7 @@ import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from
 import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
 import langFr from 'echarts/lib/i18n/langFR';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { BudgetPrincipalGrapheComponent } from './components/visualisations/budget-principal-graphe/budget-principal-graphe.component';
+import { VisualisationDonut } from './components/visualisations/visualisation-donut/visualisation-donut';
 import { PrepareDonneesVisualisation } from './services/prepare-donnees-visualisation.service';
 import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
 import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
@@ -38,7 +38,7 @@ echarts.registerLocale('FR', langFr);
     BudgetParametrageComponent,
     BudgetParametrageNavComponent,
     BudgetCardComponent,
-    BudgetPrincipalGrapheComponent,
+    VisualisationDonut,
     BudgetConsultationComponent,
     GroupOfVisualisationsComponent,
     TopTroisDepensesComponent,

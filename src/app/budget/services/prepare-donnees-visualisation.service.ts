@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
+import { TypeVue } from "../components/visualisations/visualisation-donut/visualisation-donut";
 import { DonneesBudgetaires, LigneBudget } from "../models/donnees-budgetaires";
 import { Pdc } from "../models/plan-de-comptes";
 import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";

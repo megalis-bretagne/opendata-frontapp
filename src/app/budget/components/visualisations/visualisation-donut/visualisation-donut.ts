@@ -28,17 +28,17 @@ const SMALL_MODE_MAX_WIDTH = 730
 const MEDIUM_MODE_MAX_WIDTH = 1200
 
 @Component({
-  selector: 'app-budget-principal-graphe',
-  templateUrl: './budget-principal-graphe.component.html',
-  styleUrls: ['./budget-principal-graphe.component.css'],
+  selector: 'app-visualisation-donut',
+  templateUrl: './visualisation-donut.html',
+  styleUrls: ['./visualisation-donut.css'],
   providers: [
     {
       provide: VisualisationComponent,
-      useExisting: BudgetPrincipalGrapheComponent,
+      useExisting: VisualisationDonut,
     }
   ]
 })
-export class BudgetPrincipalGrapheComponent extends VisualisationComponent {
+export class VisualisationDonut extends VisualisationComponent {
 
   echartsVm?: EchartsViewModel
 

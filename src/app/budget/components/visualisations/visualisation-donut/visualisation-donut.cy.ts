@@ -1,7 +1,7 @@
 import { exemple_donnees_budgetaires, exemple_infos_pdc } from "cypress/fixtures/budgets-testdata"
 import { BudgetTestBedModule } from "cypress/fixtures/testbed-modules"
 import { BudgetModule } from "src/app/budget/budget.module"
-import { BudgetPrincipalGrapheComponent } from "./budget-principal-graphe.component"
+import { VisualisationDonut } from "./visualisation-donut"
 
 const id_a_nomenclature_function = '#command_nomenclatures_par_fonctions'
 const id_a_nomenclature_nature = '#command_nomenclatures_par_fonctions'
@@ -60,7 +60,7 @@ describe('BudgetPrincipalGrapheComponent', () => {
 })
 
 function mount_budget_principal_graphe_component_with_data(donnees_budgetaires, infos_pdc) {
-    cy.mount(BudgetPrincipalGrapheComponent, {
+    cy.mount(VisualisationDonut, {
         imports: [
             BudgetTestBedModule,
             BudgetModule,

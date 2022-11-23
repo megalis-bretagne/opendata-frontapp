@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter, combineLatestWith, map } from 'rxjs/operators';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
+import { EtapeBudgetaire } from 'src/app/budget/models/etape-budgetaire';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { IdentifiantVisualisation, VisualisationUtils } from 'src/app/budget/models/visualisation.model';
 import { BudgetsStoresService } from 'src/app/budget/services/budgets-store.service';
@@ -43,13 +44,27 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
   titre_pour(visualisation: _DonneesVisualisation) {
     let annee = visualisation.annee
     let nom_etab = visualisation.nom_etablissement
+    let suffixe_etape = this._suffixe_nom_budget_pour(visualisation)
     switch(visualisation.graphe_id) {
       case 'budget-principal-depenses':
-        return `${nom_etab} - Les dépenses ${annee} du budget principal`
+        return `${nom_etab} - Les dépenses ${annee} ${suffixe_etape}`
       case 'budget-principal-recettes':
-        return `${nom_etab} - Les recettes ${annee} du budget principal`
+        return `${nom_etab} - Les recettes ${annee} ${suffixe_etape}`
       case 'top-3-depenses':
-        return `${nom_etab} - Le top 3 des dépenses ${annee} du budget principal`
+        return `${nom_etab} - Le top 3 des dépenses ${annee} ${suffixe_etape}`
+    }
+  }
+
+  _suffixe_nom_budget_pour(visualisation: _DonneesVisualisation) {
+    switch (visualisation.etape) {
+      case EtapeBudgetaire.BUDGET_PRIMITIF:
+        return 'du budget primitif'
+      case EtapeBudgetaire.COMPTE_ADMINISTRATIF:
+        return 'du compte administratif'
+      case EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE:
+        return 'du budget supplémentaire'
+      case EtapeBudgetaire.DECISION_MODIFICATIVE:
+        return 'de la décision modificative'
     }
   }
 
