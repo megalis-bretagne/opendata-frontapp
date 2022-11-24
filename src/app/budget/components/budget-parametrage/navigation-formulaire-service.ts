@@ -125,7 +125,10 @@ export class NavigationFormulaireService {
     private etapes_disponibles_combo_vm(annee?: Annee, siret?: Siret) {
         let disponibles = this.donnees_disponibles
 
+        // XXX: Sauf budget supplémentaire
         let all_etapes = Object.values(EtapeBudgetaire)
+            .filter(e => e != EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE)
+
         let etapes_disponibles = donnees_budgetaires_disponibles_etapes(disponibles, annee, siret)
 
         let etapesvm = all_etapes.map(e => {

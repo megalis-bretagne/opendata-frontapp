@@ -32,7 +32,7 @@ export class RealBudgetService implements BudgetService {
     return this.http.get<DonneesBudgetairesDisponibles>(url)
       .pipe(
         map(map_donnees_budgetaires_disponibles_from_wire),
-        map(strip_etapes_except_administratif_et_primitif_from_donnees_disponibles), // TODO: enlever lorsqu'on traitera autres que comptes administratifs
+        map(strip_etapes_budget_supplementaire_from_donnees_disponibles),
         catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires disponibles (siren: ${siren}):`)),
       )
   }
@@ -114,7 +114,7 @@ export function map_donnees_budgetaires_disponibles_from_wire(wire: any): Donnee
   return t_wire;
 }
 
-function strip_etapes_except_administratif_et_primitif_from_donnees_disponibles(donnees_disponibles: DonneesBudgetairesDisponibles): DonneesBudgetairesDisponibles {
+function strip_etapes_budget_supplementaire_from_donnees_disponibles(donnees_disponibles: DonneesBudgetairesDisponibles): DonneesBudgetairesDisponibles {
 
   console.warn(`Exclusion des étapes budgetaires mis à part l'étape administrative au sein des ressources disponibles`);
   let new_ressources_disponibles: RessourcesDisponiblesParAnnees = {}
@@ -136,6 +136,10 @@ function strip_etapes_except_administratif_et_primitif_from_donnees_disponibles(
 
       if (etapes.includes(EtapeBudgetaire.BUDGET_PRIMITIF)) {
         n_etapes = [...n_etapes, EtapeBudgetaire.BUDGET_PRIMITIF]
+      }
+
+      if (etapes.includes(EtapeBudgetaire.DECISION_MODIFICATIVE)) {
+        n_etapes = [...n_etapes, EtapeBudgetaire.DECISION_MODIFICATIVE]
       }
 
       if (n_etapes.length > 0)
