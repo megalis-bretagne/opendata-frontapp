@@ -55,6 +55,10 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     }
   }
 
+  description_pour(visualisation: _DonneesVisualisation) {
+    return this.titre_pour(visualisation)
+  }
+
   _suffixe_nom_budget_pour(visualisation: _DonneesVisualisation) {
     switch (visualisation.etape) {
       case EtapeBudgetaire.BUDGET_PRIMITIF:
@@ -65,19 +69,6 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
         return 'du budget supplémentaire'
       case EtapeBudgetaire.DECISION_MODIFICATIVE:
         return 'de la décision modificative'
-    }
-  }
-
-  description_pour(visualisation: _DonneesVisualisation) {
-    let annee = visualisation.annee
-    let nom_etab = visualisation.nom_etablissement
-    switch(visualisation.graphe_id) {
-      case 'budget-principal-depenses':
-        return `${nom_etab} - Les dépenses, pour l'année ${annee}  et pour le budget principal`
-      case 'budget-principal-recettes':
-        return `${nom_etab} - Les recettes, pour l'année ${annee}  et pour le budget principal`
-      case 'top-3-depenses':
-        return `${nom_etab} - Le top 3 des dépenses, pour l'année ${annee}  et pour le budget principal`
     }
   }
 
