@@ -13,8 +13,13 @@ export class IframeService {
     let prepared = this.location.prepareExternalUrl(route_path)
     let url = new URL(prepared, location.origin)
     return `
-      <iframe referrerpolicy="strict-origin-when-cross-origin" style="border: 0;" src="${url.href}" 
-       title="Marque blanche budgets" width="100%" height="600">
+      <iframe 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        style="border: 0;" 
+        src="${url.href}" 
+        title="Marque blanche budgets" 
+        width="100%" height="600"
+      >
       </iframe>
     `
   }

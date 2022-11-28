@@ -25,6 +25,7 @@ import { GroupOfVisualisationsComponent } from './components/visualisations/grou
 import { HttpClientModule } from '@angular/common/http';
 import { ResizeObserverModule } from '@ng-web-apis/resize-observer';
 import { TopTroisDepensesComponent } from './components/visualisations/top-trois-depenses/top-trois-depenses.component';
+import { VisIframeDialogComponent } from './components/vis-iframe-dialog/vis-iframe-dialog.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -42,6 +43,7 @@ echarts.registerLocale('FR', langFr);
     BudgetConsultationComponent,
     GroupOfVisualisationsComponent,
     TopTroisDepensesComponent,
+    VisIframeDialogComponent,
   ],
   imports: [
     CommonModule,

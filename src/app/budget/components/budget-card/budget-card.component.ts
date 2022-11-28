@@ -3,6 +3,12 @@ import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { IframeService } from '../../services/iframe.service';
 import { VisualisationComponent } from '../visualisations/visualisation.component';
+import { MatDialog } from '@angular/material/dialog';
+import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
+
+export interface DialogData {
+  iframe_fragment: string
+}
 
 @Component({
   selector: 'app-budget-card',
@@ -38,6 +44,7 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   visualisationComponent: VisualisationComponent
 
   constructor(
+    private dialog: MatDialog,
     private iframeService: IframeService,
     private router: Router,
   ) { }
@@ -48,19 +55,11 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     this._stop$.next(null);
   }
 
-  onNavClic() {
-    let url = this.url_consultation
-    this.router.navigateByUrl(url)
-  }
-
   onDeplacerClic() {
     this.deplacerClic.emit();
   }
   onEditeClic() {
     this.editeClic.emit();
-  }
-  onIframeClic() {
-    this.copierIframeClic.emit();
   }
 
   onExportClic() {
@@ -79,6 +78,15 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
 
   computeIframeFragment(): string {
     return this.iframeService.make_iframe_from_route_path(this.url_consultation)
+  }
+
+  visualizeIframeThroughDialog() {
+    let fragment = this.computeIframeFragment()
+    const dialogRef = this.dialog.open(VisIframeDialogComponent, {
+      data: {
+        iframe_fragment: fragment
+      } as DialogData
+    });
   }
 
   private _debug(msg) {

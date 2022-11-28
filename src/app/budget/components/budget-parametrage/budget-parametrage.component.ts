@@ -15,6 +15,9 @@ import { isInError, LoadingState } from '../../store/states/call-states';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 import { jsPDF } from 'jspdf'
+import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogData } from '../budget-card/budget-card.component';
 
 const pageid: PagesDeVisualisations.PageId = 'default'
 
@@ -47,6 +50,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
   private _stop$: Subject<void> = new Subject<void>();
 
   constructor(
+    private dialog: MatDialog,
     private budgetsStoresService: BudgetsStoresService,
     private componentService: BudgetParametrageComponentService,
     private routingService: RoutingService,
@@ -151,13 +155,18 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     return this.iframeService.make_iframe_from_route_path(path)
   }
 
-  navigate_vers_consultation_url() {
-
+  visualizeIframeThroughDialog() {
     let annee = this._snapshot_annee
     let siret = this._snapshot_siret
     let etape = this._snapshot_etape
-    let path = this.routingService.external_url_consultation(annee, siret, etape)
-    this.router.navigateByUrl(path)
+
+    let fragment = this.compute_iframe_fragment(annee, siret, etape)
+
+    const dialogRef = this.dialog.open(VisIframeDialogComponent, {
+      data: {
+        iframe_fragment: fragment
+      } as DialogData
+    });
   }
 
   ngOnDestroy(): void {
