@@ -5,6 +5,8 @@ import { IframeService } from '../../services/iframe.service';
 import { VisualisationComponent } from '../visualisations/visualisation.component';
 import { MatDialog } from '@angular/material/dialog';
 import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { snackify, snackify_telechargement } from '../budget-utils';
 
 export interface DialogData {
   iframe_fragment: string
@@ -45,6 +47,7 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
     private iframeService: IframeService,
     private router: Router,
   ) { }
@@ -63,17 +66,31 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
   }
 
   onExportClic() {
-    // Export comme pdf
     this.genererImageClic.emit();
+
+    let nom_fichier = 'graphe.png'
+
+    snackify_telechargement(
+      () => this._export_as_png(nom_fichier),
+      this.snackBar,
+      nom_fichier
+    )
+  }
+
+  _export_as_png(nom_fichier: string) {
 
     let imageDesc = this.visualisationComponent.visualisationDataUrlPourPdf()
 
     let link = document.createElement('a');
-    link.download = 'graphe.png'
+    link.download = nom_fichier
     link.href = imageDesc.data_url
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+  }
+
+  ouvre_snackbar(msg: string) {
+    this.snackBar.open(msg)
   }
 
   computeIframeFragment(): string {

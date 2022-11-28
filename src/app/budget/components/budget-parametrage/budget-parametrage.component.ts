@@ -18,6 +18,8 @@ import { jsPDF } from 'jspdf'
 import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogData } from '../budget-card/budget-card.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { snackify, snackify_telechargement } from '../budget-utils';
 
 const pageid: PagesDeVisualisations.PageId = 'default'
 
@@ -51,6 +53,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   constructor(
     private dialog: MatDialog,
+    private snackbar: MatSnackBar,
     private budgetsStoresService: BudgetsStoresService,
     private componentService: BudgetParametrageComponentService,
     private routingService: RoutingService,
@@ -122,7 +125,21 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
       .subscribe()
   }
 
-  rendre_pdf() {
+  ouvre_snackbar(msg: string) {
+    this.snackbar.open(msg)
+  }
+
+  telecharger_pdf() {
+    let nom_fichier = 'visualisations.pdf'
+
+    snackify_telechargement(
+      () => this._rend_et_telecharge_pdf(nom_fichier),
+      this.snackbar,
+      nom_fichier,
+    )
+  }
+
+  private _rend_et_telecharge_pdf(nom_fichier: string) {
     let doc = new jsPDF()
 
     for (let i = 0; i < this.componentService.graphe_exporters.length; i++) {
@@ -147,7 +164,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
         doc.addPage()
     }
 
-    doc.save('graphes.pdf')
+    doc.save(nom_fichier)
   }
 
   compute_iframe_fragment(annee, siret, etape) {

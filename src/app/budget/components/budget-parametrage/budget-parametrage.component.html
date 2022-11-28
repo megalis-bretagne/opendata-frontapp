@@ -29,12 +29,15 @@
 
             <div class="boutons-bas-de-page">
 
-                <button mat-raised-button (click)="rendre_pdf()">
+                <button mat-raised-button (click)="telecharger_pdf()">
                     <mat-icon>picture_as_pdf</mat-icon>
-                    Rendre en PDF
+                    Télécharger le PDF
                 </button>
 
-                <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">
+                <button mat-raised-button 
+                    [cdkCopyToClipboard]="iframeFragment"
+                    (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')"
+                >
                     <mat-icon>code</mat-icon>
                     Copier l'iframe
                 </button>

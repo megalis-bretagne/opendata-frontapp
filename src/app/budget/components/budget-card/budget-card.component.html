@@ -39,7 +39,10 @@
                     <mat-icon>visibility</mat-icon>
                 </button>
 
-            <button *ngIf="parametrable" [cdkCopyToClipboard]="computeIframeFragment()" class="menu-btn" mat-mini-fab
+            <button *ngIf="parametrable" 
+                [cdkCopyToClipboard]="computeIframeFragment()" 
+                (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')"
+                class="menu-btn" mat-mini-fab
                 matTooltip="Copier l'iframe de la section" matTooltipPosition="above"
                 color="basic">
                 <mat-icon>code</mat-icon>
