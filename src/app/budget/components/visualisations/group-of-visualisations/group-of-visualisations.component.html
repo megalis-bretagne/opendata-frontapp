@@ -28,7 +28,7 @@
 
             <div class="visualisation">
 
-                <ng-container *ngSwitchCase="'budget-principal-depenses'">
+                <ng-container *ngSwitchCase="'donut-depenses'">
 
                     <app-budget-card [titre]="titre_pour(visualisation)"
                         [description]="description_pour(visualisation)" [parametrable]="parametrable"
@@ -44,7 +44,7 @@
                 </ng-container>
 
 
-                <ng-container *ngSwitchCase="'budget-principal-recettes'">
+                <ng-container *ngSwitchCase="'donut-recettes'">
 
                     <app-budget-card [titre]="titre_pour(visualisation)"
                         [description]="description_pour(visualisation)" [parametrable]="parametrable"

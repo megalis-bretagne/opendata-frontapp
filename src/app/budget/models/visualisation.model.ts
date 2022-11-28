@@ -4,22 +4,34 @@ import { EtapeBudgetaire } from "./etape-budgetaire";
 export namespace PagesDeVisualisations {
 
     export type PageId = 'default'
+        | EtapeBudgetaire.BUDGET_PRIMITIF;
 
     const _pages = new Map<PageId, VisualisationGraphId[]>()
     _pages.set(
         'default',
-        ['budget-principal-depenses', 'budget-principal-recettes', 'top-3-depenses'],
+        ['donut-depenses', 'donut-recettes', 'top-3-depenses'],
     );
+    _pages.set(
+        EtapeBudgetaire.BUDGET_PRIMITIF,
+        ['donut-depenses', 'donut-recettes', 'top-3-depenses'],
+    )
 
-    export function visualisation_pour_pageid(id: PageId) {
+    export function visualisations_pour_pageid(id: PageId) {
         return _pages.get(id)
+    }
+
+    export function visualisations_pour_route(_0: Annee, _1: Siret, etape: EtapeBudgetaire) {
+        if (etape == EtapeBudgetaire.BUDGET_PRIMITIF)
+            return _pages.get(EtapeBudgetaire.BUDGET_PRIMITIF)
+        else
+            return _pages.get('default')
     }
 }
 
 /** Identifiant d'une visualisation */
 export type VisualisationGraphId =
-    'budget-principal-depenses'
-    | 'budget-principal-recettes'
+    'donut-depenses'
+    | 'donut-recettes'
     | 'top-3-depenses';
 
 export interface IdentifiantVisualisation {

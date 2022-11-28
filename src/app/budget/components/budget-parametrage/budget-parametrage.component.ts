@@ -19,9 +19,7 @@ import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog
 import { MatDialog } from '@angular/material/dialog';
 import { DialogData } from '../budget-card/budget-card.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { snackify, snackify_telechargement } from '../budget-utils';
-
-const pageid: PagesDeVisualisations.PageId = 'default'
+import { snackify_telechargement } from '../budget-utils';
 
 @Component({
   selector: 'app-budget-parametrage',
@@ -93,12 +91,18 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
       .pipe(
         tap(navValues => {
           console.debug(`[NAV VALUES] - ${navValues.annee}, ${navValues.siret}, ${navValues.etape}`)
-          this._snapshot_annee = navValues.annee
-          this._snapshot_siret = navValues.siret
-          this._snapshot_etape = navValues.etape
+          let annee = navValues.annee
+          let siret = navValues.siret
+          let etape = navValues.etape
+
+          this._snapshot_annee = annee
+          this._snapshot_siret = siret
+          this._snapshot_etape = etape
 
           this.id_visualisations = []
-          for (const graphe_id of PagesDeVisualisations.visualisation_pour_pageid(pageid)) {
+
+          let visualisations = PagesDeVisualisations.visualisations_pour_route(annee, siret, etape)
+          for (const graphe_id of visualisations) {
             this.id_visualisations.push(
               { annee: navValues.annee, siret: navValues.siret, etape: navValues.etape, graphe_id }
             )
@@ -154,13 +158,13 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
       let h = imageDesc.height * ratio
 
       doc.addImage(
-        imageDesc.data_url, 
-        'PNG', 
-        pos_x, pos_y, 
+        imageDesc.data_url,
+        'PNG',
+        pos_x, pos_y,
         w, h,
       )
-      
-      if ((i+1) < this.componentService.graphe_exporters.length)
+
+      if ((i + 1) < this.componentService.graphe_exporters.length)
         doc.addPage()
     }
 

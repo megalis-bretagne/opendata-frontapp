@@ -46,9 +46,9 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     let nom_etab = visualisation.nom_etablissement
     let suffixe_etape = this._suffixe_nom_budget_pour(visualisation)
     switch(visualisation.graphe_id) {
-      case 'budget-principal-depenses':
+      case 'donut-depenses':
         return `${nom_etab} - Les dépenses ${annee} ${suffixe_etape}`
-      case 'budget-principal-recettes':
+      case 'donut-recettes':
         return `${nom_etab} - Les recettes ${annee} ${suffixe_etape}`
       case 'top-3-depenses':
         return `${nom_etab} - Le top 3 des dépenses ${annee} ${suffixe_etape}`
