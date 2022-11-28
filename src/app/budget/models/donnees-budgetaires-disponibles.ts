@@ -73,7 +73,7 @@ export function donnees_budgetaires_disponibles_etapes(
     let etapes_tmp = new Set<EtapeBudgetaire>()
 
     for (let annee of annees) {
-        let disponible_x_siret = ressources_disponibles[annee]
+        let disponible_x_siret = ressources_disponibles[annee] || []
 
         for (let siret of etablissements) {
 

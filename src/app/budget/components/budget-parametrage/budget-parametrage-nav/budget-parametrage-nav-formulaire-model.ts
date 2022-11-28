@@ -26,18 +26,23 @@ export class BudgetParametrageNavFormulaireModel {
     private _annee$: Observable<Annee>;
 
     setup(
-        annee: Annee, annees_disponibles: Annee[],
-        etab: Siret, etablissements_disponibles: EtablissementComboItemViewModel[],
-        etape: EtapeBudgetaire, etapes_disponibles: EtapeComboItemViewModel[],
+        annee: Annee, annees_dispo_fn: () => Annee[],
+        etab: Siret, etabs_dispo_fn: (Annee) => EtablissementComboItemViewModel[],
+        etape: EtapeBudgetaire, etapes_dispo_fn: (Annee, Siret) => EtapeComboItemViewModel[],
     ) {
 
-        let _annee = this.normalize_annee(annee, annees_disponibles)
-        let _etab = this.normalize_etablissement(etab, etablissements_disponibles)
-        let _etape = this.normalize_etape(etape, etapes_disponibles)
+        let _annees_dipo = annees_dispo_fn()
+        let _annee = this.normalize_annee(annee, _annees_dipo)
 
-        this.setup_annees(_annee, annees_disponibles)
-        this.setup_etablissement(_etab, etablissements_disponibles)
-        this.setup_etapes(_etape, etapes_disponibles)
+        let _etabs_dispo = etabs_dispo_fn(_annee)
+        let _etab = this.normalize_etablissement(etab, _etabs_dispo)
+
+        let _etapes_dispo = etapes_dispo_fn(_annee, _etab)
+        let _etape = this.normalize_etape(etape, _etapes_dispo)
+
+        this.setup_annees(_annee, _annees_dipo)
+        this.setup_etablissement(_etab, _etabs_dispo)
+        this.setup_etapes(_etape, _etapes_dispo)
     }
 
     private setup_annees(annee: Annee, disponibles: Annee[]) {

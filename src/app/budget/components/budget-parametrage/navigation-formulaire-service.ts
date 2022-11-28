@@ -105,14 +105,14 @@ export class NavigationFormulaireService {
         let siret = (args.siret !== undefined) ? args.siret : this._formModel.etablissement
         let etape = (args.etape !== undefined) ? args.etape : this._formModel.etape
 
-        let annees_disponibles = this.annees_dispo_vm()
-        let sirets_disponibles = this.etabs_dispo_combo_vm(annee)
-        let etapes_disponibles = this.etapes_disponibles_combo_vm(annee, siret)
+        let annees_dispo_fn = () => this.annees_dispo_vm()
+        let etabs_dispo_fn = (annee) => this.etabs_dispo_combo_vm(annee)
+        let etapes_dispo_fn = (annee, siret) => this.etapes_disponibles_combo_vm(annee, siret)
 
         this._formModel.setup(
-            annee, annees_disponibles,
-            siret, sirets_disponibles,
-            etape, etapes_disponibles,
+            annee, annees_dispo_fn,
+            siret, etabs_dispo_fn,
+            etape, etapes_dispo_fn
         )
 
         this._setupDone$.next()
