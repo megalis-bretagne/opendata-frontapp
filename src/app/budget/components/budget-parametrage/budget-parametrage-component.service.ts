@@ -4,6 +4,7 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
+import { SettingsService } from 'src/environments/settings.service';
 import { Annee, Siret } from '../../models/common-types';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
 import { BudgetsStoresService } from '../../services/budgets-store.service';
@@ -24,6 +25,7 @@ export class BudgetParametrageComponentService {
   constructor(
     private globalStore: Store<GlobalState>,
     private budgetStoresServices: BudgetsStoresService,
+    private settingsService: SettingsService,
   ) {
 
     this.user$ = this.globalStore.select(selectAuthState)
@@ -40,6 +42,7 @@ export class BudgetParametrageComponentService {
     this.navigationFormulaireService = new NavigationFormulaireService(
       this.siren$, 
       this.budgetStoresServices,
+      this.settingsService,
     );
   }
 

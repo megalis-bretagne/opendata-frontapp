@@ -26,7 +26,7 @@ export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
   private navigationFormService: NavigationFormulaireService
 
   constructor(
-    private componentService: BudgetParametrageComponentService,
+    componentService: BudgetParametrageComponentService,
     private router: Router,
     private route: ActivatedRoute,
   ) {

@@ -6,6 +6,7 @@ import { distinctUntilChanged, first, map, mergeMap, takeUntil, tap } from "rxjs
 import { EtapeBudgetaire } from "../../models/etape-budgetaire";
 import { etablissements_vers_comboViewModel, etape_vers_comboViewModel } from "../../models/view-models.functions";
 import { BudgetsStoresService } from "../../services/budgets-store.service";
+import { SettingsService } from "src/environments/settings.service";
 
 export interface NavigationValues {
     annee?: Annee
@@ -49,6 +50,7 @@ export class NavigationFormulaireService {
     constructor(
         private siren$: Observable<Siren>,
         private budgetsStoreServices: BudgetsStoresService,
+        private settingsService: SettingsService,
     ) {
 
         let _siren$ = this.siren$.pipe(distinctUntilChanged())
@@ -125,9 +127,10 @@ export class NavigationFormulaireService {
     private etapes_disponibles_combo_vm(annee?: Annee, siret?: Siret) {
         let disponibles = this.donnees_disponibles
 
-        // XXX: Sauf budget supplémentaire
+        let etapes_a_afficher = this.settingsService.budgets_etapes_a_afficher as EtapeBudgetaire[]
+
         let all_etapes = Object.values(EtapeBudgetaire)
-            .filter(e => e != EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE)
+            .filter(e => etapes_a_afficher.includes(e))
 
         let etapes_disponibles = donnees_budgetaires_disponibles_etapes(disponibles, annee, siret)
 

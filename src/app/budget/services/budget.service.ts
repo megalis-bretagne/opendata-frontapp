@@ -22,8 +22,12 @@ export class RealBudgetService implements BudgetService {
 
   constructor(
     private http: HttpClient,
-    private settings: SettingsService,
+    private settingsService: SettingsService,
   ) { }
+
+  get etapes_a_garder(): EtapeBudgetaire[] {
+    return this.settingsService.budgets_etapes_a_afficher as EtapeBudgetaire[]
+  }
 
   donneesBudgetairesDisponibles(siren: Siren): Observable<DonneesBudgetairesDisponibles> {
     this._debug(`Cherche les données budgetaires disponibles pour le siren ${siren}`)
@@ -32,7 +36,7 @@ export class RealBudgetService implements BudgetService {
     return this.http.get<DonneesBudgetairesDisponibles>(url)
       .pipe(
         map(map_donnees_budgetaires_disponibles_from_wire),
-        map(strip_etapes_budget_supplementaire_from_donnees_disponibles),
+        map(donnees => keep_only_etape_from_donnees_disponibles(donnees, this.etapes_a_garder)),
         catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires disponibles (siren: ${siren}):`)),
       )
   }
@@ -91,7 +95,7 @@ export class RealBudgetService implements BudgetService {
   }
 
   private _getBudgetBaseUrl() {
-    return `${this.settings.settings.api.url}/mq_apis/budgets/v1`
+    return `${this.settingsService.settings.api.url}/mq_apis/budgets/v1`
   }
 }
 
@@ -114,9 +118,9 @@ export function map_donnees_budgetaires_disponibles_from_wire(wire: any): Donnee
   return t_wire;
 }
 
-function strip_etapes_budget_supplementaire_from_donnees_disponibles(donnees_disponibles: DonneesBudgetairesDisponibles): DonneesBudgetairesDisponibles {
+function keep_only_etape_from_donnees_disponibles(donnees_disponibles: DonneesBudgetairesDisponibles, etapes_a_garder: EtapeBudgetaire[]): DonneesBudgetairesDisponibles {
 
-  console.warn(`Exclusion des étapes budgetaires mis à part l'étape administrative au sein des ressources disponibles`);
+  console.debug(`Exclusion des étapes budgetaires mis à part les étapes ${etapes_a_garder} au sein des ressources disponibles`);
   let new_ressources_disponibles: RessourcesDisponiblesParAnnees = {}
 
   let ressources_disponibles = donnees_disponibles.ressources_disponibles
@@ -126,20 +130,13 @@ function strip_etapes_budget_supplementaire_from_donnees_disponibles(donnees_dis
     let res_x_annee = {}
 
     for (const siret in ressources_disponibles[annee]) {
-      let etapes = ressources_disponibles[annee][siret]
+      let curr_etapes = ressources_disponibles[annee][siret]
 
       let n_etapes = []
 
-      if (etapes.includes(EtapeBudgetaire.COMPTE_ADMINISTRATIF)) {
-        n_etapes = [...n_etapes, EtapeBudgetaire.COMPTE_ADMINISTRATIF]
-      }
-
-      if (etapes.includes(EtapeBudgetaire.BUDGET_PRIMITIF)) {
-        n_etapes = [...n_etapes, EtapeBudgetaire.BUDGET_PRIMITIF]
-      }
-
-      if (etapes.includes(EtapeBudgetaire.DECISION_MODIFICATIVE)) {
-        n_etapes = [...n_etapes, EtapeBudgetaire.DECISION_MODIFICATIVE]
+      for (let etape_a_garder of etapes_a_garder) {
+        if (curr_etapes.includes(etape_a_garder))
+          n_etapes = [...n_etapes, etape_a_garder]
       }
 
       if (n_etapes.length > 0)

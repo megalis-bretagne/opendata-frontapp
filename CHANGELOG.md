@@ -11,6 +11,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Réutilisation budgets: Ajout du choix des établissements pour le siren concerné.
 - Réutilisation budgets: Ajout du graphe top 3 des dépenses.
 - Réutilisation budgets: Export des visualisations en image.
+- Paramètre `budgets.etapes_a_afficher` au sein de [./src/assets/settings.json](./src/assets/settings.json)
 
 ### Changed
 
