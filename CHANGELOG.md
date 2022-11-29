@@ -17,6 +17,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Couleur et wording du bouton publication.
 - Réutilisation budgets: menu de navigation selon les ressources budgetaires disponibles.
 - Logo france relance hors écrans de consultation / embarqués dans les iframes.
 - Technique: protractor -> cypress
