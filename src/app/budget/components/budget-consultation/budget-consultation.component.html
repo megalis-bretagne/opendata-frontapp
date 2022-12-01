@@ -1,4 +1,7 @@
-<app-group-of-visualisations
-    [id_visualisations]="id_visualisations"
-    [parametrable]="false"
-></app-group-of-visualisations>
+<ng-container *ngIf="affiche_en_construction">
+    <app-en-construction text="Les visuels pour les décisions modificatives sont en cours de construction">
+    </app-en-construction>
+</ng-container>
+
+<app-group-of-visualisations [id_visualisations]="id_visualisations" [parametrable]="false">
+</app-group-of-visualisations>

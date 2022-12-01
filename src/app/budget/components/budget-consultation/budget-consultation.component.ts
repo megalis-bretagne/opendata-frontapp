@@ -29,6 +29,10 @@ export class BudgetConsultationComponent implements OnInit {
   private _stop$: Subject<void> = new Subject<void>();
   id_visualisations: IdentifiantVisualisation[];
 
+  get affiche_en_construction() {
+    return this.etape == EtapeBudgetaire.DECISION_MODIFICATIVE
+  }
+
   constructor(
     private route: ActivatedRoute,
     private budgetsStoresService: BudgetsStoresService) { }

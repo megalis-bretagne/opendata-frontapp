@@ -49,6 +49,10 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   private _stop$: Subject<void> = new Subject<void>();
 
+  get affiche_en_construction() {
+    return this._snapshot_etape == EtapeBudgetaire.DECISION_MODIFICATIVE
+  }
+
   constructor(
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
