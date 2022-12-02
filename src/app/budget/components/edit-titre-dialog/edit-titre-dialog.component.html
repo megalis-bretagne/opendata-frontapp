@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Edition du graphe</h2>
+
+<h3>{{default_titre}}</h3>
+
+<!-- {{formModel | json}} -->
+
+<form (ngSubmit)="onSubmit()" #editTitresForm="ngForm">
+
+  <mat-dialog-content class="mat-typography">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Titre</mat-label>
+
+      <input matInput type="text" id="titre" required [(ngModel)]="formModel.titre" name="titre">
+    </mat-form-field>
+
+    <br />
+
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+
+      <textarea matInput type="text" id="description" required [(ngModel)]="formModel.description"
+        name="description"></textarea>
+    </mat-form-field>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button 
+      mat-button
+      color="primary"
+      type="submit" [disabled]="!editTitresForm.form.valid || !editTitresForm.form.dirty">
+      <mat-icon>save</mat-icon>
+      Enregistrer
+    </button>
+
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>
+      Fermer
+    </button>
+  </mat-dialog-actions>
+
+
+</form>

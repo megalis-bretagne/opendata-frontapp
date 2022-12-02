@@ -26,7 +26,7 @@
             </ng-container>
 
             <div>
-                <app-group-of-visualisations [id_visualisations]="id_visualisations" [parametrable]="true">
+                <app-group-of-visualisations [id_visualisations]="id_visualisations">
                 </app-group-of-visualisations>
             </div>
 
@@ -37,8 +37,10 @@
                     Télécharger le PDF
                 </button>
 
-                <button mat-raised-button [cdkCopyToClipboard]="iframeFragment"
-                    (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')">
+                <button mat-raised-button 
+                    [cdkCopyToClipboard]="iframeFragment"
+                    (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')"
+                >
                     <mat-icon>code</mat-icon>
                     Copier l'iframe
                 </button>

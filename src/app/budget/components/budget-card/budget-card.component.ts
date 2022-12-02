@@ -1,44 +1,64 @@
-import { Component, ContentChild, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, ContentChild, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Router } from '@angular/router';
 import { IframeService } from '../../services/iframe.service';
 import { VisualisationComponent } from '../visualisations/visualisation.component';
 import { MatDialog } from '@angular/material/dialog';
 import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { snackify, snackify_telechargement } from '../budget-utils';
+import { snackify_telechargement } from '../budget-utils';
+import { EditTitreDialogComponent, EditTitreDialogData } from '../edit-titre-dialog/edit-titre-dialog.component';
+import { BudgetParametrageComponentService } from '../budget-parametrage/budget-parametrage-component.service';
+import { Visualisation } from '../../models/visualisation.model';
+import { BudgetCardComponentService, VisualisationComponentService } from './budget-card-component.service';
 
-export interface DialogData {
+export interface IframeDialogData {
   iframe_fragment: string
 }
 
 @Component({
   selector: 'app-budget-card',
   templateUrl: './budget-card.component.html',
-  styleUrls: ['./budget-card.component.css']
+  styleUrls: ['./budget-card.component.css'],
+  providers: [
+    { provide: VisualisationComponentService, useClass: BudgetCardComponentService }
+  ]
 })
 export class BudgetCardComponent implements OnInit, OnDestroy {
 
-  @Input()
-  parametrable = false;
+  get titre() {
+    return this.service.titre
+  }
+  get description() {
+    return this.service.description
+  }
+  get graphe_id() {
+    return this.service.graphe_id
+  }
+
+  get parametrable() {
+    return Boolean(this.parametrageComponentService)
+  }
+
+  get url_consultation() {
+    return this.service.url_consultation
+  }
+
+  get is_loading$() {
+    return this.service.is_loading$
+  }
+
+  get is_in_error$() {
+    return this.service.is_in_error$
+  }
+
+  get is_successfully_loaded$() {
+    return this.service.is_successfully_loaded$
+  }
 
   @Input()
-  url_consultation = ''
-
-  @Input()
-  titre?;
-
-  @Input()
-  description?: string;
-
-  @Output()
-  deplacerClic = new EventEmitter();
-  @Output()
-  editeClic = new EventEmitter();
-  @Output()
-  copierIframeClic = new EventEmitter();
-  @Output()
-  genererImageClic = new EventEmitter();
+  set visualisation(visualisation: Visualisation) {
+    this.service.visualisation = visualisation
+  }
 
   _stop$ = new Subject();
 
@@ -49,7 +69,9 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private iframeService: IframeService,
-    private router: Router,
+    private service: VisualisationComponentService,
+    @Optional()
+    private parametrageComponentService?: BudgetParametrageComponentService,
   ) { }
 
   ngOnInit(): void { }
@@ -58,16 +80,23 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     this._stop$.next(null);
   }
 
-  onDeplacerClic() {
-    this.deplacerClic.emit();
-  }
+  onDeplacerClic() { }
+
   onEditeClic() {
-    this.editeClic.emit();
+    const dialogRef = this.dialog.open(EditTitreDialogComponent, {
+      data: {
+        default_titre: this.service.default_titre,
+        default_description: this.service.default_description,
+        previous_titre: this.titre,
+        previous_description: this.description,
+        grapheId: this.graphe_id,
+        parametrageService: this.parametrageComponentService,
+      } as EditTitreDialogData,
+      minWidth: '50%',
+    });
   }
 
   onExportClic() {
-    this.genererImageClic.emit();
-
     let nom_fichier = 'graphe.png'
 
     snackify_telechargement(
@@ -102,7 +131,7 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(VisIframeDialogComponent, {
       data: {
         iframe_fragment: fragment
-      } as DialogData
+      } as IframeDialogData
     });
   }
 

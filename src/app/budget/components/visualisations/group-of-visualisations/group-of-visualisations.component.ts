@@ -1,18 +1,17 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, filter, combineLatestWith, map } from 'rxjs/operators';
+import { Annee } from 'src/app/budget/models/common-types';
+import { DefaultVisualisationParametrage, DefaultVisualisationParametrageLocalisation } from 'src/app/budget/models/defaultvisualisation-parametrage';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { EtapeBudgetaire } from 'src/app/budget/models/etape-budgetaire';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
-import { IdentifiantVisualisation, VisualisationUtils } from 'src/app/budget/models/visualisation.model';
+import { IdentifiantVisualisation, VisualisationGraphId, VisualisationUtils } from 'src/app/budget/models/visualisation.model';
 import { BudgetsStoresService } from 'src/app/budget/services/budgets-store.service';
 import { RoutingService } from 'src/app/budget/services/routing.service';
+import { BudgetParametrageComponentService } from '../../budget-parametrage/budget-parametrage-component.service';
 
-interface _DonneesVisualisation extends IdentifiantVisualisation {
-  donnees_budgetaires?: DonneesBudgetaires
-  informations_pdc?: Pdc.InformationsPdc
-  nom_etablissement?: string
-}
+import { Visualisation } from '../../../models/visualisation.model'
 
 @Component({
   selector: 'app-group-of-visualisations',
@@ -30,47 +29,23 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     this.compute_visualisations(this._id_visualisations)
   }
 
-  @Input() parametrable: boolean = false
+  get parametrable() {
+    return Boolean(this.parametrageComponentService)
+  }
 
-  public visualisations: _DonneesVisualisation[] = []
+  private _visualisations: IdentifiantVisualisation[] = []
+  get visualisations(): Visualisation[] {
+    return (this._visualisations as Visualisation[])
+  }
 
   constructor(
     private storesServices: BudgetsStoresService,
     private routingService: RoutingService,
+    @Optional()
+    private parametrageComponentService?: BudgetParametrageComponentService,
   ) { }
 
   ngOnInit(): void { }
-
-  titre_pour(visualisation: _DonneesVisualisation) {
-    let annee = visualisation.annee
-    let nom_etab = visualisation.nom_etablissement
-    let suffixe_etape = this._suffixe_nom_budget_pour(visualisation)
-    switch(visualisation.graphe_id) {
-      case 'donut-depenses':
-        return `${nom_etab} - Les dépenses ${annee} ${suffixe_etape}`
-      case 'donut-recettes':
-        return `${nom_etab} - Les recettes ${annee} ${suffixe_etape}`
-      case 'top-3-depenses':
-        return `${nom_etab} - Le top 3 des dépenses ${annee} ${suffixe_etape}`
-    }
-  }
-
-  description_pour(visualisation: _DonneesVisualisation) {
-    return this.titre_pour(visualisation)
-  }
-
-  _suffixe_nom_budget_pour(visualisation: _DonneesVisualisation) {
-    switch (visualisation.etape) {
-      case EtapeBudgetaire.BUDGET_PRIMITIF:
-        return 'du budget primitif'
-      case EtapeBudgetaire.COMPTE_ADMINISTRATIF:
-        return 'du compte administratif'
-      case EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE:
-        return 'du budget supplémentaire'
-      case EtapeBudgetaire.DECISION_MODIFICATIVE:
-        return 'de la décision modificative'
-    }
-  }
 
   compute_visualisations(id_visualisations: IdentifiantVisualisation[]) {
 
@@ -103,41 +78,34 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
         });
     }
 
-    this.visualisations = visualisations
-  }
-
-  url_consultation(id_visualisation: IdentifiantVisualisation) {
-    return this.routingService.external_url_consultation_grapheId(
-      id_visualisation.annee,
-      id_visualisation.siret,
-      id_visualisation.etape,
-      id_visualisation.graphe_id,
-    )
+    this._visualisations = visualisations
   }
 
   // Plumbing
-  is_loading$(visualisation: IdentifiantVisualisation) {
-    return this.storesServices.viewModels.select_is_budget_loading(
-      visualisation.annee,
-      visualisation.siret,
-      visualisation.etape
-    )
+  private _default_titre_pour(annee: Annee, nom_etablissement: string, etape: EtapeBudgetaire, graphe_id: VisualisationGraphId) {
+
+    let suffixe_etape = this._suffixe_nom_budget_pour(etape)
+    switch (graphe_id) {
+      case 'donut-depenses':
+        return `${nom_etablissement} - Les dépenses ${annee} ${suffixe_etape}`
+      case 'donut-recettes':
+        return `${nom_etablissement} - Les recettes ${annee} ${suffixe_etape}`
+      case 'top-3-depenses':
+        return `${nom_etablissement} - Le top 3 des dépenses ${annee} ${suffixe_etape}`
+    }
   }
 
-  is_in_error$(visualisation: IdentifiantVisualisation) {
-    return this.storesServices.viewModels.select_is_budget_in_error(
-      visualisation.annee,
-      visualisation.siret,
-      visualisation.etape
-    )
-  }
-
-  is_successfully_loaded$(visualisation) {
-    return this.is_loading$(visualisation)
-      .pipe(
-        combineLatestWith(this.is_in_error$(visualisation)),
-        map(([loading, inError]) => !loading && !inError)
-      )
+  private _suffixe_nom_budget_pour(etape: EtapeBudgetaire) {
+    switch (etape) {
+      case EtapeBudgetaire.BUDGET_PRIMITIF:
+        return 'du budget primitif'
+      case EtapeBudgetaire.COMPTE_ADMINISTRATIF:
+        return 'du compte administratif'
+      case EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE:
+        return 'du budget supplémentaire'
+      case EtapeBudgetaire.DECISION_MODIFICATIVE:
+        return 'de la décision modificative'
+    }
   }
 
   private _id_visualisations: IdentifiantVisualisation[]
@@ -155,12 +123,24 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
     donnees_budgetaires: DonneesBudgetaires,
     informations_pdc: Pdc.InformationsPdc,
     nom_etablissement: string,
-  ): _DonneesVisualisation {
+  ): Visualisation {
+
+    let annee = id.annee;
+    let siret = id.siret;
+    let etape = id.etape;
+    let graphe_id = id.graphe_id;
+
+    let titre = this._default_titre_pour(annee, nom_etablissement, etape, graphe_id)
+    let description = this._default_titre_pour(annee, nom_etablissement, etape, graphe_id)
+
     return {
-      annee: id.annee,
-      siret: id.siret,
-      etape: id.etape,
-      graphe_id: id.graphe_id,
+      annee,
+      siret,
+      etape,
+      graphe_id,
+
+      titre,
+      description,
 
       donnees_budgetaires,
       informations_pdc,

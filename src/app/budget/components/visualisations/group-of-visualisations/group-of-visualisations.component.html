@@ -2,43 +2,16 @@
 
     <ng-container *ngFor="let visualisation of visualisations">
 
-        <ng-container *ngIf="is_loading$(visualisation) | async">
-            <div class="visualisation">
-                <mat-card>
-                    <div class="loading">
-                        <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-                    </div>
-                </mat-card>
-            </div>
-        </ng-container>
-
-        <ng-container *ngIf="is_in_error$(visualisation) | async">
-            <div class="visualisation">
-                <mat-card>
-                    <div class="in_error">
-                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
-                        Une erreur est survenue, veuillez recharger la page.
-                    </div>
-                </mat-card>
-            </div>
-        </ng-container>
-
-        <ng-container [ngSwitch]="visualisation.graphe_id"
-            *ngIf="is_successfully_loaded$(visualisation)| async">
+        <ng-container [ngSwitch]="visualisation.graphe_id">
 
             <div class="visualisation">
 
                 <ng-container *ngSwitchCase="'donut-depenses'">
 
-                    <app-budget-card [titre]="titre_pour(visualisation)"
-                        [description]="description_pour(visualisation)" [parametrable]="parametrable"
-                        [url_consultation]="url_consultation(visualisation)">
+                    <app-budget-card 
+                        [visualisation]="visualisation">
 
-                        <app-visualisation-donut [titre]="titre_pour(visualisation)"
-                            [description]="description_pour(visualisation)"
-                            [donneesBudget]="visualisation.donnees_budgetaires"
-                            [informationPlanDeCompte]="visualisation.informations_pdc" rd="depense">
-                        </app-visualisation-donut>
+                        <app-visualisation-donut rd="depense"></app-visualisation-donut>
                     </app-budget-card>
 
                 </ng-container>
@@ -46,15 +19,10 @@
 
                 <ng-container *ngSwitchCase="'donut-recettes'">
 
-                    <app-budget-card [titre]="titre_pour(visualisation)"
-                        [description]="description_pour(visualisation)" [parametrable]="parametrable"
-                        [url_consultation]="url_consultation(visualisation)">
+                    <app-budget-card 
+                        [visualisation]="visualisation">
 
-                        <app-visualisation-donut [titre]="titre_pour(visualisation)"
-                            [description]="description_pour(visualisation)"
-                            [donneesBudget]="visualisation.donnees_budgetaires"
-                            [informationPlanDeCompte]="visualisation.informations_pdc" rd="recette">
-                        </app-visualisation-donut>
+                        <app-visualisation-donut rd="recette"></app-visualisation-donut>
                     </app-budget-card>
 
                 </ng-container>
@@ -62,16 +30,10 @@
 
                 <ng-container *ngSwitchCase="'top-3-depenses'">
 
-                    <app-budget-card [titre]="titre_pour(visualisation)"
-                        [description]="description_pour(visualisation)" [parametrable]="parametrable"
-                        [url_consultation]="url_consultation(visualisation)">
+                    <app-budget-card 
+                        [visualisation]="visualisation">
 
-                        <app-top-trois-depenses [titre]="titre_pour(visualisation)"
-                            [description]="description_pour(visualisation)"
-                            [donneesBudget]="visualisation.donnees_budgetaires"
-                            [informationsPlanDeCompte]="visualisation.informations_pdc">
-
-                        </app-top-trois-depenses>
+                        <app-top-trois-depenses></app-top-trois-depenses>
 
                     </app-budget-card>
 

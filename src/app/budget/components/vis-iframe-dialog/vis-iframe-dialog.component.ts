@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogData } from '../budget-card/budget-card.component';
+import { IframeDialogData } from '../budget-card/budget-card.component';
 
 @Component({
   selector: 'app-vis-iframe-dialog',
@@ -12,7 +12,7 @@ export class VisIframeDialogComponent implements OnInit, AfterViewInit {
   @ViewChild('iframe_fragment_ref')
   iframe_frag_ref: ElementRef
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: IframeDialogData) { }
 
   ngOnInit(): void { }
 

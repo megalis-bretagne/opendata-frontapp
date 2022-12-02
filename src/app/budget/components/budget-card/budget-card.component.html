@@ -1,58 +1,73 @@
-<mat-card>
+<ng-container *ngIf="is_loading$ | async">
+    <div class="visualisation">
+        <mat-card>
+            <div class="loading">
+                <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+            </div>
+        </mat-card>
+    </div>
+</ng-container>
 
-    <mat-card-title class="horizontal">
-        <div>
-            {{titre}}
-        </div>
+<ng-container *ngIf="is_in_error$ | async">
+    <div class="visualisation">
+        <mat-card>
+            <div class="in_error">
+                <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
+                Une erreur est survenue, veuillez recharger la page.
+            </div>
+        </mat-card>
+    </div>
+</ng-container>
 
-        <div *ngIf="parametrable">
+<ng-container
+    *ngIf="is_successfully_loaded$ | async">
+    <mat-card>
 
-            <!-- <button disabled (click)="onDeplacerClic()" class="menu-btn" mat-mini-fab color="basic">
-                <mat-icon>open_with</mat-icon>
-            </button>
+        <mat-card-title class="horizontal">
+            <div>
+                {{titre}}
+            </div>
 
-            <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
-                <mat-icon>edit</mat-icon>
-            </button> -->
-            <!-- <button disabled (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
+            <div *ngIf="parametrable">
+
+                <button (click)="onEditeClic()" class="menu-btn" mat-mini-fab color="basic">
                     <mat-icon>edit</mat-icon>
-            </button> -->
+                </button>
 
-        </div>
+            </div>
 
-    </mat-card-title>
+        </mat-card-title>
 
-    <mat-card-subtitle>
-        {{description}}
-    </mat-card-subtitle>
+        <mat-card-subtitle>
+            {{description}}
+        </mat-card-subtitle>
 
-    <mat-card-content>
-        <ng-content></ng-content>
-    </mat-card-content>
+        <mat-card-content>
+            <ng-content></ng-content>
+        </mat-card-content>
 
-    <mat-card-footer class="horizontal">
-        <div></div>
-        <div>
+        <mat-card-footer class="horizontal">
+            <div></div>
+            <div>
 
-            <button *ngIf="parametrable" (click)="visualizeIframeThroughDialog()" class="menu-btn" mat-mini-fab color="basic"
-                matTooltip="Visualiser l'iframe de la section" matTooltipPosition="above">
+                <button *ngIf="parametrable" (click)="visualizeIframeThroughDialog()" class="menu-btn" mat-mini-fab
+                    color="basic" matTooltip="Visualiser l'iframe de la section" matTooltipPosition="above">
                     <mat-icon>visibility</mat-icon>
                 </button>
 
-            <button *ngIf="parametrable" 
-                [cdkCopyToClipboard]="computeIframeFragment()" 
-                (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')"
-                class="menu-btn" mat-mini-fab
-                matTooltip="Copier l'iframe de la section" matTooltipPosition="above"
-                color="basic">
-                <mat-icon>code</mat-icon>
-            </button>
+                <button *ngIf="parametrable" [cdkCopyToClipboard]="computeIframeFragment()"
+                    (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')"
+                    class="menu-btn" mat-mini-fab matTooltip="Copier l'iframe de la section" matTooltipPosition="above"
+                    color="basic">
+                    <mat-icon>code</mat-icon>
+                </button>
 
-            <button (click)="onExportClic()" class="menu-btn" mat-mini-fab color="basic"
-                matTooltip="Exporter la section en image" matTooltipPosition="above">
-                <mat-icon>upload</mat-icon>
-            </button>
-        </div>
-    </mat-card-footer>
+                <button (click)="onExportClic()" class="menu-btn" mat-mini-fab color="basic"
+                    matTooltip="Exporter la section en image" matTooltipPosition="above">
+                    <mat-icon>upload</mat-icon>
+                </button>
+            </div>
+        </mat-card-footer>
 
-</mat-card>
+    </mat-card>
+</ng-container>

@@ -1,8 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { EChartsOption } from "echarts";
+import { Subject, takeUntil } from "rxjs";
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
 import { Pdc } from "../../models/plan-de-comptes";
 import { EchartsUtilsService } from "../../services/echarts-utils.service";
+import { VisualisationComponentService } from "../budget-card/budget-card-component.service";
 import { BudgetParametrageComponentService } from "../budget-parametrage/budget-parametrage-component.service";
 import { EchartsViewModel } from "./EchartsViewModel";
 
@@ -18,10 +20,18 @@ export interface ChartExportImage {
 })
 export abstract class VisualisationComponent implements OnInit, OnDestroy {
 
+  protected _stop$ = new Subject<void>()
+
   constructor(
     protected echartsUtilsService: EchartsUtilsService,
+    protected visualisationService: VisualisationComponentService,
     protected componentService?: BudgetParametrageComponentService,
-  ) { }
+  ) {
+    this.visualisationService
+      .visualisationUpdate$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(() => this.refresh())
+  }
 
   ngOnInit(): void {
     if (this.componentService)
@@ -31,13 +41,18 @@ export abstract class VisualisationComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.componentService)
       this.componentService.unregister_graphe_exporter(this)
+    
+    this._stop$.next()
+    this._stop$.complete()
   }
 
-  @Input()
-  titre: string
+  get titre() {
+    return this.visualisationService.titre
+  }
 
-  @Input()
-  description
+  get description() {
+    return this.visualisationService.description
+  }
 
   /** Le viewmodel courant*/
   echartsVm?: EchartsViewModel

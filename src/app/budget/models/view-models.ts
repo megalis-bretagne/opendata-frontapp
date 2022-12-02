@@ -12,3 +12,9 @@ export type EtablissementComboItemViewModel = ComboItemViewModel<string>
 
 /** etape - pretty name */
 export type EtapeComboItemViewModel = ComboItemViewModel<EtapeBudgetaire>
+
+
+export interface VisualisationTitres {
+    titre: string,
+    sous_titre: string,
+}

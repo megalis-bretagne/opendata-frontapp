@@ -27,6 +27,7 @@ import { ResizeObserverModule } from '@ng-web-apis/resize-observer';
 import { TopTroisDepensesComponent } from './components/visualisations/top-trois-depenses/top-trois-depenses.component';
 import { VisIframeDialogComponent } from './components/vis-iframe-dialog/vis-iframe-dialog.component';
 import { EnConstructionComponent } from './components/en-construction/en-construction.component';
+import { EditTitreDialogComponent } from './components/edit-titre-dialog/edit-titre-dialog.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
@@ -46,6 +47,7 @@ echarts.registerLocale('FR', langFr);
     TopTroisDepensesComponent,
     VisIframeDialogComponent,
     EnConstructionComponent,
+    EditTitreDialogComponent,
   ],
   imports: [
     CommonModule,

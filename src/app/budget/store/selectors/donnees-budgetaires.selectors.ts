@@ -16,6 +16,7 @@ const selectEntities = createSelector(
     selectDonneesBudgetairesState,
     state => state.entities
 )
+
 const selectCallStates = createSelector(
     selectDonneesBudgetairesState,
     state => state.callStates)

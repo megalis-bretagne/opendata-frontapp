@@ -13,6 +13,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Réutilisation budgets: Export des visualisations en image.
 - Réutilisation budgets: Meilleure UI pour les actions sur visualisation.
 - Réutilisation budgets: Modale de prévisualisation pour les fragments iframe budget.
+- Réutilisation budgets: Possibilité d'édition des titres pour les graphes.
 - Paramètre `budgets.etapes_a_afficher` au sein de [./src/assets/settings.json](./src/assets/settings.json)
 
 ### Changed

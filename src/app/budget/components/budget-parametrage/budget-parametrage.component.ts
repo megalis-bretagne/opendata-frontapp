@@ -17,7 +17,7 @@ import { BudgetParametrageComponentService } from './budget-parametrage-componen
 import { jsPDF } from 'jspdf'
 import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogData } from '../budget-card/budget-card.component';
+import { IframeDialogData } from '../budget-card/budget-card.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { snackify_telechargement } from '../budget-utils';
 
@@ -190,7 +190,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(VisIframeDialogComponent, {
       data: {
         iframe_fragment: fragment
-      } as DialogData
+      } as IframeDialogData
     });
   }
 

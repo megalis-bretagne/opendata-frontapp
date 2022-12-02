@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { User } from 'src/app/models/user';
 import { GlobalState, selectAuthState } from 'src/app/store/states/global.state';
 import { SettingsService } from 'src/environments/settings.service';
 import { Annee, Siret } from '../../models/common-types';
 import { EtapeBudgetaire } from '../../models/etape-budgetaire';
+import { VisualisationGraphId } from '../../models/visualisation.model';
 import { BudgetsStoresService } from '../../services/budgets-store.service';
 import { VisualisationComponent } from '../visualisations/visualisation.component';
 import { NavigationFormulaireService } from './navigation-formulaire-service';
@@ -40,7 +41,7 @@ export class BudgetParametrageComponentService {
 
     this.navigation = new Navigation();
     this.navigationFormulaireService = new NavigationFormulaireService(
-      this.siren$, 
+      this.siren$,
       this.budgetStoresServices,
       this.settingsService,
     );
@@ -57,7 +58,19 @@ export class BudgetParametrageComponentService {
     if (index > -1) this._graphe_exporters.splice(index, 1)
   }
 
+  editeGrapheTitres(grapheId: VisualisationGraphId, titre: string, sous_titre: string) {
+
+    let annee = this.navigation.anneeSelectionnee
+    let siret = this.navigation.etablissementSelectionne
+    let etape = this.navigation.etapeBudgetaireSelectionnee
+
+    this.budgetStoresServices.edit_defaultvisualisation_titres_pour(
+      annee, siret, etape, grapheId, titre, sous_titre
+    )
+  }
+
   destroy() {
+    this.navigation.destroy()
     this.navigationFormulaireService.destroy()
   }
 
@@ -87,12 +100,28 @@ export class Navigation {
   private _siretSelectionnee: Subject<string> = new ReplaySubject(1);
   private _distinctSiretSelectionnee = this._siretSelectionnee.pipe(distinctUntilChanged())
 
+  anneeSelectionnee?: Annee
+  etapeBudgetaireSelectionnee?: EtapeBudgetaire
+  etablissementSelectionne?: Siret
+
+  _stop$ = new Subject<void>()
+
   constructor() {
-    // Debug 
-    // this.etablissementSelectionnee$.subscribe(etab => this._debug(`emet etab: ${etab}`))
-    // this.etapeBudgetaireSelectionnee$.subscribe(etape => this._debug(`emet etape: ${etape}`))
-    // this.anneeSelectionnee$.subscribe(annee => this._debug(`emet annee: ${annee}`))
-    //
+
+    this.etablissementSelectionnee$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(etab => this.etablissementSelectionne = etab)
+    this.etapeBudgetaireSelectionnee$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(etape => this.etapeBudgetaireSelectionnee = etape)
+    this.anneeSelectionnee$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(annee => this.anneeSelectionnee = annee)
+  }
+
+  destroy() {
+    this._stop$.next()
+    this._stop$.complete()
   }
 
   public selectionneAnnee(annee: Annee) {

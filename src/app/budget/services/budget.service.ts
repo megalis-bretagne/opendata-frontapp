@@ -1,13 +1,15 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, InjectionToken } from "@angular/core";
 import { Observable, throwError } from "rxjs";
-import { tap, map, catchError } from "rxjs/operators";
+import { map, catchError, tap } from "rxjs/operators";
 import { SettingsService } from "src/environments/settings.service";
 import { DonneesBudgetairesDisponibles, RessourcesDisponiblesParAnnees } from "../models/donnees-budgetaires-disponibles";
 import { DonneesBudgetaires } from "../models/donnees-budgetaires";
 import { Pdc } from "../models/plan-de-comptes";
 import { EtapeBudgetaire, EtapeBudgetaireUtil } from "../models/etape-budgetaire";
 import { Annee, Siren, Siret } from "../models/common-types";
+import { DefaultVisualisationParametrage } from "../models/defaultvisualisation-parametrage";
+import { VisualisationGraphId } from "../models/visualisation.model";
 
 
 export interface BudgetService {
@@ -15,6 +17,8 @@ export interface BudgetService {
   loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationsPdc>
   loadBudgets(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DonneesBudgetaires>
   donneesBudgetairesDisponibles(siren: Siren): Observable<DonneesBudgetairesDisponibles>
+  loadTitresPour(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DefaultVisualisationParametrage[]>
+  editTitresPour(annee: string, siret: string, etape: EtapeBudgetaire, grapheId: VisualisationGraphId, titre?: string, sous_titre?: string): Observable<DefaultVisualisationParametrage>
 }
 
 @Injectable()
@@ -75,6 +79,45 @@ export class RealBudgetService implements BudgetService {
         catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des données budgetaires (annee: ${annee}, siret: ${siret}, etape: ${etape}):`)),
       );
     return donnees;
+  }
+
+  loadTitresPour(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DefaultVisualisationParametrage[]> {
+
+    this._debug(`Charge le parametrage pour ${annee}-${siret}-${etape}`)
+
+    let url = `${this._getBudgetBaseUrl()}/parametrage/default_visualisation/search`;
+    const params = `?annee=${annee}&siret=${siret}&etape_str=${etape}`
+    url += params
+
+    let donnees = this.http.post<DefaultVisualisationParametrage[]>(url, {}).pipe(
+      map(parametrages => {
+        for (const parametrage of parametrages)
+          normalize_parametrage(parametrage)
+
+        return parametrages;
+      }),
+      catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des parametrages de visualisation (annee: ${annee}, siret: ${siret}, etape: ${etape}):`)),
+    )
+
+    return donnees;
+  }
+
+  editTitresPour(annee: string, siret: string, etape: EtapeBudgetaire, grapheId: VisualisationGraphId, titre?: string, sous_titre?: string): Observable<DefaultVisualisationParametrage> {
+
+    this._debug(`Edite le parametrage pour ${annee}-${siret}-${etape}-${grapheId}`)
+
+    let url = `${this._getBudgetBaseUrl()}/parametrage/default_visualisation/${annee}/${siret}/${etape}/${grapheId}`
+
+    let donnees = this.http.put<DefaultVisualisationParametrage>(url,
+      {
+        'titre': titre,
+        'sous_titre': sous_titre,
+      }
+    ).pipe(
+      tap((parametrage) => normalize_parametrage(parametrage))
+    )
+
+    return donnees
   }
 
   private log_and_rethrow(err: any, msg?: string) {
@@ -153,4 +196,15 @@ function keep_only_etape_from_donnees_disponibles(donnees_disponibles: DonneesBu
     siren: donnees_disponibles.siren,
   }
   return donnees
+}
+
+function normalize_parametrage(parametrage: DefaultVisualisationParametrage) {
+
+  if (!parametrage || !parametrage.localisation || !parametrage.localisation.etape)
+    return
+
+  let etape_str = parametrage.localisation.etape as string;
+  let etape = EtapeBudgetaireUtil.fromApi(etape_str);
+
+  parametrage.localisation.etape = etape
 }

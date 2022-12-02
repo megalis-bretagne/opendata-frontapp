@@ -6,6 +6,7 @@ import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.servi
 import { PrepareDonneesVisualisation, VisualisationPourTop3 } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
 import { object_is_empty } from 'src/app/utils';
+import { VisualisationComponentService } from '../../budget-card/budget-card-component.service';
 import { BudgetParametrageComponentService } from '../../budget-parametrage/budget-parametrage-component.service';
 import { EchartsViewModel } from '../EchartsViewModel';
 import { VisualisationComponent } from '../visualisation.component';
@@ -25,26 +26,23 @@ export class TopTroisDepensesComponent extends VisualisationComponent {
 
   echartsVm?: EchartsViewModel;
 
-  @Input()
-  public set donneesBudget(value: DonneesBudgetaires) {
-    this._donneesBudget = value;
-    this.refresh()
+  get donneesBudget() {
+    return this.visualisationService.donnees_budgetaires
   }
 
-  @Input()
-  public set informationsPlanDeCompte(value: Pdc.InformationsPdc) {
-    this._informationsPlanDeCompte = value;
-    this.refresh()
+  get informationsPlanDeCompte() {
+    return this.visualisationService.informations_pdc
   }
 
   constructor(
     private mapper: PrepareDonneesVisualisation,
     private prettyCurrencyFormatter: PrettyCurrencyFormatter,
     echartsUtilsService: EchartsUtilsService,
+    visualisationService: VisualisationComponentService,
     @Optional()
-    componentService: BudgetParametrageComponentService,
+    parametrageService?: BudgetParametrageComponentService,
   ) {
-    super(echartsUtilsService, componentService);
+    super(echartsUtilsService, visualisationService, parametrageService);
   }
 
   toChartsViewModel(donnees: DonneesBudgetaires, _: Pdc.InformationsPdc): EchartsViewModel {
@@ -147,17 +145,6 @@ export class TopTroisDepensesComponent extends VisualisationComponent {
 
     this.pdf_echarts_options = option
     return option as EChartsOption
-  }
-
-  // Accessors & boilerplate
-  private _donneesBudget: DonneesBudgetaires;
-  public get donneesBudget(): DonneesBudgetaires {
-    return this._donneesBudget;
-  }
-
-  private _informationsPlanDeCompte: Pdc.InformationsPdc;
-  public get informationsPlanDeCompte(): Pdc.InformationsPdc {
-    return this._informationsPlanDeCompte;
   }
 
   _debug(msg: string) {

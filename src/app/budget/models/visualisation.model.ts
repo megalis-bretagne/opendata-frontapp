@@ -1,5 +1,7 @@
 import { Annee, Siret } from "./common-types";
+import { DonneesBudgetaires } from "./donnees-budgetaires";
 import { EtapeBudgetaire } from "./etape-budgetaire";
+import { Pdc } from "./plan-de-comptes";
 
 export namespace PagesDeVisualisations {
 
@@ -39,6 +41,17 @@ export interface IdentifiantVisualisation {
     siret: Siret
     etape: EtapeBudgetaire
     graphe_id: VisualisationGraphId
+}
+
+/** Réelle visualisation */
+export interface Visualisation extends IdentifiantVisualisation {
+
+  titre?: string,
+  description?: string,
+
+  donnees_budgetaires?: DonneesBudgetaires
+  informations_pdc?: Pdc.InformationsPdc
+  nom_etablissement?: string
 }
 
 export interface ApiCallDesc {

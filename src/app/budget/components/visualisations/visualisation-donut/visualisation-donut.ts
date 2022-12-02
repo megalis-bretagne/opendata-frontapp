@@ -11,6 +11,7 @@ import { LayoutConfig, LAYOUT_CONFIGS, LAYOUT_MODE } from './layout-config';
 
 import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.service';
 import { BudgetParametrageComponentService } from '../../budget-parametrage/budget-parametrage-component.service';
+import { VisualisationComponentService } from '../../budget-card/budget-card-component.service';
 
 export type TypeVue = 'general' | 'detaille'
 
@@ -42,16 +43,12 @@ export class VisualisationDonut extends VisualisationComponent {
 
   echartsVm?: EchartsViewModel
 
-  @Input()
-  public set donneesBudget(value: DonneesBudgetaires) {
-    this._donneesBudget = value;
-    this.refresh()
+  get donneesBudget() {
+    return this.visualisationService.donnees_budgetaires
   }
 
-  @Input()
-  public set informationPlanDeCompte(value: Pdc.InformationsPdc) {
-    this._informationPlanDeCompte = value;
-    this.typeNomenclature = this.typeNomenclature
+  get informationPlanDeCompte() {
+    return this.visualisationService.informations_pdc
   }
 
   @Input()
@@ -89,10 +86,11 @@ export class VisualisationDonut extends VisualisationComponent {
     private mapper: PrepareDonneesVisualisation,
     private prettyCurrencyFormatter: PrettyCurrencyFormatter,
     echartsUtilsService: EchartsUtilsService,
+    visualisationService: VisualisationComponentService,
     @Optional()
-    componentService?: BudgetParametrageComponentService,
-  ) { 
-    super(echartsUtilsService, componentService);
+    parametrageService?: BudgetParametrageComponentService,
+  ) {
+    super(echartsUtilsService, visualisationService, parametrageService);
   }
 
   get afficherOptionsChoixNomenclatures() {
@@ -134,9 +132,9 @@ export class VisualisationDonut extends VisualisationComponent {
     let chartOption: EChartsOption = this.compute_echarts_options(intitule, donneesVisualisation, modePresentationMontant, this.layoutConfig);
 
     this.pdf_echarts_options = this.compute_echarts_options(
-      intitule, 
-      donneesVisualisation, 
-      modePresentationMontant, 
+      intitule,
+      donneesVisualisation,
+      modePresentationMontant,
       this.pdfLayoutConfig
     );
 
@@ -228,16 +226,6 @@ export class VisualisationDonut extends VisualisationComponent {
   }
 
   // Accessors & boilerplates
-  private _donneesBudget: DonneesBudgetaires;
-  public get donneesBudget(): DonneesBudgetaires {
-    return this._donneesBudget;
-  }
-
-  private _informationPlanDeCompte: Pdc.InformationsPdc;
-  public get informationPlanDeCompte(): Pdc.InformationsPdc {
-    return this._informationPlanDeCompte;
-  }
-
   private _rd: 'recette' | 'depense';
   public get rd(): 'recette' | 'depense' {
     return this._rd;
