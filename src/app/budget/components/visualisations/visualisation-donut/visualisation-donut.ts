@@ -47,7 +47,7 @@ export class VisualisationDonut extends VisualisationComponent {
     return this.visualisationService.donnees_budgetaires
   }
 
-  get informationPlanDeCompte() {
+  get informationPlanDeComptes() {
     return this.visualisationService.informations_pdc
   }
 
@@ -62,15 +62,14 @@ export class VisualisationDonut extends VisualisationComponent {
     this.refresh()
   }
 
+  private _typeNomenclature: Pdc.TypeNomenclature = "fonctions";
+
+  public get typeNomenclature(): Pdc.TypeNomenclature {
+    return this._typeNomenclature;
+  }
+
   public set typeNomenclature(value: Pdc.TypeNomenclature) {
-
-    if (this.informationPlanDeCompte && object_is_empty(this.informationPlanDeCompte.references_fonctionnelles)) {
-      this._debug(`Aucune donnée provenant de la nomenclature de fontions. On visualise par nature.`);
-      this._typeNomenclature = 'nature';
-    } else {
-      this._typeNomenclature = value;
-    }
-
+    this._typeNomenclature = value
     this.refresh()
   }
 
@@ -95,10 +94,10 @@ export class VisualisationDonut extends VisualisationComponent {
 
   get afficherOptionsChoixNomenclatures() {
     let afficher = true
-    afficher = afficher && Boolean(this.informationPlanDeCompte)
+    afficher = afficher && Boolean(this.informationPlanDeComptes)
     afficher = afficher
-      && !object_is_empty(this.informationPlanDeCompte.references_fonctionnelles)
-      && !object_is_empty(this.informationPlanDeCompte.comptes_nature)
+      && !object_is_empty(this.informationPlanDeComptes.references_fonctionnelles)
+      && !object_is_empty(this.informationPlanDeComptes.comptes_nature)
     return afficher
   }
 
@@ -117,15 +116,32 @@ export class VisualisationDonut extends VisualisationComponent {
     this.layoutMode = _layoutMode
   }
 
+  _normalizeTypeNomenclature(nomenclaturesDisponibles: Pdc.TypeNomenclature[], typeNomenclature: Pdc.TypeNomenclature): Pdc.TypeNomenclature {
+
+    if (nomenclaturesDisponibles.includes(typeNomenclature))
+      return typeNomenclature
+    
+    if (nomenclaturesDisponibles.length > 0)
+      return nomenclaturesDisponibles[0]
+
+    return 'fonctions'
+  }
+
   toChartsViewModel(
     donneesBudget: DonneesBudgetaires,
-    informationPlanDeCompte: Pdc.InformationsPdc,
+    informationsPlanDeComptes: Pdc.InformationsPdc,
   ): EchartsViewModel {
 
     let typeVue = this.typeVue
     let modePresentationMontant = this.selectedMontantPresentation
 
-    let nomenclature = Pdc.extraire_nomenclature(informationPlanDeCompte, this.typeNomenclature)
+    let typesNomenclaturesDisponibles = this.typesNomenclatureDisponibles(donneesBudget, informationsPlanDeComptes)
+    let _typeNomenclature = this._normalizeTypeNomenclature(typesNomenclaturesDisponibles, this.typeNomenclature)
+
+    if (_typeNomenclature !== this.typeNomenclature)
+      this._debug(`Nomenclature ${this.typeNomenclature} indisponible avec les données actuelles. On utilisera la nomenclature ${_typeNomenclature}`)
+
+    let nomenclature = Pdc.extraire_nomenclature(informationsPlanDeComptes, _typeNomenclature)
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
 
     let intitule = `Budget de \n {b|${donneesVisualisation.prettyTotal}}`
@@ -220,8 +236,8 @@ export class VisualisationDonut extends VisualisationComponent {
   }
 
   refresh() {
-    if (!this.informationPlanDeCompte || !this.donneesBudget) return
-    let chartVm = this.toChartsViewModel(this.donneesBudget, this.informationPlanDeCompte);
+    if (!this.informationPlanDeComptes || !this.donneesBudget) return
+    let chartVm = this.toChartsViewModel(this.donneesBudget, this.informationPlanDeComptes);
     this.echartsVm = chartVm
   }
 
@@ -236,10 +252,6 @@ export class VisualisationDonut extends VisualisationComponent {
     return this._typeVue;
   }
 
-  private _typeNomenclature: Pdc.TypeNomenclature = "fonctions";
-  public get typeNomenclature(): Pdc.TypeNomenclature {
-    return this._typeNomenclature;
-  }
 
   private _layoutMode: LAYOUT_MODE = 'medium'
   get layoutMode() { return this._layoutMode }
@@ -263,6 +275,6 @@ export class VisualisationDonut extends VisualisationComponent {
   onSelectedMontantPresentationChange = () => this.refresh()
 
   private _debug(msg: string) {
-    console.debug(`[BUDGET_PRINCIPAL_GRAPHE] ${msg}`);
+    console.debug(`[VisualisationDonut] ${msg}`);
   }
 }

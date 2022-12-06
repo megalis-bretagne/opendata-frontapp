@@ -68,7 +68,7 @@ function mount_budget_principal_graphe_component_with_data(donnees_budgetaires, 
         componentProperties: {
             rd: 'depense',
             donneesBudget: donnees_budgetaires,
-            informationPlanDeCompte: infos_pdc,
+            informationPlanDeComptes: infos_pdc,
         }
     })
 }

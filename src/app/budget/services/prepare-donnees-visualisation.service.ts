@@ -102,7 +102,7 @@ export class PrepareDonneesVisualisation {
         let elmtNomenclature = nomenclature.get(code)
 
         if (elmtNomenclature == null) {
-            console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature. Il sera catégorisé inconnu dans la visualisation.`);
+            console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature de type ${nomenclature.type}. Il sera catégorisé inconnu dans la visualisation.`);
             return "Inconnu";
         }
 

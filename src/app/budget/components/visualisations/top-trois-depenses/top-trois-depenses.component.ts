@@ -1,11 +1,10 @@
-import { Component, Input, Optional } from '@angular/core';
+import { Component, Optional } from '@angular/core';
 import { EChartsOption } from 'echarts';
 import { DonneesBudgetaires } from 'src/app/budget/models/donnees-budgetaires';
 import { Pdc } from 'src/app/budget/models/plan-de-comptes';
 import { EchartsUtilsService } from 'src/app/budget/services/echarts-utils.service';
 import { PrepareDonneesVisualisation, VisualisationPourTop3 } from 'src/app/budget/services/prepare-donnees-visualisation.service';
 import { PrettyCurrencyFormatter } from 'src/app/budget/services/pretty-currency-formatter';
-import { object_is_empty } from 'src/app/utils';
 import { VisualisationComponentService } from '../../budget-card/budget-card-component.service';
 import { BudgetParametrageComponentService } from '../../budget-parametrage/budget-parametrage-component.service';
 import { EchartsViewModel } from '../EchartsViewModel';
@@ -45,13 +44,13 @@ export class TopTroisDepensesComponent extends VisualisationComponent {
     super(echartsUtilsService, visualisationService, parametrageService);
   }
 
-  toChartsViewModel(donnees: DonneesBudgetaires, _: Pdc.InformationsPdc): EchartsViewModel {
+  toChartsViewModel(donnees: DonneesBudgetaires, pdc: Pdc.InformationsPdc): EchartsViewModel {
 
-    let typeNomenclature: Pdc.TypeNomenclature = 'fonctions'
-    if (object_is_empty(this.informationsPlanDeCompte.references_fonctionnelles)) {
-      this._debug(`Pas de nomenclature par fonctions disponibles, on utilise la nomenclature par nature`);
-      typeNomenclature = 'nature';
-    }
+    let typesNomenclaturesDisponibles = this.typesNomenclatureDisponibles(donnees, pdc)
+    let typeNomenclature: Pdc.TypeNomenclature = (typesNomenclaturesDisponibles.length > 0)? typesNomenclaturesDisponibles[0] : 'fonctions'
+
+    if (typeNomenclature != 'fonctions')
+      this._debug(`Nomenclature par fonctions indisponibles avec les données actuelles. On utilisera la nomenclature ${typeNomenclature}`)
 
     let nomenclature = Pdc.extraire_nomenclature(this.informationsPlanDeCompte, typeNomenclature)
     let donneesVisualisation = this.mapper.donneesPourTop3Depenses(donnees, nomenclature)

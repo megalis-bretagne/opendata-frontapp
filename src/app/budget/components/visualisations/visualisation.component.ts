@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { EChartsOption } from "echarts";
 import { Subject, takeUntil } from "rxjs";
+import { object_is_empty } from "src/app/utils";
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
 import { Pdc } from "../../models/plan-de-comptes";
 import { EchartsUtilsService } from "../../services/echarts-utils.service";
@@ -61,6 +62,24 @@ export abstract class VisualisationComponent implements OnInit, OnDestroy {
   protected pdf_echarts_options: EChartsOption
   protected pdf_chart_width: number = 1000
   protected pdf_chart_height: number = 500
+
+  /** Détermine le type de nomenclature disponibles d'après les données budgetaires*/
+  typesNomenclatureDisponibles(donnees: DonneesBudgetaires, infos_pdc: Pdc.InformationsPdc): Pdc.TypeNomenclature[] {
+
+    let result: Pdc.TypeNomenclature[] = []
+    if (!infos_pdc || !donnees)
+      return result
+
+    let has_code_fonction = donnees.lignes.find(ligne => ligne.fonction_code)
+    let has_compte_nature_code = donnees.lignes.find(ligne => ligne.compte_nature_code)
+    
+    if (!object_is_empty(infos_pdc.references_fonctionnelles) && has_code_fonction)
+      result.push('fonctions')
+    if (!object_is_empty(infos_pdc.comptes_nature) && has_compte_nature_code)
+      result.push('nature')
+
+    return result
+  }
 
   /** Transforme les données budgetaires brutes en view model pour echarts*/
   abstract toChartsViewModel(donnees: DonneesBudgetaires, infos_pdc: Pdc.InformationsPdc): EchartsViewModel
