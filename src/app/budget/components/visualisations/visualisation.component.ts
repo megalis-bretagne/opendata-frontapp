@@ -90,6 +90,10 @@ export abstract class VisualisationComponent implements OnInit, OnDestroy {
       title: {
         show: true,
         text: this.titre,
+        textStyle: {
+          overflow: 'truncate',
+          width: this.pdf_chart_width - 20,
+        }
       }
     }
     let opts = Object.assign({}, this.pdf_echarts_options, partial)
