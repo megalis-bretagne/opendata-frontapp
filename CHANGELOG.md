@@ -6,6 +6,9 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+
+## [1.0.8] - 2022-12-07
+
 ### Added 
 
 - Réutilisation budgets: Ajout du choix des établissements pour le siren concerné.
