@@ -10,7 +10,21 @@
       ou <a href="https://schema.data.gouv.fr/scdl/budget/latest.html" target="_blank">SCDL budget</a>) 
       et actualisés sur les 2 catalogues opendata précités.
     </p>
-    <mat-slide-toggle (change)="onChangeActivationOpenData()" [(ngModel)]="isChecked">{{isChecked ? 'Activé':'Désactivé'}}</mat-slide-toggle>
+
+    <mat-slide-toggle 
+      color="primary"
+      (change)="onChangeActivationOpenData()" 
+      [(ngModel)]="isChecked">
+
+      <ng-container *ngIf="isChecked; else toggleUnchecked">
+        Le service de publication automatique opendata est actuellement <strong>activé</strong>.
+      </ng-container>
+      <ng-template #toggleUnchecked>
+        Le service de publication automatique opendata est actuellement <strong>désactivé</strong>.
+      </ng-template>
+
+    </mat-slide-toggle>
+
     <p>
     <br><br>
     <p><br /><strong>Point RGPD :</strong> <br />*************** <br />

@@ -1,65 +1,61 @@
 <div>
+    <ng-container *ngIf="isLoadingDisponibles$ | async as loading; else errorOrContenu">
+        <div style="display: flex; justify-content: center;">
+            <div>
+                <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+            </div>
+        </div>
+    </ng-container>
 
-    <!-- <div *ngIf="errorInLoadingBudget$ | async as error">
-        An error occured {{error}}
-    </div> -->
-    <!-- TODO: handle error -->
+    <ng-template #errorOrContenu>
 
-    <app-budget-parametrage-nav></app-budget-parametrage-nav>
+        <div *ngIf="errorInLoadingDisponibles$ | async as error; else contenu">
+            <div class="in_error">
+                <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
+                Une erreur est survenue, veuillez recharger la page.
+            </div>
+        </div>
 
-    <div class="visualisations">
-        <app-budget-card 
-            titre="Les recettes {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyName}}" 
-            description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal - {{etablissementPrettyName}}"
-            [parametrable]="true">
-            <app-budget-principal-graphe
-                [donneesBudget]="donneesBudget"
-                [informationPlanDeCompte]="informationsPlanDeCompte"
-                rd="recette"
-                ></app-budget-principal-graphe>
-        </app-budget-card>
+        <ng-template #contenu>
 
-        <app-budget-card 
-            titre="Les dépenses {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyName}}" 
-            description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal - {{etablissementPrettyName}}"
-            [parametrable]="true">
-            <app-budget-principal-graphe
-                [donneesBudget]="donneesBudget"
-                [informationPlanDeCompte]="informationsPlanDeCompte"
-                rd="depense"
-                ></app-budget-principal-graphe>
-        </app-budget-card>
-<!-- 
-        <app-budget-card [titre]="'Répartition des recettes'"
-            [description]="'Ceci est une description de la répartition des recettes'" [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
-        </app-budget-card>
+            <app-budget-parametrage-nav></app-budget-parametrage-nav>
+
+            <ng-container *ngIf="affiche_en_construction">
+                <app-en-construction text="Les visuels pour les décisions modificatives sont en cours de construction">
+                </app-en-construction>
+            </ng-container>
+
+            <div>
+                <app-group-of-visualisations [id_visualisations]="id_visualisations">
+                </app-group-of-visualisations>
+            </div>
+
+            <div class="boutons-bas-de-page">
+
+                <button mat-raised-button (click)="telecharger_pdf()">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    Télécharger le PDF
+                </button>
+
+                <button mat-raised-button 
+                    [cdkCopyToClipboard]="iframeFragment"
+                    (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')"
+                >
+                    <mat-icon>code</mat-icon>
+                    Copier l'iframe
+                </button>
+
+                <button mat-raised-button (click)="visualizeIframeThroughDialog()">
+                    <mat-icon>visibility</mat-icon>
+                    Visualiser l'iframe de la section
+                </button>
+            </div>
+
+        </ng-template>
+
+    </ng-template>
 
 
-        <app-budget-card [titre]="'Répartition des dépenses'"
-            [description]="'Ceci est une description de la répartition des dépenses'" [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
-        </app-budget-card>
 
-        <app-budget-card [titre]="'Le top 3 des dépenses'"
-            [description]="'Ceci est une description du top 3 des dépenses'" [parametrable]="true">
-            <p>Je suis du contenu projeté</p>
-        </app-budget-card> -->
-    </div>
-
-    <div class="boutons-bas-de-page">
-        <button mat-raised-button [cdkCopyToClipboard]="iframeFragment">
-            <mat-icon>code</mat-icon>
-            Copier l'iframe
-        </button>
-        <!-- <button mat-raised-button disabled (click)="onTelechargerPdfClic()">
-            <mat-icon>download</mat-icon>
-            Télécharget le PDF
-        </button> -->
-        <!-- <button mat-raised-button color="primary" disabled (click)="onEnregistrerClic()">
-            <mat-icon>save</mat-icon>
-            Enregistrer
-        </button> -->
-    </div>
 
 </div>

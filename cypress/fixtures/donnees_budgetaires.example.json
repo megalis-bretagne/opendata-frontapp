@@ -1,0 +1,1009 @@
+{
+    "etape": "compte administratif",
+    "annee": 2021,
+    "siret": 25351449100047,
+    "lignes": [
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28088",
+            "recette": true,
+            "montant": 140386.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6453",
+            "recette": false,
+            "montant": 197485.89
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6811",
+            "recette": false,
+            "montant": 650029.04
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "64111",
+            "recette": false,
+            "montant": 551108.98
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6338",
+            "recette": false,
+            "montant": 2522.35
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6451",
+            "recette": false,
+            "montant": 168627.43
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "232",
+            "recette": false,
+            "montant": 152905.91
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2183",
+            "recette": false,
+            "montant": 41361.76
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "70872",
+            "recette": true,
+            "montant": 236594.39
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28033",
+            "recette": true,
+            "montant": 3312.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28184",
+            "recette": true,
+            "montant": 3921.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28031",
+            "recette": true,
+            "montant": 57896.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28181",
+            "recette": true,
+            "montant": 4929.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28183",
+            "recette": true,
+            "montant": 63103.97
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6336",
+            "recette": false,
+            "montant": 18078.63
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "139158",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "7588",
+            "recette": true,
+            "montant": 193.61
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2031",
+            "recette": false,
+            "montant": 2340.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2051",
+            "recette": false,
+            "montant": 26524.7
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6232",
+            "recette": false,
+            "montant": 148.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6185",
+            "recette": false,
+            "montant": 12988.08
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60622",
+            "recette": false,
+            "montant": 14835.03
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6512",
+            "recette": false,
+            "montant": 7353.08
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "64131",
+            "recette": false,
+            "montant": 211086.46
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6237",
+            "recette": false,
+            "montant": 2346.59
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "021",
+            "recette": true,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "20",
+            "compte_nature_code": "611",
+            "recette": false,
+            "montant": 14.37
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6479",
+            "recette": true,
+            "montant": 16540.8
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60612",
+            "recette": false,
+            "montant": 8562.33
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6135",
+            "recette": false,
+            "montant": 15464.68
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "64112",
+            "recette": false,
+            "montant": 10749.88
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "70688",
+            "recette": true,
+            "montant": 1756550.18
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6135",
+            "recette": false,
+            "montant": 21075.37
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6184",
+            "recette": false,
+            "montant": 23837.74
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "777",
+            "recette": true,
+            "montant": 115341.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6132",
+            "recette": false,
+            "montant": 204819.12
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28158",
+            "recette": true,
+            "montant": 6803.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28051",
+            "recette": true,
+            "montant": 56065.67
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "61551",
+            "recette": false,
+            "montant": -143.84
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2088",
+            "recette": false,
+            "montant": 10517.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2032",
+            "recette": false,
+            "montant": 25625.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2315",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "65888",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6488",
+            "recette": false,
+            "montant": 11148.29
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "611",
+            "recette": false,
+            "montant": -19251.72
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6332",
+            "recette": false,
+            "montant": 781.39
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6531",
+            "recette": false,
+            "montant": 36369.8
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "023",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6156",
+            "recette": false,
+            "montant": 112618.51
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28032",
+            "recette": true,
+            "montant": 284124.4
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6184",
+            "recette": false,
+            "montant": 3290.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6711",
+            "recette": false,
+            "montant": 42.77
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "139151",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "678",
+            "recette": false,
+            "montant": 315392.99
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6331",
+            "recette": false,
+            "montant": 16817.22
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "021",
+            "recette": true,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "614",
+            "recette": false,
+            "montant": -5675.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "611",
+            "recette": false,
+            "montant": 167021.96
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60628",
+            "recette": false,
+            "montant": 1556.52
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "777",
+            "recette": true,
+            "montant": 149715.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "023",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "64138",
+            "recette": false,
+            "montant": 80264.27
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6261",
+            "recette": false,
+            "montant": 3379.09
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6256",
+            "recette": false,
+            "montant": 1930.49
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "678",
+            "recette": false,
+            "montant": -15225.9
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "7473",
+            "recette": true,
+            "montant": 928000.01
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6238",
+            "recette": false,
+            "montant": 2538.98
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "13917",
+            "recette": false,
+            "montant": 95933.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "7472",
+            "recette": true,
+            "montant": 602127.35
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "637",
+            "recette": false,
+            "montant": 3085.78
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28188",
+            "recette": true,
+            "montant": 300.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6419",
+            "recette": true,
+            "montant": 8239.54
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "1318",
+            "recette": true,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6718",
+            "recette": false,
+            "montant": 5250.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6228",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2033",
+            "recette": false,
+            "montant": 3240.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60623",
+            "recette": false,
+            "montant": 675.39
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6454",
+            "recette": false,
+            "montant": 11669.38
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6132",
+            "recette": false,
+            "montant": -40876.09
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6478",
+            "recette": false,
+            "montant": 48576.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "64118",
+            "recette": false,
+            "montant": 220189.61
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "275",
+            "recette": true,
+            "montant": 49.15
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6458",
+            "recette": false,
+            "montant": 2193.09
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6236",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6231",
+            "recette": false,
+            "montant": 1077.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6533",
+            "recette": false,
+            "montant": 3723.03
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6262",
+            "recette": false,
+            "montant": -897.26
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6161",
+            "recette": false,
+            "montant": 11541.16
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "7815",
+            "recette": true,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "13151",
+            "recette": true,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6042",
+            "recette": false,
+            "montant": 162670.83
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "60636",
+            "recette": false,
+            "montant": -112.55
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "001",
+            "recette": true,
+            "montant": 1236601.36
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2181",
+            "recette": false,
+            "montant": 15251.85
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "13912",
+            "recette": false,
+            "montant": 19408.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "13911",
+            "recette": false,
+            "montant": 17301.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "61551",
+            "recette": false,
+            "montant": 7786.12
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "60632",
+            "recette": false,
+            "montant": 575.33
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6042",
+            "recette": false,
+            "montant": -118841.19
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6188",
+            "recette": false,
+            "montant": 7900.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6218",
+            "recette": false,
+            "montant": 31876.05
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2188",
+            "recette": false,
+            "montant": 499.98
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6182",
+            "recette": false,
+            "montant": 9251.03
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6182",
+            "recette": false,
+            "montant": -93.24
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60632",
+            "recette": false,
+            "montant": 2839.4
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "2184",
+            "recette": false,
+            "montant": 501.39
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "673",
+            "recette": false,
+            "montant": 37932.23
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "1311",
+            "recette": true,
+            "montant": 225576.82
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "615228",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "70841",
+            "recette": true,
+            "montant": 266259.66
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "7788",
+            "recette": true,
+            "montant": 5636.91
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6068",
+            "recette": false,
+            "montant": 207.9
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6261",
+            "recette": false,
+            "montant": -174.48
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6064",
+            "recette": false,
+            "montant": 1388.46
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "13912",
+            "recette": false,
+            "montant": 37788.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6168",
+            "recette": false,
+            "montant": 38649.72
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6815",
+            "recette": false,
+            "montant": 5400.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "13918",
+            "recette": false,
+            "montant": 5400.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "627",
+            "recette": false,
+            "montant": 81.28
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "002",
+            "recette": true,
+            "montant": 894621.97
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60631",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "70878",
+            "recette": true,
+            "montant": -5250.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "275",
+            "recette": false,
+            "montant": 747.61
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "28182",
+            "recette": true,
+            "montant": 2188.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "139158",
+            "recette": false,
+            "montant": 11830.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6185",
+            "recette": false,
+            "montant": -2588.41
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "614",
+            "recette": false,
+            "montant": 39302.37
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "60636",
+            "recette": false,
+            "montant": 112.55
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6257",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "657358",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "627",
+            "recette": false,
+            "montant": -20.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "63512",
+            "recette": false,
+            "montant": 12119.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "13913",
+            "recette": false,
+            "montant": 39608.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6161",
+            "recette": false,
+            "montant": -349.32
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "13913",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "7718",
+            "recette": true,
+            "montant": 10593.5
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "637",
+            "recette": false,
+            "montant": -38.5
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "2804181",
+            "recette": true,
+            "montant": 27000.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "7588",
+            "recette": true,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "7815",
+            "recette": true,
+            "montant": 2835.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6532",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "60622",
+            "recette": false,
+            "montant": -732.36
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "70872",
+            "recette": true,
+            "montant": 70085.19
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6459",
+            "recette": true,
+            "montant": 8070.09
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6156",
+            "recette": false,
+            "montant": 1058842.85
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "70878",
+            "recette": true,
+            "montant": 5250.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6815",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "7588",
+            "recette": true,
+            "montant": 1.52
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "65888",
+            "recette": false,
+            "montant": 1.4
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "7472",
+            "recette": true,
+            "montant": -12642.87
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6475",
+            "recette": false,
+            "montant": 109.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "74758",
+            "recette": true,
+            "montant": 360373.66
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6188",
+            "recette": false,
+            "montant": 4900.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "60628",
+            "recette": false,
+            "montant": -290.99
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6238",
+            "recette": false,
+            "montant": -145.94
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "74758",
+            "recette": true,
+            "montant": -26465.83
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "7788",
+            "recette": true,
+            "montant": -400.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "6262",
+            "recette": false,
+            "montant": 22084.11
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "13911",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6218",
+            "recette": false,
+            "montant": 1650.2
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "70688",
+            "recette": true,
+            "montant": -155740.89
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "139151",
+            "recette": false,
+            "montant": 37788.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "6478",
+            "recette": false,
+            "montant": -3312.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "204181",
+            "recette": false,
+            "montant": 45000.0
+        },
+        {
+            "fonction_code": "01",
+            "compte_nature_code": "232",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "232",
+            "recette": false,
+            "montant": 0.0
+        },
+        {
+            "fonction_code": "020",
+            "compte_nature_code": "232",
+            "recette": false,
+            "montant": 0.0
+        }
+    ]
+}

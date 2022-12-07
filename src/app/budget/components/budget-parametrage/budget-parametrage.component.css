@@ -14,3 +14,10 @@
 .boutons-bas-de-page button {
     margin-right: 1em;
 }
+
+.in_error {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

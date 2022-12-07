@@ -10,3 +10,16 @@ mat-card-footer {
 .menu-btn {
     margin-right: 5px;
 }
+
+.visualisation {
+    margin-bottom: 2em;
+}
+
+.loading, .in_error {
+    /* XXX: Hauteur par défaut des encarts de visualisation*/
+    height: 400px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { TypeVue } from "../components/visualisations/budget-principal-graphe/budget-principal-graphe.component";
+import { TypeVue } from "../components/visualisations/visualisation-donut/visualisation-donut";
+import { DonneesBudgetaires, LigneBudget } from "../models/donnees-budgetaires";
 import { Pdc } from "../models/plan-de-comptes";
-import { DonneesBudgetaires, LigneBudget } from "../store/states/budget.state";
 import { PrettyCurrencyFormatter } from "./pretty-currency-formatter";
 
 
@@ -12,38 +12,51 @@ export interface VisualisationPourDonut {
     data_dict: { [name: string]: number }
 }
 
+export interface VisualisationPourTop3 {
+    data: { value: number, groupId: string }[]
+}
+
 @Injectable()
 export class PrepareDonneesVisualisation {
 
     constructor(private prettyCurrencyFormatter: PrettyCurrencyFormatter) { }
+
+    donneesPourTop3Depenses(
+        donnees: DonneesBudgetaires, 
+        nomenclature: Pdc.Nomenclature,
+    ): VisualisationPourTop3 {
+
+        let visuDonut = this.donneesPourDonut(donnees, nomenclature, 'depense', 'general')
+        let data = visuDonut.data
+            .sort((a, b) => b.value - a.value)
+            .filter((_, i) => i < 3)
+            .map(d =>
+                { 
+                    return { value: d.value, groupId: d.name }
+                }
+            )
+        
+        return { data }
+    }
 
     donneesPourDonut(
         donneesBudget: DonneesBudgetaires, nomenclature: Pdc.Nomenclature,
         rd: 'recette' | 'depense', typeVue: TypeVue,
     ): VisualisationPourDonut {
 
-        let extract_code = (ligne: LigneBudget) => ligne.fonction_code;
-        if (nomenclature.type == "nature")
-            extract_code = (ligne) => ligne.compte_nature_code;
-
-        if (nomenclature.type == "fonctions")
-            console.info(`On utilise une nomenclature fonctionnelle`);
-        else if (nomenclature.type == "nature")
-            console.info(`On utilise une nomenclature par nature`);
-
         let data_dict = {};
         let mapped = new Map<string, number>()
 
-        let expectRecette = rd == 'recette';
+        let inRecetteCase = rd == 'recette';
 
         let total = 0;
 
         for (var ligne of donneesBudget.lignes) {
 
-            if (ligne.recette == expectRecette)
+            if (ligne.recette != inRecetteCase)
                 continue;
 
-            let code = extract_code(ligne);
+            let code = this.extractCode(nomenclature, ligne);
             let libelle = this._extraireLibelleCategoriePourLigne(code, nomenclature, typeVue);
             let key = libelle
 
@@ -73,6 +86,13 @@ export class PrepareDonneesVisualisation {
             data, data_dict
         };
     }
+    
+    private extractCode(nomenclature: Pdc.Nomenclature, ligne: LigneBudget) {
+        if ( nomenclature.type === 'nature' )
+            return ligne.compte_nature_code
+        else
+            return ligne.fonction_code
+    }
 
     _extraireLibelleCategoriePourLigne(
         code: string,
@@ -82,7 +102,7 @@ export class PrepareDonneesVisualisation {
         let elmtNomenclature = nomenclature.get(code)
 
         if (elmtNomenclature == null) {
-            console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature. Il sera catégorisé inconnu dans la visualisation.`);
+            console.warn(`Impossible de récupérer la catégorie de code ${code} dans la nomenclature de type ${nomenclature.type}. Il sera catégorisé inconnu dans la visualisation.`);
             return "Inconnu";
         }
 

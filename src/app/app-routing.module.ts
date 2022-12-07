@@ -6,6 +6,7 @@ import { ValiderTableComponent } from './components/valider-table/valider-table.
 import { MarqueBlancheComponent } from './components/marque-blanche/marque-blanche.component';
 import { ParametragePastellComponent } from "./components/parametrage-pastell/parametrage-pastell.component";
 import { NavigationComponent } from './components/navigation/navigation.component';
+import { ROUTE_PREFIX_MODULE as BUDGETS_ROUTE_PREFIX_MODULE } from './budget/services/routing.service';
 
 const routes: Routes = [
   {
@@ -32,7 +33,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'budget',
+    path: BUDGETS_ROUTE_PREFIX_MODULE,
     loadChildren: () => import('./budget/budget.module').then(m => m.BudgetModule)
   },
   {

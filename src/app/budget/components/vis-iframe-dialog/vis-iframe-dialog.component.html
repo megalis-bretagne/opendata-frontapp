@@ -1,0 +1,20 @@
+<h2 mat-dialog-title></h2>
+
+<mat-dialog-content class="mat-typography">
+    <h3>Intégrer la visualisation au sein de votre site</h3>
+
+    <p>L'intégration de cette visualisation est réalisée via une iframe dont le code source est disponible ci-dessous:</p>
+
+    <pre>
+        {{data?.iframe_fragment}}
+    </pre>
+
+    <h3>Aperçu</h3>
+
+    <div style="min-height: 1000;" #iframe_fragment_ref></div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>OK</button>
+</mat-dialog-actions>

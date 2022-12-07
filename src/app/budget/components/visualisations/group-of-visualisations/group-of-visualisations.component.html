@@ -1,0 +1,47 @@
+<div class="visualisations">
+
+    <ng-container *ngFor="let visualisation of visualisations">
+
+        <ng-container [ngSwitch]="visualisation.graphe_id">
+
+            <div class="visualisation">
+
+                <ng-container *ngSwitchCase="'donut-depenses'">
+
+                    <app-budget-card 
+                        [visualisation]="visualisation">
+
+                        <app-visualisation-donut rd="depense"></app-visualisation-donut>
+                    </app-budget-card>
+
+                </ng-container>
+
+
+                <ng-container *ngSwitchCase="'donut-recettes'">
+
+                    <app-budget-card 
+                        [visualisation]="visualisation">
+
+                        <app-visualisation-donut rd="recette"></app-visualisation-donut>
+                    </app-budget-card>
+
+                </ng-container>
+
+
+                <ng-container *ngSwitchCase="'top-3-depenses'">
+
+                    <app-budget-card 
+                        [visualisation]="visualisation">
+
+                        <app-top-trois-depenses></app-top-trois-depenses>
+
+                    </app-budget-card>
+
+                </ng-container>
+            </div>
+
+        </ng-container>
+
+    </ng-container>
+
+</div>

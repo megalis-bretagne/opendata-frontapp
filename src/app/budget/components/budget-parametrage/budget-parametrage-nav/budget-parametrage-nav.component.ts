@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, first, map, takeUntil } from 'rxjs/operators';
-import { EtablissementComboItemViewModel } from 'src/app/budget/models/view-models';
-import { EtapeBudgetaire, EtapeBudgetaireUtil } from 'src/app/budget/services/budget.service';
-import { BudgetParametrageComponentService, PresentationType } from '../budget-parametrage-component.service';
+import { first, map, takeUntil } from 'rxjs/operators';
+import { EtapeBudgetaire } from 'src/app/budget/models/etape-budgetaire';
+import { BudgetParametrageComponentService, Navigation } from '../budget-parametrage-component.service';
+import { NavigationFormulaireService } from '../navigation-formulaire-service';
+import { ANNEE_KEY, BudgetParametrageNavFormulaireModel, ETAB_KEY, ETAPE_KEY } from './budget-parametrage-nav-formulaire-model';
+
 
 @Component({
   selector: 'app-budget-parametrage-nav',
@@ -14,181 +15,111 @@ import { BudgetParametrageComponentService, PresentationType } from '../budget-p
 })
 export class BudgetParametrageNavComponent implements OnInit, OnDestroy {
 
-  anneesDisponibles: string[] = [new Date().getFullYear().toString()];
-  anneesSelectedIndex: number = 0;
-
-  readonly etapeOptions = [
-    { value: EtapeBudgetaire.COMPTE_ADMINISTRATIF, viewValue: "Compte administratif" },
-  ];
-  selectedEtape: EtapeBudgetaire = EtapeBudgetaire.COMPTE_ADMINISTRATIF;
-
-  etablissementOptions: EtablissementComboItemViewModel[] = []
-  selectedEtablissement: string = ""
-
-  readonly presentationOptions = [
-    { value: PresentationType.SIMPLIFIE, viewValue: "Présentation simplifiée" },
-    { value: PresentationType.AVANCEE, viewValue: "Présentation avancée" },
-    { value: PresentationType.PAR_HABITANT, viewValue: "Présentation par habitant" },
-    { value: PresentationType.PAR_EURO, viewValue: "Présentation par euros" },
-  ];
-  selectedPresentation: PresentationType = PresentationType.SIMPLIFIE;
+  formulaire: BudgetParametrageNavFormulaireModel
 
   private _stop$ = new Subject<void>();
   private _etablissementFromRoute$: Observable<string>;
   private _anneeFromRoute$: Observable<string>;
   private _etapeFromRoute$: Observable<EtapeBudgetaire>;
-  private _presentationFromRoute$: Observable<number>;
+
+  private navigation: Navigation
+  private navigationFormService: NavigationFormulaireService
 
   constructor(
-    private componentService: BudgetParametrageComponentService,
+    componentService: BudgetParametrageComponentService,
     private router: Router,
     private route: ActivatedRoute,
   ) {
+
+    this.formulaire = new BudgetParametrageNavFormulaireModel()
+    this.navigation = componentService.navigation
+    this.navigationFormService = componentService.navigationFormulaireService
+    this.navigationFormService.formModel = this.formulaire
+
     this._etablissementFromRoute$ = this.route.queryParams
-      .pipe(
-        map(params => params['etab']),
-      );
+      .pipe(map(params => params[ETAB_KEY]));
     this._anneeFromRoute$ = this.route.queryParams
       .pipe(
         map(params => {
-          let annee = params['annee']
+          let annee = params[ANNEE_KEY]
           return annee;
         }),
-        // tap(annee => this._debug(`Reçu l'année ${annee} des paramètres de route`)),
       );
     this._etapeFromRoute$ = this.route.queryParams
-      .pipe(
-        map(params => params['etape'] as EtapeBudgetaire),
-        filter(etape => EtapeBudgetaireUtil.hasValue(etape)),
-      );
-    this._presentationFromRoute$ = this.route.queryParams
-      .pipe(
-        map(params => Number(params['presentation'])),
-        filter(presentation => presentation in PresentationType),
-      );
+      .pipe(map(params => params[ETAPE_KEY] as EtapeBudgetaire));
+
+    this.formulaire.annee$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(a => this.navigation.selectionneAnnee(a))
+    this.formulaire.etape$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(e => this.navigation.selectionneEtapeBudgetaire(e))
+    this.formulaire.etablissement$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(e => this.navigation.selectionneEtablissement(e))
   }
 
   ngOnInit(): void {
+    this.navigationFormService.initialized$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(() => this.setup_navigation_and_queryParams())
+  }
 
+  setup_navigation_and_queryParams() {
     /*
-     Positionne les options de navigation selon les queryParams
-     ou le component service.
+     Positionne les options de navigation selon les queryParams ou le component service.
      */
-    let annee$ = merge(this._anneeFromRoute$, this.componentService.navigation.anneeSelectionnee$)
-      .pipe(distinctUntilChanged());
-    let anneesDisponibles$ = this.componentService.anneesDisponibles$
-      .pipe(
-        distinctUntilChanged(),
-        filter(annees => Boolean(annees) && annees.length > 0),
-      );
-    let infoAnnees$ = combineLatest([annee$, anneesDisponibles$])
-
-    infoAnnees$
-      .pipe(takeUntil(this._stop$))
-      .subscribe(([annee, anneesDisponibles]) => {
-        let index = anneesDisponibles.indexOf(annee);
-        // this._debug(`Reçu année: ${annee} et années disponibles: ${anneesDisponibles}`);
-        // this._debug(`this.anneesDisponibles: ${anneesDisponibles}`);
-        // this._debug(`this.anneesSelectedIndex: ${index}`);
-        this.anneesDisponibles = anneesDisponibles;
-        this.anneesSelectedIndex = index;
-      });
-    
-    let siret$ = merge(this._etablissementFromRoute$, this.componentService.navigation.etablissementSelectionnee$)
-      .pipe(distinctUntilChanged());
-    let etablissementsDisponibles$ = this.componentService.etablissementsDisponibles$
-      .pipe(
-        distinctUntilChanged(),
-        filter(etabs => Boolean(etabs) && etabs.length > 0),
-      );
-    let infoEtab$ = combineLatest([siret$, etablissementsDisponibles$])
-
-    infoEtab$
-      .pipe(takeUntil(this._stop$))
-      .subscribe(([siret, etablissements]) => {
-        // this._debug(`Reçu siret: ${siret} et ${etablissements.length} établissement(s)`);
-        
-        this.etablissementOptions = etablissements;
-        this.selectedEtablissement = siret;
+    let fromRoute$ = combineLatest([this._anneeFromRoute$, this._etablissementFromRoute$, this._etapeFromRoute$])
+    fromRoute$
+      .pipe(first())
+      .subscribe(([annee, etab, etape]) => {
+        this.navigationFormService.setup_form({ annee: annee, siret: etab, etape: etape })
       });
 
-    merge(this._etapeFromRoute$, this.componentService.navigation.etapeBudgetaireSelectionnee$)
-      .pipe(
-        distinctUntilChanged(),
-        takeUntil(this._stop$),
-      )
-      .subscribe(etape => this.selectedEtape = etape);
+    let annee$ = merge(this.navigation.anneeSelectionnee$)
+    annee$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(annee => {
+        this.navigationFormService.setup_form_annee(annee)
+      });
 
-    merge(this._presentationFromRoute$, this.componentService.navigation.presentationSelectionnee$)
-      .pipe(
-        distinctUntilChanged(),
-        takeUntil(this._stop$),
-      )
-      .subscribe(presentation => this.selectedPresentation = presentation);
+    let siret$ = merge(this.navigation.etablissementSelectionnee$)
+    siret$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(siret => {
+        this.navigationFormService.setup_form_etab(siret)
+      });
 
-    // Initialisation des informations de navigation
-    infoEtab$
-      .pipe(first())
-      .subscribe(
-        ([siret, etablissements]) => {
-          if (!siret && etablissements && etablissements.length > 0)
-            siret = this.etablissementOptions[0].value
-          this.componentService.navigation.selectionneEtablissement(siret)
-        }
-      );
-    infoAnnees$
-      .pipe(first())
-      .subscribe(
-        ([annee, anneesDisponibles]) => {
-          let anneeOuDefault = (anneesDisponibles.indexOf(annee) == -1) ? anneesDisponibles[0] : annee;
-          this.componentService.navigation.selectionneAnnee(anneeOuDefault)
-        }
-      );
-    this.componentService.navigation.selectionneEtapeBudgetaire(this.selectedEtape);
-    this.componentService.navigation.selectionnePresentation(this.selectedPresentation);
+
+    let etape$ = merge(this.navigation.etapeBudgetaireSelectionnee$)
+    etape$
+      .pipe(takeUntil(this._stop$))
+      .subscribe(etape => {
+        this.navigationFormService.setup_form_etape(etape);
+      });
 
     // Mise à jour de la route selon les paramètres.
     combineLatest([
-      this.componentService.navigation.etablissementSelectionnee$,
-      this.componentService.navigation.anneeSelectionnee$,
-      this.componentService.navigation.etapeBudgetaireSelectionnee$,
-      this.componentService.navigation.presentationSelectionnee$,
+      this.navigation.etablissementSelectionnee$,
+      this.navigation.anneeSelectionnee$,
+      this.navigation.etapeBudgetaireSelectionnee$,
     ])
       .pipe(takeUntil(this._stop$))
-      .subscribe(([siret, annee, etape, presentation]) => {
+      .subscribe(([siret, annee, etape]) => {
+
+        let queryParams = {}
+        queryParams[ETAB_KEY] = siret
+        queryParams[ANNEE_KEY] = annee
+        queryParams[ETAPE_KEY] = etape
 
         this.router.navigate(
           [],
           {
             relativeTo: this.route,
-            queryParams: {
-              etab: siret,
-              annee: annee,
-              etape: etape,
-              presentation: presentation,
-            },
+            queryParams,
             queryParamsHandling: 'merge',
           })
       });
-  }
-
-  onSelectionneAnnee(event: MatTabChangeEvent) {
-    let index = event.index;
-    let annee = this.anneesDisponibles[index];
-    // this._debug(`onSelectionneAnnee(${annee})`);
-    this.componentService.navigation.selectionneAnnee(annee);
-  }
-
-  onSelectedEtapeChange(etape: EtapeBudgetaire) {
-    this.componentService.navigation.selectionneEtapeBudgetaire(etape);
-  }
-
-  onSelectedEtablissementChange(siret: string) {
-    this.componentService.navigation.selectionneEtablissement(siret)
-  }
-
-  onPresentationChange(presentation: PresentationType) {
-    this.componentService.navigation.selectionnePresentation(presentation);
   }
 
   private _debug(msg: string) {

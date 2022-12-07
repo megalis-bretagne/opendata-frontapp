@@ -1,15 +1,7 @@
-<div class="visualisations">
-    <app-budget-card titre="Les recettes {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyname}}"
-        description="Les recettes, pour l'année {{donneesBudget?.annee}} et pour le budget principal - {{etablissementPrettyname}}"
-        [parametrable]="true">
-        <app-budget-principal-graphe [donneesBudget]="donneesBudget" [informationPlanDeCompte]="informationsPdc"
-            rd="recette"></app-budget-principal-graphe>
-    </app-budget-card>
+<ng-container *ngIf="affiche_en_construction">
+    <app-en-construction text="Les visuels pour les décisions modificatives sont en cours de construction">
+    </app-en-construction>
+</ng-container>
 
-    <app-budget-card titre="Les dépenses {{donneesBudget?.annee}} du budget principal - {{etablissementPrettyname}}"
-        description="Les dépenses, pour l'année {{donneesBudget?.annee}}  et pour le budget principal - {{etablissementPrettyname}}"
-        [parametrable]="true">
-        <app-budget-principal-graphe [donneesBudget]="donneesBudget" [informationPlanDeCompte]="informationsPdc"
-            rd="depense"></app-budget-principal-graphe>
-    </app-budget-card>
-</div>
+<app-group-of-visualisations [id_visualisations]="id_visualisations">
+</app-group-of-visualisations>

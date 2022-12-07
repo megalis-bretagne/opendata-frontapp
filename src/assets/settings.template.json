@@ -9,5 +9,9 @@
   "api": {
     "url": "${API_URL}"
   },
-  "urlmarqueblanche" :"${URL_MARQUE_BLANCHE}"
+  "urlmarqueblanche" :"${URL_MARQUE_BLANCHE}",
+
+  "budgets": {
+    "etapes_a_afficher": ["administratif", "primitif", "modificative"]
+  }
 }

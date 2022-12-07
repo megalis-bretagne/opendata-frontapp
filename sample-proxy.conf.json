@@ -1,0 +1,11 @@
+{
+  "context": [
+    "/api/**",
+    "/private_api/**",
+    "/mq_apis/**"
+  ],
+  "target": "https://data-publication-preprod.megalis.bretagne.bzh",
+  "secure": false,
+  "changeOrigin": true,
+  "logLevel": "debug"
+}

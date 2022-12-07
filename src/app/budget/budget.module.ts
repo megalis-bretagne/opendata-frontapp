@@ -11,20 +11,28 @@ import { BudgetStorageModule } from './store/budget-storage.module';
 import * as echarts from 'echarts/core';
 import { BarChart, PieChart } from 'echarts/charts';
 import { TitleComponent, TooltipComponent, GridComponent, LegendComponent } from 'echarts/components';
-import { SVGRenderer } from 'echarts/renderers';
+import { CanvasRenderer, SVGRenderer } from 'echarts/renderers';
 import langFr from 'echarts/lib/i18n/langFR';
 import { NgxEchartsModule } from 'ngx-echarts';
-import { BudgetPrincipalGrapheComponent } from './components/visualisations/budget-principal-graphe/budget-principal-graphe.component';
+import { VisualisationDonut } from './components/visualisations/visualisation-donut/visualisation-donut';
 import { PrepareDonneesVisualisation } from './services/prepare-donnees-visualisation.service';
 import { BudgetConsultationComponent } from './components/budget-consultation/budget-consultation.component';
 import { PrettyCurrencyFormatter } from './services/pretty-currency-formatter';
 import { LayoutModule } from '@angular/cdk/layout';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ReactiveFormsModule } from '@angular/forms';
+import { GroupOfVisualisationsComponent } from './components/visualisations/group-of-visualisations/group-of-visualisations.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ResizeObserverModule } from '@ng-web-apis/resize-observer';
+import { TopTroisDepensesComponent } from './components/visualisations/top-trois-depenses/top-trois-depenses.component';
+import { VisIframeDialogComponent } from './components/vis-iframe-dialog/vis-iframe-dialog.component';
+import { EnConstructionComponent } from './components/en-construction/en-construction.component';
+import { EditTitreDialogComponent } from './components/edit-titre-dialog/edit-titre-dialog.component';
 
 echarts.use([
   TitleComponent, TooltipComponent, GridComponent, LegendComponent,
   BarChart, PieChart,
-  SVGRenderer,
+  SVGRenderer, CanvasRenderer,
 ]);
 echarts.registerLocale('FR', langFr);
 
@@ -33,13 +41,21 @@ echarts.registerLocale('FR', langFr);
     BudgetParametrageComponent,
     BudgetParametrageNavComponent,
     BudgetCardComponent,
-    BudgetPrincipalGrapheComponent,
+    VisualisationDonut,
     BudgetConsultationComponent,
+    GroupOfVisualisationsComponent,
+    TopTroisDepensesComponent,
+    VisIframeDialogComponent,
+    EnConstructionComponent,
+    EditTitreDialogComponent,
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
+    ReactiveFormsModule,
     LayoutModule,
     ClipboardModule,
+    ResizeObserverModule,
 
     NgxEchartsModule.forRoot({ echarts }),
 

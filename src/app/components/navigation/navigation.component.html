@@ -1,3 +1,5 @@
+
+<div class="container">
 <mat-sidenav-container class="sidenav-container">
 
 
@@ -13,6 +15,8 @@
         <a mat-list-item [routerLink]="['/']" [queryParams]="{ etat: '0'}">&Agrave; statuer</a>
         <a mat-list-item [routerLink]="['/']" [queryParams]="{ etat: 'all'}" >Toutes les publications</a>
         <a mat-list-item [routerLink]="['/marqueblanche']" >Marque blanche</a>
+        <!-- <a mat-list-item [routerLink]="['/marqueblanche']" >Marque blanche délibérations</a> -->
+        <!-- <a mat-list-item [routerLink]="['/budgets']" >Marque blanche budgets</a> -->
         <a mat-list-item [routerLink]="['/parametrage']" >Paramétrage</a>
       </mat-nav-list>
     </div>
@@ -79,4 +83,11 @@
 
 
   </mat-sidenav-content>
+
+
 </mat-sidenav-container>
+</div>
+
+<footer>
+  <img src="assets/img/logo_france_relance.png" alt="France Relance"/>
+</footer>
