@@ -18,18 +18,18 @@ const selectEntities = createSelector(selectInformationsPdcState,
 const selectCallStates = createSelector(selectInformationsPdcState,
     state => state.callStates)
 
-export const selectInformationsPdcPour = (annee: Annee, siret: Siret) => createSelector(
+export const selectInformationsPdcPour = (annee: Annee, nomenclature: string) => createSelector(
     selectEntities,
     (entities) => {
-        let str_id = toStrInformationsPdcId({annee, siret})
+        let str_id = toStrInformationsPdcId({annee, nomenclature})
         return entities[str_id]
     }
 )
 
-export const selectInformationsPdcCallStatePour = (annee: Annee, siret: Siret) => createSelector(
+export const selectInformationsPdcCallStatePour = (annee: Annee, nomenclature: string) => createSelector(
     selectCallStates,
     callStates => {
-        let str_id = toStrInformationsPdcId({annee, siret})
+        let str_id = toStrInformationsPdcId({annee, nomenclature})
         return callStates[str_id]
     }
 )

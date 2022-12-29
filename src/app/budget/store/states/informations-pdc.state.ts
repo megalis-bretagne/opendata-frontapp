@@ -1,15 +1,15 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from "@ngrx/entity";
-import { Annee, Siret } from "../../models/common-types";
+import { Annee } from "../../models/common-types";
 import { Pdc } from "../../models/plan-de-comptes";
 import { CallStates } from "./call-states";
 
 export interface InformationsPdcId {
     annee: Annee,
-    siret: Siret,
+    nomenclature: string,
 }
 
 export function toStrInformationsPdcId(id: InformationsPdcId | Partial<Pdc.InformationsPdc>) {
-    return `${id.annee}-${id.siret}`
+    return `${id.annee}-${id.nomenclature}`
 }
 
 export interface InformationsPdcState extends EntityState<Pdc.InformationsPdc> {

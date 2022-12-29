@@ -14,7 +14,7 @@ import { VisualisationGraphId } from "../models/visualisation.model";
 
 export interface BudgetService {
 
-  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationsPdc>
+  loadInformationPdc(annee: Annee, nomenclature: string): Observable<Pdc.InformationsPdc>
   loadBudgets(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DonneesBudgetaires>
   donneesBudgetairesDisponibles(siren: Siren): Observable<DonneesBudgetairesDisponibles>
   loadTitresPour(annee: Annee, siret: Siret, etape: EtapeBudgetaire): Observable<DefaultVisualisationParametrage[]>
@@ -45,19 +45,19 @@ export class RealBudgetService implements BudgetService {
       )
   }
 
-  loadInformationPdc(annee: Annee, siret: Siret): Observable<Pdc.InformationsPdc> {
+  loadInformationPdc(annee: Annee, nomenclature: string): Observable<Pdc.InformationsPdc> {
 
-    this._debug(`Charge les informations du plan de compte pour l'année ${annee} et le siret ${siret}`)
+    this._debug(`Charge les informations du plan de compte pour l'année ${annee} et la nomenclature ${nomenclature}`)
 
-    const url = `${this._getBudgetBaseUrl()}/plans_de_comptes/${annee}/${siret}`;
+    const url = `${this._getBudgetBaseUrl()}/plans_de_comptes/${annee}/${nomenclature}`;
     let informationsPdc =
       this.http.get<Pdc.InformationsPdc>(url).pipe(
         map(informations => {
-          informations.siret = siret;
+          informations.nomenclature = nomenclature;
           informations.annee = annee;
           return informations;
         }),
-        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des informations PDC (annee: ${annee}, siret: ${siret}):`)),
+        catchError(err => this.log_and_rethrow(err, `Erreur lors de la récupération/traitement des informations PDC (annee: ${annee}, nomenclature: ${nomenclature}):`)),
       );
 
     return informationsPdc;

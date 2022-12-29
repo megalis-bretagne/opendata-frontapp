@@ -7,6 +7,7 @@ import { catchError, map, switchMap } from "rxjs/operators";
 import { DonneesBudgetaires } from "../../models/donnees-budgetaires";
 import { BudgetService, BUDGET_SERVICE_TOKEN } from "../../services/budget.service";
 import { DonneesBudgetairesActionType, DonnneesBudgetairesNoopAction, DonnneesBudgetairesLoadFailureAction, DonnneesBudgetairesLoadingAction, DonnneesBudgetairesLoadSuccessAction, DonnneesBudgetairesInitAction } from "../actions/donnees-budgetaires.actions";
+import { InformationsPdcInitAction } from "../actions/informations-pdc.actions";
 import { selectDonneesBudgtetairesCallStatePour } from "../selectors/donnees-budgetaires.selectors";
 import { LoadingState } from "../states/call-states";
 import { DonneesBudgetairesState } from "../states/donnees-budgetaires.state";
@@ -67,4 +68,20 @@ export class DonneesBudgetairesEffects {
             ),
         { dispatch: true },
     );
+
+    public loadPdc$ = createEffect(
+        () => this.actions$
+            .pipe(
+                ofType<DonnneesBudgetairesLoadSuccessAction>(DonneesBudgetairesActionType.LoadSuccess),
+
+                switchMap(action => {
+
+                    let annee = action.donnees.pdc_info.annee
+                    let nomenclature = action.donnees.pdc_info.nomenclature
+
+                    return of(new InformationsPdcInitAction(annee, nomenclature))
+                })
+            ),
+        { dispatch: true },
+    )
 }

@@ -1,4 +1,4 @@
-import { Annee, Siret } from "./common-types"
+import { Annee } from "./common-types"
 
 export namespace Pdc {
     export interface ElementDeNomenclature {
@@ -20,7 +20,7 @@ export namespace Pdc {
 
 
     export interface InformationsPdc {
-        siret: Siret
+        nomenclature: string
         annee: Annee
 
         references_fonctionnelles: ReferencesFonctionnelles | {}

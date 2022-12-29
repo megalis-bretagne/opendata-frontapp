@@ -8,9 +8,15 @@ export interface LigneBudget {
     montant: number,
 }
 
+export interface PdcNomenclatureId {
+    annee: Annee,
+    nomenclature: string,
+}
+
 export interface DonneesBudgetaires {
     annee: Annee,
     siret: Siret,
     etape: EtapeBudgetaire,
+    pdc_info: PdcNomenclatureId,
     lignes: [LigneBudget]
 }

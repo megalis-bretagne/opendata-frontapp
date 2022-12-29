@@ -24,14 +24,14 @@ export class InformationsPdcEffects {
             .pipe(
                 ofType<InformationsPdcInitAction>(InformationsPdcActionType.Init),
 
-                concatLatestFrom(action => this.informationsPdcStore.select(selectInformationsPdcCallStatePour(action.annee, action.siret))),
+                concatLatestFrom(action => this.informationsPdcStore.select(selectInformationsPdcCallStatePour(action.annee, action.nomenclature))),
 
                 switchMap(([action, callState]) => {
 
                     if (callState === LoadingState.LOADED || callState === LoadingState.LOADING)
-                        return of(new InformationsPdcNoopAction(action.annee, action.siret, 'Chargement en cours ou déjà réalisé'))
+                        return of(new InformationsPdcNoopAction(action.annee, action.nomenclature, 'Chargement en cours ou déjà réalisé'))
 
-                    return of(new InformationsPdcLoadingAction(action.annee, action.siret))
+                    return of(new InformationsPdcLoadingAction(action.annee, action.nomenclature))
                 })
             ),
         { dispatch: true }
@@ -42,10 +42,10 @@ export class InformationsPdcEffects {
             .pipe(
                 ofType<InformationsPdcLoadingAction>(InformationsPdcActionType.Loading),
                 switchMap(action => {
-                    return this.budgetService.loadInformationPdc(action.annee, action.siret)
+                    return this.budgetService.loadInformationPdc(action.annee, action.nomenclature)
                         .pipe(
-                            map(pdc => new InformationsPdcLoadSuccessAction(action.annee, action.siret, pdc)),
-                            catchError(err => of(new InformationsPdcLoadFailureAction(action.annee, action.siret, err))),
+                            map(pdc => new InformationsPdcLoadSuccessAction(action.annee, action.nomenclature, pdc)),
+                            catchError(err => of(new InformationsPdcLoadFailureAction(action.annee, action.nomenclature, err))),
                         )
                 })
             ),
