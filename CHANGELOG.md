@@ -6,6 +6,10 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Chargement des plans de comptes suit la nouvelle API
+
 
 ## [1.0.8] - 2022-12-07
 

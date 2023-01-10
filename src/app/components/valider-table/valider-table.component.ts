@@ -332,17 +332,12 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   openActe(event,element:Publication): void {
     event.stopPropagation();
-    // this.selection.selected.length === 1 ?
-    //   window.open(this.selection.selected[0].actes[0].url, '_blank').focus() :
-    //   this.msg_alert('Merci de selectioner 1 ligne');
-    this.http.get(element.actes[0].url, { responseType: 'blob' }).toPromise().then( blob =>
-      {
-        const a    = document.createElement('a');
-        a.href = window.URL.createObjectURL(blob);
-        a.target = '_blank';
-        a.click();
-      }
-    );
+    const href = element.actes[0].url
+    const link = document.createElement('a'); 
+    link.target = '_blank';
+    link.href = href;
+    link.setAttribute('visibility', 'hidden');
+    link.click();
   }
 
   getLibelleFilter(): string {

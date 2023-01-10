@@ -13,23 +13,23 @@ export enum InformationsPdcActionType {
 
 export class InformationsPdcInitAction implements Action {
     public readonly type = InformationsPdcActionType.Init
-    constructor(public annee: Annee, public siret: Siret) {}
+    constructor(public annee: Annee, public nomenclature: string) {}
 }
 export class InformationsPdcLoadingAction implements Action {
     public readonly type = InformationsPdcActionType.Loading
-    constructor(public annee: Annee, public siret: Siret) {}
+    constructor(public annee: Annee, public nomenclature: string) {}
 }
 export class InformationsPdcNoopAction implements Action {
-    constructor(public annee: Annee, public siret: Siret, public reason: string) {}
+    constructor(public annee: Annee, public nomenclature: string, public reason: string) {}
     public readonly type = InformationsPdcActionType.Noop
 }
 export class InformationsPdcLoadSuccessAction implements Action {
     public readonly type = InformationsPdcActionType.LoadSuccess
-    constructor(public annee: Annee, public siret: Siret, public infos_pdc: Pdc.InformationsPdc) {}
+    constructor(public annee: Annee, public nomenclature: string, public infos_pdc: Pdc.InformationsPdc) {}
 }
 export class InformationsPdcLoadFailureAction implements Action {
     public readonly type = InformationsPdcActionType.LoadFailure
-    constructor(public annee: Annee, public siret: Siret, public err: any) {}
+    constructor(public annee: Annee, public nomenclature: string, public err: any) {}
 }
 
 export type InformationsPdcAction = 

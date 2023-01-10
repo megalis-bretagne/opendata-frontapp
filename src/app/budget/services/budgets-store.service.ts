@@ -1,18 +1,17 @@
 import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
-import { combineLatest, Observable, startWith, zip } from "rxjs";
-import { filter, map } from 'rxjs/operators';
+import { combineLatest, Observable, startWith } from "rxjs";
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { Annee, extract_siren, Siren, Siret } from "../models/common-types";
 import { DefaultVisualisationParametrageLocalisation } from "../models/defaultvisualisation-parametrage";
 import { EtapeBudgetaire } from "../models/etape-budgetaire";
 import { VisualisationTitres } from "../models/view-models";
 import { etablissement_pretty_name } from "../models/view-models.functions";
 import { VisualisationGraphId } from "../models/visualisation.model";
-import { DefaultVisualisationParametrageEditAction, DefaultVisualisationParametrageInitAction, DefaultVisualisationParametrageLoadSuccessAction } from "../store/actions/default-visualisation-parametrages.action";
+import { DefaultVisualisationParametrageEditAction, DefaultVisualisationParametrageInitAction } from "../store/actions/default-visualisation-parametrages.action";
 import { BudgetDisponiblesInitAction } from "../store/actions/donnees-budgetaires-disponibles.actions";
 import { DonnneesBudgetairesInitAction } from "../store/actions/donnees-budgetaires.actions";
-import { InformationsPdcInitAction } from "../store/actions/informations-pdc.actions";
-import { selectDefaultVisualisationParametrageCallStatePour, selectDefaultVisualisationParametragesPour, selectDefaultVisualisationParametrageState } from "../store/selectors/default-visualisation-parametrages.selector";
+import { selectDefaultVisualisationParametrageCallStatePour, selectDefaultVisualisationParametragesPour } from "../store/selectors/default-visualisation-parametrages.selector";
 import { selectDonneesBudgetairesDisponiblesCallStatePour, selectDonneesBudgetairesDisponiblesPour } from "../store/selectors/donnees-budgetaires-disponibles.selectors";
 import { selectDonneesBudgtetairesCallStatePour, selectDonneesPour } from "../store/selectors/donnees-budgetaires.selectors";
 import { selectInformationsPdcCallStatePour, selectInformationsPdcPour } from "../store/selectors/informations-pdc.selectors";
@@ -35,7 +34,6 @@ export class BudgetsStoresService {
 
     load_budgets_pour(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
         this.donneesBudgetairesStore.dispatch(new DonnneesBudgetairesInitAction(annee, siret, etape))
-        this.informationsPdcStore.dispatch(new InformationsPdcInitAction(annee, siret));
         this.defaultVisualisationParametrageStore.dispatch(new DefaultVisualisationParametrageInitAction(annee, siret, etape))
     }
 
@@ -57,8 +55,22 @@ export class BudgetsStoresService {
         return donnees$
     }
 
-    select_pdc(annee: Annee, siret: Siret) {
-        return this.informationsPdcStore.select(selectInformationsPdcPour(annee, siret))
+    select_pdc(annee: Annee, nomenclature: string) {
+        return this.informationsPdcStore.select(selectInformationsPdcPour(annee, nomenclature))
+    }
+
+    /** Selectionne le plan de compte correspondant aux données budgetaires. */
+    select_pdc_of_donnees_budgetaires(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
+        let donnees$ = this.select_donnees_budgetaires(annee, siret, etape)
+        return donnees$.pipe(
+            filter(donnees => Boolean(donnees)),
+            mergeMap(donnees => {
+                let annee = donnees.pdc_info.annee
+                let nomenclature = donnees.pdc_info.nomenclature
+
+                return this.select_pdc(annee, nomenclature)
+            })
+        )
     }
 
     select_default_visualisation_parametrages(localisation: DefaultVisualisationParametrageLocalisation) {
@@ -79,8 +91,8 @@ export class BudgetsStoresService {
         )
     }
 
-    select_pdc_callstate(annee: Annee, siret: Siret) {
-        return this.informationsPdcStore.select(selectInformationsPdcCallStatePour(annee, siret))
+    select_pdc_callstate(annee: Annee, nomenclature: string) {
+        return this.informationsPdcStore.select(selectInformationsPdcCallStatePour(annee, nomenclature))
     }
 
 
@@ -94,13 +106,26 @@ class ViewModelStoreService {
 
     constructor(private budgetStoreService: BudgetsStoresService) { }
 
+    private _select_pdc_callstate(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
+        return this.budgetStoreService.select_donnees_budgetaires(annee, siret, etape)
+            .pipe(
+                filter(donnees => Boolean(donnees)),
+                mergeMap(donnees => {
+                    let annee = donnees.pdc_info.annee
+                    let nomenclature = donnees.pdc_info.nomenclature
+
+                    return this.budgetStoreService.select_pdc_callstate(annee, nomenclature)
+                }),
+                startWith(LoadingState.LOADING),
+            )
+    }
+
     private zipped_callstates(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
         let donnees$ = this.budgetStoreService.select_donnees_budgetaires_callstate(annee, siret, etape)
             .pipe(startWith(LoadingState.LOADING))
-        let pdc$ = this.budgetStoreService.select_pdc_callstate(annee, siret)
-            .pipe(startWith(LoadingState.LOADING))
+        let pdc$ = this._select_pdc_callstate(annee, siret, etape)
 
-        return zip(donnees$, pdc$)
+        return combineLatest([donnees$, pdc$])
     }
 
     select_is_budget_loading(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
@@ -140,7 +165,7 @@ class ViewModelStoreService {
 
         return this.budgetStoreService.select_default_visualisation_parametrage_callstate(localisation)
             .pipe(
-                map((cs) => !cs || cs == LoadingState.LOADING) 
+                map((cs) => !cs || cs == LoadingState.LOADING)
             )
     }
 
@@ -148,7 +173,7 @@ class ViewModelStoreService {
 
         return this.budgetStoreService.select_default_visualisation_parametrage_callstate(localisation)
             .pipe(
-                map((cs) => isInError(cs)) 
+                map((cs) => isInError(cs))
             )
     }
 
@@ -181,15 +206,14 @@ class ViewModelStoreService {
 
     select_budget(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
         let donnees$ = this.budgetStoreService.select_donnees_budgetaires(annee, siret, etape);
-        let pdc$ = this.budgetStoreService.select_pdc(annee, siret);
-        return combineLatest([donnees$, pdc$])
+        let pdc$ = this.budgetStoreService.select_pdc_of_donnees_budgetaires(annee, siret, etape);
+        return combineLatest([donnees$, pdc$]);
     }
 
     select_budget_et_etabname(annee: Annee, siret: Siret, etape: EtapeBudgetaire) {
-
         let donnees$ = this.budgetStoreService.select_donnees_budgetaires(annee, siret, etape);
-        let pdc$ = this.budgetStoreService.select_pdc(annee, siret);
-        let etabName$ = this.select_etablissement_pretty_name(siret)
-        return combineLatest([donnees$, pdc$, etabName$])
+        let pdc$ = this.budgetStoreService.select_pdc_of_donnees_budgetaires(annee, siret, etape);
+        let etabName$ = this.select_etablissement_pretty_name(siret);
+        return combineLatest([donnees$, pdc$, etabName$]);
     }
 }
