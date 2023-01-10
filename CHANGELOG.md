@@ -4,11 +4,12 @@ Tous changements importants seront journalisés dans ce fichier.
 
 Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [1.0.10] - 2023-01-10
 
 ### Changed
 
 - Chargement des plans de comptes suit la nouvelle API
+- Chargement des documents dans la liste des publications (ouverture nouvel onglet)
 
 
 ## [1.0.8] - 2022-12-07
