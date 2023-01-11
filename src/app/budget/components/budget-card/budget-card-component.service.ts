@@ -14,6 +14,7 @@ export abstract class VisualisationComponentService {
 
     abstract get is_loading$()
     abstract get is_in_error$()
+    abstract get is_loading_unless_in_error$()
     abstract get is_successfully_loaded$()
 
     abstract get visualisation(): Visualisation
@@ -40,6 +41,7 @@ export class BudgetCardComponentService extends VisualisationComponentService {
     private _param_sub: Subscription;
 
     get is_loading$() {
+
         let b_is_loading$ = this.storesServices.viewModels.select_is_budget_loading(
             this.visualisation.annee,
             this.visualisation.siret,
@@ -65,6 +67,12 @@ export class BudgetCardComponentService extends VisualisationComponentService {
         let combined$ = combineLatest([b_in_error$, p_in_error$])
             .pipe(map(([b1, b2]) => b1 || b2))
         return combined$
+    }
+
+    get is_loading_unless_in_error$() {
+        let combined$ = combineLatest([this.is_in_error$, this.is_loading$])
+            .pipe(map(([in_error, is_loading]) => !in_error && is_loading))
+        return combined$;
     }
 
     get is_successfully_loaded$() {
