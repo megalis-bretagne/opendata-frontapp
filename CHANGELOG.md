@@ -10,6 +10,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - [BUDGETS] Correction bug qui affichait le chargement si une erreur était survenue  lors du chargement des budgets
 - [BUDGETS] Espace entre chaque encart de budget
+- Selection du thème pour la MQ actes
 
 ## [1.0.10] - 2023-01-10
 
