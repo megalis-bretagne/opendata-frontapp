@@ -51,6 +51,10 @@ export class BudgetCardComponent implements OnInit, OnDestroy {
     return this.service.is_in_error$
   }
 
+  get is_loading_unless_in_eror$() {
+    return this.service.is_loading_unless_in_error$
+  }
+
   get is_successfully_loaded$() {
     return this.service.is_successfully_loaded$
   }
