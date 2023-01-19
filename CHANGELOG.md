@@ -9,6 +9,11 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - [BUDGETS] N'affiche pas les décisions modificatives.
+- [BUDGETS] Menu `Marqueblanche` devient `Réutilisation Actes`
+
+### Added
+
+- [BUDGETS] Menu `Réutilisation Budgets` activé.
 
 ## [1.0.11] - 2023-01-18
 
