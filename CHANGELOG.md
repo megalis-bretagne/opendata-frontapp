@@ -6,6 +6,8 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.11] - 2023-01-18
+
 ### Fixed
 
 - [BUDGETS] Correction bug qui affichait le chargement si une erreur était survenue  lors du chargement des budgets
