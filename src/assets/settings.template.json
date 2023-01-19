@@ -12,6 +12,6 @@
   "urlmarqueblanche" :"${URL_MARQUE_BLANCHE}",
 
   "budgets": {
-    "etapes_a_afficher": ["administratif", "primitif", "modificative"]
+    "etapes_a_afficher": ["administratif", "primitif"]
   }
 }
