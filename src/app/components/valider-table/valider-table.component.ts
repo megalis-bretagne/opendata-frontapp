@@ -24,6 +24,7 @@ import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {DialogBoxComponent} from '../dialog-box/dialog-box.component';
+import { GestionPublicationAnexesDialogComponent } from './gestion-publication-anexes/gestion-publication-anexes.component';
 
 @Component({
   selector: 'app-valider-table',
@@ -36,7 +37,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['numero_de_lacte', 'objet', 'date_de_lacte', 'acte_nature', 'etat', 'action', 'select'];
+  displayedColumns = ['numero_de_lacte', 'objet', 'nb_pj', 'date_de_lacte', 'acte_nature', 'etat', 'action', 'select'];
   public dataSource: MatTableDataSource<Publication>;
   public publicationTotal: number;
   public noData: Publication[] = [{} as Publication];
@@ -378,9 +379,29 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selection.clear();
   }
 
+  // #region pieces jointes
+  can_edit_annexes(p: Publication) {
+    return Boolean(p) && p.etat === '1' && p.pieces_jointe?.length > 0;
+  }
+  annexes_label(p: Publication) {
+    let n_pjs = p.pieces_jointe.length;
+    let n_publiees = p.pieces_jointe.filter(pj => pj.publie).length
 
+    let str = `${n_pjs} annexe(s)`;
+    if (n_pjs !== n_publiees && this.can_edit_annexes(p))
+      str += ` - dont ${n_publiees} publiée(s)`
 
+    return str;
+  }
 
+  openGestionAnnexe(event, publication: Publication) {
+    event.stopPropagation();
+
+    let dialogRef = this.dialog.open(GestionPublicationAnexesDialogComponent, {
+      data: { publication }
+    });
+
+    dialogRef.afterClosed().subscribe(_ => this.refresh());
+  }
+  // #endregion
 }
-
-

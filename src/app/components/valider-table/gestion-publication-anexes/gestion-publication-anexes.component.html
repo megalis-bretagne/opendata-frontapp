@@ -1,0 +1,53 @@
+<h1 mat-dialog-title>Gestion de l'état de publication des annexes</h1>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content>
+        <table style="width: 100%" mat-table [dataSource]="publication.pieces_jointe">
+
+            <ng-container matColumnDef="nom">
+                <th mat-header-cell *matHeaderCellDef>Nom</th>
+                <td mat-cell *matCellDef="let pj">{{pj.name}}</td>
+            </ng-container>
+            <ng-container matColumnDef="etat">
+                <th mat-header-cell *matHeaderCellDef>Publié</th>
+                <td mat-cell *matCellDef="let pj">
+                    <mat-checkbox color="primary" 
+                        [formControlName]="pj.id">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+
+    <ng-container *ngIf="last_request_error">
+        <div class="message--error">
+            <mat-icon>error</mat-icon> <span>Erreur lors de la mise à jour des pièces jointes. Veuillez réessayer.</span>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="last_request_success">
+        <div class="message--success">
+            <mat-icon>success</mat-icon> <span>Status de publication des annexes mis à jour avec succès.</span>
+        </div>
+    </ng-container>
+
+    <div mat-dialog-actions align="end">
+        <button type="button" [disabled]="pending" mat-button mat-dialog-close (click)="onClose()">Fermer</button>
+        <button type="submit" mat-button color="primary" 
+            [disabled]="!form.valid || form.pristine || pending">
+
+            <ng-container *ngIf="pending" diameter="20">
+                En cours...
+            </ng-container>
+
+            <ng-container *ngIf="!pending">
+                Valider
+            </ng-container>
+
+        </button>
+    </div>
+
+</form>

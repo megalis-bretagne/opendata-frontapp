@@ -66,12 +66,6 @@
       Cliquer sur un ou plusieurs actes pour changer son état
     </div>
 
-<!--    <div *ngIf="this.selection.selected.length == 1">-->
-<!--    <button id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe()" matTooltip="ouvrir l'acte">-->
-<!--      <mat-icon>visibility</mat-icon>-->
-<!--    </button>-->
-<!--    </div>-->
-
     <div *ngIf="this.selection.selected.length > 0">
     <button id="publier-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? publish():msg_alert('aucune publication est selectionnée')" matTooltip="publier en open data">
       <mat-icon style="color: green">share</mat-icon>
@@ -105,6 +99,7 @@
     </div>
   </div>
 
+
   <div class="mat-elevation-z8">
   <div class="table-container">
     <table  class="full-width-table" mat-table [dataSource]="dataSource" matSort matSortDisableClear="true"
@@ -121,8 +116,8 @@
       </ng-container>
 
       <ng-container matColumnDef="objet">
-        <th style="width: 45%" mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
-        <td style="width: 45%" mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
+        <th style="width: 35%" mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
+        <td style="width: 35%" mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
       </ng-container>
 
       <ng-container matColumnDef="date_de_lacte">
@@ -130,6 +125,10 @@
         <td style="width: 10%" mat-cell class="dc-content" *matCellDef="let element">{{element.date_de_lacte | date:'dd-MM-yyyy'}} </td>
       </ng-container>
 
+      <ng-container matColumnDef="nb_pj">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Annexes</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{annexes_label(element)}}</td>
+      </ng-container>
 
       <ng-container matColumnDef="etat">
         <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>&Eacute;tat</th>
@@ -145,18 +144,22 @@
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let element" class="action-link">
-          <button id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe($event,element)" matTooltip="ouvrir l'acte">
+          <button color="primary" mat-icon-button class="material-icons md-48" 
+            [disabled]="!can_edit_annexes(element)"
+            id="gestion-annexe-button" (click)="openGestionAnnexe($event, element)" matTooltip="Ouvrir la gestion d'annexes">
+            <mat-icon>article</mat-icon>
+          </button>
+          <button color="primary" id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe($event,element)" matTooltip="ouvrir l'acte">
             <mat-icon>visibility</mat-icon>
           </button>
-          <button id="edit-button" mat-icon-button class="material-icons md-48" (click)="openDialog($event,'Update',element)" matTooltip="éditer l'objet de l'acte">
+          <button color="primary" id="edit-button" mat-icon-button class="material-icons md-48" (click)="openDialog($event,'Update',element)" matTooltip="éditer l'objet de l'acte">
             <mat-icon>edit</mat-icon>
           </button>
-          <button id="delete-button" mat-icon-button class="material-icons md-48" (click)="openDialog($event,'Delete',element)" matTooltip="supprimer l'acte">
+          <button color="primary" id="delete-button" mat-icon-button class="material-icons md-48" (click)="openDialog($event,'Delete',element)" matTooltip="supprimer l'acte">
             <mat-icon>delete</mat-icon>
           </button>
         </td>
       </ng-container>
-
 
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
