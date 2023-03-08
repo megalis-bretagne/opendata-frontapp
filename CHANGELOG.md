@@ -4,6 +4,13 @@ Tous changements importants seront journalisés dans ce fichier.
 
 Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [unreleased]
+
+### Changed
+
+ - [BUDGETS] Documentation développeur pour le module budget
+
+
 ## [1.0.12] - 2023-01-24
 
 ### Changed
