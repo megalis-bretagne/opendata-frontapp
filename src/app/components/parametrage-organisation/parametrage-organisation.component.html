@@ -13,16 +13,29 @@
 
     <mat-slide-toggle 
       color="primary"
+      [disabled]="loading"
       (change)="onChangeActivationOpenData()" 
-      [(ngModel)]="isChecked">
+      [(ngModel)]="is_opendata_active">
+      Le service de publication automatique opendata est actuellement 
+      <strong>{{ is_opendata_active? 'activé': 'désactivé' }}</strong>
+    </mat-slide-toggle>
 
-      <ng-container *ngIf="isChecked; else toggleUnchecked">
-        Le service de publication automatique opendata est actuellement <strong>activé</strong>.
-      </ng-container>
-      <ng-template #toggleUnchecked>
-        Le service de publication automatique opendata est actuellement <strong>désactivé</strong>.
-      </ng-template>
+    <br>
+    <br>
 
+    <p>
+      Paramètre de publication des annexes. 
+      <!-- TODO: petit texte d'explication -->
+    </p>
+
+    <mat-slide-toggle
+      color="primary"
+      [disabled]="loading"
+      (change)="onChangePublierLesAnnexes()"
+      [(ngModel)]="is_publication_annexes_active"
+    >
+      La publication automatique des annexes est actuellement
+      <strong>{{ is_publication_annexes_active? "activé":"désactivé" }}</strong>
     </mat-slide-toggle>
 
     <p>

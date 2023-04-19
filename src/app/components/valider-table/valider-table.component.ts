@@ -383,6 +383,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   can_edit_annexes(p: Publication) {
     return Boolean(p) && p.etat === '1' && p.pieces_jointe?.length > 0;
   }
+
   annexes_label(p: Publication) {
     let n_pjs = p.pieces_jointe.length;
     let n_publiees = p.pieces_jointe.filter(pj => pj.publie).length
