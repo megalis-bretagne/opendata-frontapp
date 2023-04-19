@@ -17,7 +17,7 @@ import {
 } from '../../store/selectors/publication.selectors';
 import {PublicationLoadAction} from '../../store/actions/publications.actions';
 import {PublicationParams} from '../../models/publication-params';
-import {debounceTime, distinctUntilChanged, filter, take, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
@@ -25,6 +25,13 @@ import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
 import {DialogBoxComponent} from '../dialog-box/dialog-box.component';
 import { GestionPublicationAnexesDialogComponent } from './gestion-publication-anexes/gestion-publication-anexes.component';
+import { selectAllParametrage } from 'src/app/store/selectors/parametrage.selectors';
+import { ParametrageLoadAction } from 'src/app/store/actions/parametrage.actions';
+
+export interface CanEditAnnexe {
+  can: boolean;
+  raison: string;
+}
 
 @Component({
   selector: 'app-valider-table',
@@ -49,6 +56,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   private filter = '';
   public etatPublication = '0';
   private subscription: Subscription = new Subscription();
+  public global_publication_des_annexes: boolean = false;
   selection = new SelectionModel<Publication>(true, []);
   user: User | null = null;
   nombrePublicationLibelle = 'Nombre de publications à valider';
@@ -62,9 +70,14 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public ngOnInit(): void {
 
-    this.store.pipe(select(selectAuthState), take(1)).subscribe((state) => {
-      this.user = state.user;
-    });
+    this.store.pipe(
+      select(selectAuthState), 
+      take(1),
+      tap(state => this.store.dispatch(new ParametrageLoadAction(state.user.siren))),
+    ).subscribe((state) => this.user = state.user);
+    this.store.pipe(select(selectAllParametrage))
+      .pipe(map(param => param[0]))
+      .subscribe(param => this.global_publication_des_annexes = param?.publication_des_annexes);
     this.store.pipe(select(selectAllPublication)).subscribe(publications => this.initializeData(publications));
     this.store.pipe(select(selectPublicationTotal)).subscribe(total => this.publicationTotal = total);
     this.subscription.add(this.store.pipe(select(selectPublicationLoading)).subscribe(loading => {
@@ -380,8 +393,16 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // #region pieces jointes
-  can_edit_annexes(p: Publication) {
-    return Boolean(p) && p.etat === '1' && p.pieces_jointe?.length > 0;
+  can_edit_annexes(p: Publication): CanEditAnnexe {
+
+    if (!this.global_publication_des_annexes)
+      return { can: false, raison: "La publication d'annexe est désactivé." }
+    if (!Boolean(p) || p.etat !== '1')
+      return { can: false, raison: "L'acte est dépubliée." }
+    if (p.pieces_jointe?.length < 1)
+      return { can: false, raison: "Aucune annexe disponible." }
+    
+    return { can: true, raison: null }
   }
 
   annexes_label(p: Publication) {

@@ -116,8 +116,8 @@
       </ng-container>
 
       <ng-container matColumnDef="objet">
-        <th style="width: 35%" mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
-        <td style="width: 35%" mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
+        <th style="width: 30%" mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Objet</th>
+        <td style="width: 30%" mat-cell class="dc-content" *matCellDef="let element"> {{element.objet}} </td>
       </ng-container>
 
       <ng-container matColumnDef="date_de_lacte">
@@ -142,13 +142,15 @@
 
       <!-- Action Column -->
       <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef> Actions </th>
-        <td mat-cell *matCellDef="let element" class="action-link">
-          <button color="primary" mat-icon-button class="material-icons md-48" 
-            [disabled]="!can_edit_annexes(element)"
-            id="gestion-annexe-button" (click)="openGestionAnnexe($event, element)" matTooltip="Ouvrir la gestion d'annexes">
+        <th style="width: 15%" mat-header-cell *matHeaderCellDef> Actions </th>
+        <td style="width: 15%" mat-cell *matCellDef="let element" class="action-link">
+          <span [matTooltip]="can_edit_annexes(element).raison">
+            <button color="primary" mat-icon-button class="material-icons md-48" 
+              [disabled]="!can_edit_annexes(element).can"
+              id="gestion-annexe-button" (click)="openGestionAnnexe($event, element)" matTooltip="Ouvrir la gestion d'annexes">
             <mat-icon>article</mat-icon>
           </button>
+          </span>
           <button color="primary" id="view-button" mat-icon-button class="material-icons md-48" (click)="openActe($event,element)" matTooltip="ouvrir l'acte">
             <mat-icon>visibility</mat-icon>
           </button>
