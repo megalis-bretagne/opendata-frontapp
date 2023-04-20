@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Publication } from 'src/app/models/publication';
+import { piece_jointe_publiee, Publication } from 'src/app/models/publication';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +13,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export interface GestionPublicationAnexesDialogComponent_DialogData {
-  publication: Publication
+  publication: Publication,
+  global_publication_des_annexes: boolean,
 }
 
 @Component({
@@ -36,7 +37,13 @@ export class GestionPublicationAnexesDialogComponent {
   public get publication(): Publication { return this._publication; }
   public set publication(v: Publication) {
     this._publication = v;
-    this.form = this._make_form(v);
+    this.form = this._make_form();
+  }
+  private _global_publication_des_annexes: boolean;
+  public get global_publication_des_annexes(): boolean { return this._global_publication_des_annexes; }
+  public set global_publication_des_annexes(v: boolean) {
+    this._global_publication_des_annexes = v;
+    this.form = this._make_form();
   }
 
   displayedColumns = ['nom', 'etat']
@@ -54,6 +61,7 @@ export class GestionPublicationAnexesDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: GestionPublicationAnexesDialogComponent_DialogData,
   ) {
     this.publication = data.publication;
+    this.global_publication_des_annexes = data.global_publication_des_annexes;
     this.dialogRef.beforeClosed().subscribe(_ => this.onClose())
   }
 
@@ -96,11 +104,13 @@ export class GestionPublicationAnexesDialogComponent {
     this.dialogRef.disableClose = false;
   }
 
-  private _make_form(value: Publication): FormGroup<any> {
+  private _make_form(): FormGroup<any> {
+    let publication: Publication = this.publication;
+    let global_publication_des_annexes = this.global_publication_des_annexes;
     let controls = {}
 
-    for (const pj of value.pieces_jointe) {
-      let control = this.fb.control(pj.publie);
+    for (const pj of publication.pieces_jointe) {
+      let control = this.fb.control(piece_jointe_publiee(pj, global_publication_des_annexes));
       controls[pj.id] = control;
     }
 

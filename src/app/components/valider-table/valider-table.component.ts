@@ -4,7 +4,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {select, Store} from '@ngrx/store';
 import {MatPaginator} from '@angular/material/paginator';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
-import {DataDialog, Publication} from '../../models/publication';
+import {DataDialog, piece_jointe_publiee, Publication} from '../../models/publication';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
 import {MatDialog} from '@angular/material/dialog';
 
@@ -78,7 +78,6 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.store.pipe(
       select(selectAuthState), 
       take(1),
-      tap(state => this.store.dispatch(new ParametrageLoadAction(state.user.siren))),
     ).subscribe((state) => this.user = state.user);
     this.store.pipe(select(selectAllParametrage))
       .pipe(map(param => param[0]))
@@ -168,6 +167,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if ( this.is_admin_open_data() && this.valueSirenAdmin.length === 9 ){
       //cas admin
+      this.store.dispatch(new ParametrageLoadAction(this.valueSirenAdmin));
       this.store.dispatch(new PublicationLoadAction(
         {
           filter: this.filter.toLocaleLowerCase(),
@@ -183,6 +183,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
         } as PublicationParams
       ));
     }else {
+      this.store.dispatch(new ParametrageLoadAction(this.user.siren));
       this.store.dispatch(new PublicationLoadAction(
         {
           filter: this.filter.toLocaleLowerCase(),
@@ -428,10 +429,18 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   annexes_label(p: Publication) {
     let n_pjs = p.pieces_jointe.length;
-    let n_publiees = p.pieces_jointe.filter(pj => pj.publie).length
+    let n_publiees = p.pieces_jointe
+    .filter(pj => piece_jointe_publiee(pj, this.global_publication_des_annexes))
+    .length
 
     let str = `${n_pjs} annexe(s)`;
-    if (n_pjs !== n_publiees && this.can_edit_annexes(p))
+
+    if (!this.can_edit_annexes(p).can)
+      return str;
+
+    if (n_publiees === 0)
+      str += ` non publiée(s)`;
+    else if (n_pjs !== n_publiees)
       str += ` - dont ${n_publiees} publiée(s)`;
     else if (n_pjs > 0)
       str += ` publiée(s)`;
@@ -443,7 +452,10 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     event.stopPropagation();
 
     let dialogRef = this.dialog.open(GestionPublicationAnexesDialogComponent, {
-      data: { publication }
+      data: { 
+        publication: publication, 
+        global_publication_des_annexes: this.global_publication_des_annexes,
+      }
     });
 
     dialogRef.afterClosed().subscribe(_ => this.refresh());

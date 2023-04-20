@@ -42,5 +42,11 @@ export interface Actes {
 }
 
 export interface PieceJointe extends Actes {
-  publie: boolean;
+  publie?: boolean;
+}
+
+export function piece_jointe_publiee(pj: PieceJointe, global_publication_annexe: boolean) {
+  if (pj.publie == undefined)
+    return global_publication_annexe
+  return pj.publie;
 }
