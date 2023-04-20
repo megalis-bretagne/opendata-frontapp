@@ -19,7 +19,7 @@ import {PublicationLoadAction} from '../../store/actions/publications.actions';
 import {PublicationParams} from '../../models/publication-params';
 import {debounceTime, distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
-import {PublicationsService} from '../../services/publications-service';
+import {PublicationPjsCommands, PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {HttpClient} from '@angular/common/http';
@@ -28,6 +28,11 @@ import { GestionPublicationAnexesDialogComponent } from './gestion-publication-a
 import { selectAllParametrage } from 'src/app/store/selectors/parametrage.selectors';
 import { ParametrageLoadAction } from 'src/app/store/actions/parametrage.actions';
 
+export enum CannotEditRaison {
+  PUBLICATION_GLOBAL_DISABLED = "La publication d'annexe est désactivée.",
+  ACTE_DEPUBLIE = "L'acte n'est pas publié",
+  AUCUNE_ANNEXE = "Aucune annexe n'est présente pour l'acte.",
+}
 export interface CanEditAnnexe {
   can: boolean;
   raison: string;
@@ -44,7 +49,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['numero_de_lacte', 'objet', 'nb_pj', 'date_de_lacte', 'acte_nature', 'etat', 'action', 'select'];
+  displayedColumns = ['numero_de_lacte', 'objet', 'date_de_lacte', 'acte_nature', 'etat', 'nb_pj', 'action', 'select'];
   public dataSource: MatTableDataSource<Publication>;
   public publicationTotal: number;
   public noData: Publication[] = [{} as Publication];
@@ -141,6 +146,11 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
+
+  // #region selection shortcut
+  get nothing_selected() { return this.selection.selected.length === 0 }
+  get has_acte_selected() { return this.selection.selected.length > 0 }
+  // #endregion
 
   is_admin_open_data(): boolean{
     if ( this.user === null) {
@@ -393,14 +403,25 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // #region pieces jointes
+  selections_can_edit_annexes(): CanEditAnnexe {
+    let can_edit_per_publication: CanEditAnnexe[] = []
+    for (const publication of this.selection.selected) {
+      can_edit_per_publication.push(this.can_edit_annexes(publication))
+    }
+
+    let can = can_edit_per_publication.map(can_edit => can_edit.can).find(can => can);
+    can = Boolean(can);
+    let raison = (!can)? "Aucun acte n'a d'annexes pouvant être publiée(s) / dépubliée(s)":null;
+    return { can: can, raison: raison }
+  }
   can_edit_annexes(p: Publication): CanEditAnnexe {
 
     if (!this.global_publication_des_annexes)
-      return { can: false, raison: "La publication d'annexe est désactivé." }
+      return { can: false, raison: CannotEditRaison.PUBLICATION_GLOBAL_DISABLED }
     if (!Boolean(p) || p.etat !== '1')
-      return { can: false, raison: "L'acte est dépubliée." }
+      return { can: false, raison: CannotEditRaison.ACTE_DEPUBLIE }
     if (p.pieces_jointe?.length < 1)
-      return { can: false, raison: "Aucune annexe disponible." }
+      return { can: false, raison: CannotEditRaison.AUCUNE_ANNEXE }
     
     return { can: true, raison: null }
   }
@@ -411,7 +432,9 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     let str = `${n_pjs} annexe(s)`;
     if (n_pjs !== n_publiees && this.can_edit_annexes(p))
-      str += ` - dont ${n_publiees} publiée(s)`
+      str += ` - dont ${n_publiees} publiée(s)`;
+    else if (n_pjs > 0)
+      str += ` publiée(s)`;
 
     return str;
   }
@@ -424,6 +447,33 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(_ => this.refresh());
+  }
+
+  publish_annexes(): void {
+    let payload = { }
+    for (const publication of this.selection.selected) {
+      payload[publication.id] = this._commands_pjs_publish(publication, true);
+    }
+    this._do_request_for_annexes(payload);
+  }
+  unpublish_annexes(): void {
+    let payload = { }
+    for (const publication of this.selection.selected) {
+      payload[publication.id] = this._commands_pjs_publish(publication, false);
+    }
+    this._do_request_for_annexes(payload);
+  }
+
+  _commands_pjs_publish(p: Publication, publish: boolean) {
+    let payload = {}
+    for (const pj of p.pieces_jointe) {
+      payload[pj.id] = publish
+    }
+    return payload;
+  }
+
+  _do_request_for_annexes(payload: { [id: string]: PublicationPjsCommands }) {
+    this.service.publish_pj(payload).subscribe(_ => this.refresh())
   }
   // #endregion
 }

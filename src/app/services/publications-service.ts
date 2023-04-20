@@ -6,10 +6,14 @@ import {PublicationResponse} from '../models/publication-response';
 import {SettingsService} from '../../environments/settings.service';
 
 /** Structure d'une commande publicaion / depublication d'une pièce jointe.
- * Consiste en l'id de la PJ associée à true pour une commande publication et false pour une commande de dépublication
- * */
-export interface PublicationPjPayload {
+ * Consiste en l'id de la PJ associée à true pour une commande publication et false pour une commande de dépublication */
+export interface PublicationPjsCommands {
   [id: string]: boolean
+}
+
+/** Structure pour la commande de publication / depublication de pièces jointes pour plusieurs publications */
+export interface PublicationPjsPayload {
+  [id: string]: PublicationPjsCommands
 }
 
 @Injectable({
@@ -59,7 +63,7 @@ export class PublicationsService {
   }
 
   // #region piece jointe
-  publish_pj(payload: PublicationPjPayload) {
+  publish_pj(payload: PublicationPjsPayload) {
     const url = `${this._url}/pieces_jointes/`
     return this.http.post(url, payload);
   }

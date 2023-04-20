@@ -20,24 +20,6 @@
       <strong>{{ is_opendata_active? 'activé': 'désactivé' }}</strong>
     </mat-slide-toggle>
 
-    <br>
-    <br>
-
-    <p>
-      Paramètre de publication des annexes. 
-      <!-- TODO: petit texte d'explication -->
-    </p>
-
-    <mat-slide-toggle
-      color="primary"
-      [disabled]="loading"
-      (change)="onChangePublierLesAnnexes()"
-      [(ngModel)]="is_publication_annexes_active"
-    >
-      La publication automatique des annexes est actuellement
-      <strong>{{ is_publication_annexes_active? "activé":"désactivé" }}</strong>
-    </mat-slide-toggle>
-
     <p>
     <br><br>
     <p><br /><strong>Point RGPD :</strong> <br />*************** <br />
@@ -60,6 +42,47 @@
     <p> </p>
     <p><strong>Rappel pour la marque-blanche :</strong> <br />**************************************</p>
     <p>Tous les actes mis à "oui", y compris actes réglementaires, actes individuels ou autres, sont publiés sur la marque-blanche. </p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Publication des annexes liées aux actes</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      Ce paramètre vous permet d'activer / désactiver la publication des annexes liées aux actes.
+    </p>
+    <br>
+    <p>
+      Lorsque vous activez le paramètre, toutes les annexes existantes et à venir seront publiées.
+      <br>
+      <br>
+      <i>
+        Sauf pour:
+        <ul>
+          <li>Les annexes que vous avez explicitement dépubliées dans les menus « à statuer » ou « Toutes les publications ».</li>
+          <li>Les annexes des actes dépubliés.</li>
+        </ul>
+      </i>
+    </p>
+    <br>
+    <p>
+      Lorsque vous désactivez le paramètre, toutes les annexes existantes et à venir ne seront <i>pas</i> publiées.
+    </p>
+
+    <br>
+    <br>
+
+    <mat-slide-toggle
+      color="primary"
+      [disabled]="loading"
+      (change)="onChangePublierLesAnnexes()"
+      [(ngModel)]="is_publication_annexes_active"
+    >
+      La publication des annexes des actes est actuellement
+      <strong>{{ is_publication_annexes_active? "activée":"désactivée" }}</strong>
+    </mat-slide-toggle>
   </mat-card-content>
 </mat-card>
 

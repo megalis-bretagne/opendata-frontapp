@@ -6,7 +6,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
-import { PublicationPjPayload, PublicationsService } from 'src/app/services/publications-service';
+import { PublicationPjsCommands, PublicationPjsPayload, PublicationsService } from 'src/app/services/publications-service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { finalize } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
@@ -107,18 +107,22 @@ export class GestionPublicationAnexesDialogComponent {
     return this.fb.group(controls);
   }
 
-  private _form_to_publish_pj_payload(): PublicationPjPayload {
+  private _form_to_publish_pj_payload(): PublicationPjsPayload {
 
-    let payload = { }
+    let commands_pjs_publication = { }
 
     for (const id of Object.keys(this.form.controls)) {
       let control = this.form.controls[id];
       if (!control.dirty)
         continue;
 
-      payload[id] = control.value;
+      commands_pjs_publication[id] = control.value;
     }
-    return payload;
+
+    let payload = {}
+    payload[this.publication.id] = commands_pjs_publication;
+
+    return payload
   }
 }
 

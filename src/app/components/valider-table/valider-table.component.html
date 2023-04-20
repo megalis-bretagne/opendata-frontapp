@@ -62,28 +62,53 @@
     </div>
   <mat-toolbar id="tab-toolbar">
 
-    <div *ngIf="selection.selected.length === 0">
-      Cliquer sur un ou plusieurs actes pour changer son état
+    <div *ngIf="selection.selected.length === 0; else has_selection">
+      Cliquez sur un ou plusieurs actes pour changer son état
     </div>
 
-    <div *ngIf="this.selection.selected.length > 0">
-    <button id="publier-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? publish():msg_alert('aucune publication est selectionnée')" matTooltip="publier en open data">
-      <mat-icon style="color: green">share</mat-icon>
-    </button>
-    </div>
+    <ng-template #has_selection>
+      <div class="toolbar-actions">
+        <span>
+          Acte:
+        </span>
 
-    <div *ngIf="etatPublication!=='all' && this.selection.selected.length > 0">
-      <button id="masquer-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? dontPusblish():msg_alert('aucune publication est selectionnée')" matTooltip="Ne pas publier">
-        <mat-icon style="color: red">block</mat-icon>
-      </button>
-    </div>
+        <div>
+          <button id="publier-button" mat-icon-button class="material-icons md-48" (click)="publish()" matTooltip="publier en open data">
+            <mat-icon style="color: green">share</mat-icon>
+          </button>
+        </div>
 
-    <div *ngIf="etatPublication!=='0' && this.selection.selected.length > 0">
-      <button id="demasquer-button" mat-icon-button class="material-icons md-48" (click)="this.selection.selected.length > 0 ? unpublish():msg_alert('aucune publication est selectionnée')" matTooltip="dépublier">
-        <mat-icon style="color: red"> block</mat-icon>
-      </button>
-    </div>
+        <div *ngIf="etatPublication!=='all'">
+          <button id="masquer-button" mat-icon-button class="material-icons md-48" (click)="dontPusblish()" matTooltip="Ne pas publier">
+            <mat-icon style="color: red">block</mat-icon>
+          </button>
+        </div>
 
+        <div *ngIf="etatPublication!=='0'">
+          <button id="demasquer-button" mat-icon-button class="material-icons md-48" (click)="unpublish()" matTooltip="dépublier">
+            <mat-icon style="color: red"> block</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar-actions" *ngIf="selections_can_edit_annexes().can">
+        <span>
+          Annexes:
+        </span>
+
+        <div>
+          <button id="publier-annexes-button" mat-icon-button class="material-icons md-48" (click)="publish_annexes()" matTooltip="publier les annexes">
+            <mat-icon style="color: green">share</mat-icon>
+          </button>
+        </div>
+
+        <div *ngIf="etatPublication!=='0'">
+          <button id="depublier-annexes-button" mat-icon-button class="material-icons md-48" (click)="unpublish_annexes()" matTooltip="dépublier les annexes">
+            <mat-icon style="color: red"> block</mat-icon>
+          </button>
+        </div>
+      </div>
+    </ng-template>
   </mat-toolbar>
   <div class="table-header">
     <div class="header">
@@ -125,14 +150,14 @@
         <td style="width: 10%" mat-cell class="dc-content" *matCellDef="let element">{{element.date_de_lacte | date:'dd-MM-yyyy'}} </td>
       </ng-container>
 
-      <ng-container matColumnDef="nb_pj">
-        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Annexes</th>
-        <td mat-cell class="dc-content" *matCellDef="let element">{{annexes_label(element)}}</td>
-      </ng-container>
-
       <ng-container matColumnDef="etat">
         <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>&Eacute;tat</th>
         <td mat-cell class="dc-content" *matCellDef="let element">{{getEtatLibelle(element.etat)}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nb_pj">
+        <th mat-header-cell class="dc-label" *matHeaderCellDef mat-sort-header>Annexes</th>
+        <td mat-cell class="dc-content" *matCellDef="let element">{{annexes_label(element)}}</td>
       </ng-container>
 
       <ng-container matColumnDef="acte_nature">

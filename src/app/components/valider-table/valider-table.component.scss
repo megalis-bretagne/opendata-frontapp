@@ -3,6 +3,12 @@ table {
   width: 100%;
 }
 
+.toolbar-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .mat-form-field {
   font-size: 14px;
   width: 100%;
