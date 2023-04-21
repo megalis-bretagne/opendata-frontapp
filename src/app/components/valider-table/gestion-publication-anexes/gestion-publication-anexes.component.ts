@@ -1,20 +1,22 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { piece_jointe_publiee, Publication } from 'src/app/models/publication';
+import { Publication } from 'src/app/models/publication';
 import { MatTableModule } from '@angular/material/table';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, _MatDialogBase } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
-import { PublicationPjsCommands, PublicationPjsPayload, PublicationsService } from 'src/app/services/publications-service';
+import { PublicationPjsPayload, PublicationsService } from 'src/app/services/publications-service';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { finalize } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ValiderTableService } from '../valider-table.service';
 
 export interface GestionPublicationAnexesDialogComponent_DialogData {
   publication: Publication,
   global_publication_des_annexes: boolean,
+  valider_table_service: ValiderTableService,
 }
 
 @Component({
@@ -30,21 +32,16 @@ export interface GestionPublicationAnexesDialogComponent_DialogData {
   styleUrls: ['./gestion-publication-annexes.component.scss']
 })
 export class GestionPublicationAnexesDialogComponent {
+  private fb = inject(FormBuilder);
+  private publicationService = inject(PublicationsService);
+  private component_service: ValiderTableService;
 
   public form: FormGroup;
 
   private _publication: Publication;
   public get publication(): Publication { return this._publication; }
-  public set publication(v: Publication) {
-    this._publication = v;
-    this.form = this._make_form();
-  }
   private _global_publication_des_annexes: boolean;
   public get global_publication_des_annexes(): boolean { return this._global_publication_des_annexes; }
-  public set global_publication_des_annexes(v: boolean) {
-    this._global_publication_des_annexes = v;
-    this.form = this._make_form();
-  }
 
   displayedColumns = ['nom', 'etat']
 
@@ -55,13 +52,14 @@ export class GestionPublicationAnexesDialogComponent {
   last_request_success = false;
 
   constructor(
-    private fb: FormBuilder,
-    private publicationService: PublicationsService,
     public dialogRef: MatDialogRef<GestionPublicationAnexesDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: GestionPublicationAnexesDialogComponent_DialogData,
+    @Inject(MAT_DIALOG_DATA) 
+    public data: GestionPublicationAnexesDialogComponent_DialogData,
   ) {
-    this.publication = data.publication;
-    this.global_publication_des_annexes = data.global_publication_des_annexes;
+    this._publication = data.publication;
+    this._global_publication_des_annexes = data.global_publication_des_annexes;
+    this.component_service = data.valider_table_service;
+    this.form = this._make_form();
     this.dialogRef.beforeClosed().subscribe(_ => this.onClose())
   }
 
@@ -110,7 +108,7 @@ export class GestionPublicationAnexesDialogComponent {
     let controls = {}
 
     for (const pj of publication.pieces_jointe) {
-      let control = this.fb.control(piece_jointe_publiee(pj, global_publication_des_annexes));
+      let control = this.fb.control(this.component_service.piece_jointe_publiee(pj, global_publication_des_annexes));
       controls[pj.id] = control;
     }
 

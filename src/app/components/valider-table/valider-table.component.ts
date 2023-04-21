@@ -4,7 +4,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {select, Store} from '@ngrx/store';
 import {MatPaginator} from '@angular/material/paginator';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
-import {DataDialog, piece_jointe_publiee, Publication} from '../../models/publication';
+import {DataDialog, Publication} from '../../models/publication';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
 import {MatDialog} from '@angular/material/dialog';
 
@@ -22,11 +22,11 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {PublicationPjsCommands, PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
 import {DialogBoxComponent} from '../dialog-box/dialog-box.component';
-import { GestionPublicationAnexesDialogComponent } from './gestion-publication-anexes/gestion-publication-anexes.component';
+import { GestionPublicationAnexesDialogComponent, GestionPublicationAnexesDialogComponent_DialogData } from './gestion-publication-anexes/gestion-publication-anexes.component';
 import { selectAllParametrage } from 'src/app/store/selectors/parametrage.selectors';
 import { ParametrageLoadAction } from 'src/app/store/actions/parametrage.actions';
+import { ValiderTableService } from './valider-table.service';
 
 export enum CannotEditRaison {
   PUBLICATION_GLOBAL_DISABLED = "La publication d'annexe est désactivée.",
@@ -41,7 +41,8 @@ export interface CanEditAnnexe {
 @Component({
   selector: 'app-valider-table',
   templateUrl: './valider-table.component.html',
-  styleUrls: ['./valider-table.component.scss']
+  styleUrls: ['./valider-table.component.scss'],
+  providers: [ValiderTableService],
 })
 export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -69,9 +70,10 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   valueSirenAdmin=''
 
   // tslint:disable-next-line:max-line-length
-  constructor(public dialog: MatDialog, public store: Store<GlobalState>, public service: PublicationsService,
+  constructor(public dialog: MatDialog, public store: Store<GlobalState>, 
+              public service: PublicationsService,
               private route: ActivatedRoute,
-              private http: HttpClient) { }
+              private component_service: ValiderTableService) { }
 
   public ngOnInit(): void {
 
@@ -430,8 +432,10 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   annexes_label(p: Publication) {
     let n_pjs = p.pieces_jointe.length;
     let n_publiees = p.pieces_jointe
-    .filter(pj => piece_jointe_publiee(pj, this.global_publication_des_annexes))
-    .length
+      .filter(pj => { 
+        return this.component_service.piece_jointe_publiee(pj, this.global_publication_des_annexes);
+      })
+      .length
 
     let str = `${n_pjs} annexe(s)`;
 
@@ -451,13 +455,13 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   openGestionAnnexe(event, publication: Publication) {
     event.stopPropagation();
 
-    let dialogRef = this.dialog.open(GestionPublicationAnexesDialogComponent, {
-      data: { 
+    let data: GestionPublicationAnexesDialogComponent_DialogData = {
         publication: publication, 
         global_publication_des_annexes: this.global_publication_des_annexes,
-      }
-    });
+        valider_table_service: this.component_service,
+    }
 
+    let dialogRef = this.dialog.open(GestionPublicationAnexesDialogComponent, { data });
     dialogRef.afterClosed().subscribe(_ => this.refresh());
   }
 
