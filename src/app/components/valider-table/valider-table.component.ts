@@ -17,18 +17,32 @@ import {
 } from '../../store/selectors/publication.selectors';
 import {PublicationLoadAction} from '../../store/actions/publications.actions';
 import {PublicationParams} from '../../models/publication-params';
-import {debounceTime, distinctUntilChanged, filter, take, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
-import {PublicationsService} from '../../services/publications-service';
+import {PublicationPjsCommands, PublicationsService} from '../../services/publications-service';
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
 import {DialogBoxComponent} from '../dialog-box/dialog-box.component';
+import { GestionPublicationAnnexesDialogComponent, GestionPublicationAnnexesDialogComponent_DialogData } from './gestion-publication-annexes/gestion-publication-annexes.component';
+import { selectAllParametrage } from 'src/app/store/selectors/parametrage.selectors';
+import { ParametrageLoadAction } from 'src/app/store/actions/parametrage.actions';
+import { ValiderTableService } from './valider-table.service';
+
+export enum CannotEditRaison {
+  PUBLICATION_GLOBAL_DISABLED = "La publication d'annexe est désactivée.",
+  ACTE_DEPUBLIE = "L'acte n'est pas publié",
+  AUCUNE_ANNEXE = "Aucune annexe n'est présente pour l'acte.",
+}
+export interface CanEditAnnexe {
+  can: boolean;
+  raison: string;
+}
 
 @Component({
   selector: 'app-valider-table',
   templateUrl: './valider-table.component.html',
-  styleUrls: ['./valider-table.component.scss']
+  styleUrls: ['./valider-table.component.scss'],
+  providers: [ValiderTableService],
 })
 export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
@@ -36,7 +50,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['numero_de_lacte', 'objet', 'date_de_lacte', 'acte_nature', 'etat', 'action', 'select'];
+  displayedColumns = ['numero_de_lacte', 'objet', 'date_de_lacte', 'acte_nature', 'etat', 'nb_pj', 'action', 'select'];
   public dataSource: MatTableDataSource<Publication>;
   public publicationTotal: number;
   public noData: Publication[] = [{} as Publication];
@@ -48,6 +62,8 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   private filter = '';
   public etatPublication = '0';
   private subscription: Subscription = new Subscription();
+  /** null: pas de parametrage chargé*/
+  public organization_publication_des_annexes?: boolean = null;
   selection = new SelectionModel<Publication>(true, []);
   user: User | null = null;
   nombrePublicationLibelle = 'Nombre de publications à valider';
@@ -55,15 +71,20 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   valueSirenAdmin=''
 
   // tslint:disable-next-line:max-line-length
-  constructor(public dialog: MatDialog, public store: Store<GlobalState>, public service: PublicationsService,
+  constructor(public dialog: MatDialog, public store: Store<GlobalState>, 
+              public service: PublicationsService,
               private route: ActivatedRoute,
-              private http: HttpClient) { }
+              private component_service: ValiderTableService) { }
 
   public ngOnInit(): void {
 
-    this.store.pipe(select(selectAuthState), take(1)).subscribe((state) => {
-      this.user = state.user;
-    });
+    this.store.pipe(
+      select(selectAuthState), 
+      take(1),
+    ).subscribe((state) => this.user = state.user);
+    this.store.pipe(select(selectAllParametrage))
+      .pipe(map(param => param[0]))
+      .subscribe(param => this.organization_publication_des_annexes = param?.publication_des_annexes);
     this.store.pipe(select(selectAllPublication)).subscribe(publications => this.initializeData(publications));
     this.store.pipe(select(selectPublicationTotal)).subscribe(total => this.publicationTotal = total);
     this.subscription.add(this.store.pipe(select(selectPublicationLoading)).subscribe(loading => {
@@ -128,6 +149,11 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
+  // #region selection shortcut
+  get nothing_selected() { return this.selection.selected.length === 0 }
+  get has_acte_selected() { return this.selection.selected.length > 0 }
+  // #endregion
+
   is_admin_open_data(): boolean{
     if ( this.user === null) {
       return false;
@@ -144,6 +170,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if ( this.is_admin_open_data() && this.valueSirenAdmin.length === 9 ){
       //cas admin
+      this.store.dispatch(new ParametrageLoadAction(this.valueSirenAdmin));
       this.store.dispatch(new PublicationLoadAction(
         {
           filter: this.filter.toLocaleLowerCase(),
@@ -159,6 +186,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
         } as PublicationParams
       ));
     }else {
+      this.store.dispatch(new ParametrageLoadAction(this.user.siren));
       this.store.dispatch(new PublicationLoadAction(
         {
           filter: this.filter.toLocaleLowerCase(),
@@ -326,18 +354,9 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loadPublications();
   }
 
-  msg_alert(msg: string): void {
-    alert(msg);
-  }
-
-  openActe(event,element:Publication): void {
-    event.stopPropagation();
-    const href = element.actes[0].url
-    const link = document.createElement('a'); 
-    link.target = '_blank';
-    link.href = href;
-    link.setAttribute('visibility', 'hidden');
-    link.click();
+  open_acte_de_publication(event, publication:Publication): void {
+    let acte = publication.actes[0]
+    this.component_service.openActe(event, acte);
   }
 
   getLibelleFilter(): string {
@@ -378,9 +397,97 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selection.clear();
   }
 
+  // #region pieces jointes
+  get can_load_annexes_feature() {
+    return this.organization_publication_des_annexes != undefined;
+  }
+  selections_can_edit_annexes(): CanEditAnnexe {
+    let can_edit_per_publication: CanEditAnnexe[] = []
+    for (const publication of this.selection.selected) {
+      can_edit_per_publication.push(this.can_edit_annexes(publication))
+    }
 
+    let can = can_edit_per_publication.map(can_edit => can_edit.can).find(can => can);
+    can = Boolean(can);
+    let raison = (!can)? "Aucun acte n'a d'annexes pouvant être publiée(s) / dépubliée(s)":null;
+    return { can: can, raison: raison }
+  }
+  can_edit_annexes(p: Publication): CanEditAnnexe {
 
+    if (!this.organization_publication_des_annexes)
+      return { can: false, raison: CannotEditRaison.PUBLICATION_GLOBAL_DISABLED }
+    if (!Boolean(p) || p.etat !== '1')
+      return { can: false, raison: CannotEditRaison.ACTE_DEPUBLIE }
+    if (p.pieces_jointe?.length < 1)
+      return { can: false, raison: CannotEditRaison.AUCUNE_ANNEXE }
+    
+    return { can: true, raison: null }
+  }
 
+  annexes_label(p: Publication) {
+    let n_pjs = p.pieces_jointe.length;
+    let str = `${n_pjs} annexe(s)`;
+
+    if (!this.can_load_annexes_feature)
+      return str;
+
+    let n_publiees = p.pieces_jointe
+      .filter(pj => { 
+        return this.component_service.is_annexe_publiee(pj, this.organization_publication_des_annexes);
+      })
+      .length
+
+    if (!this.can_edit_annexes(p).can)
+      return str;
+
+    if (n_publiees === 0)
+      str += ` non publiée(s)`;
+    else if (n_pjs !== n_publiees)
+      str += ` - dont ${n_publiees} publiée(s)`;
+    else if (n_pjs > 0)
+      str += ` publiée(s)`;
+
+    return str;
+  }
+
+  openGestionAnnexe(event, publication: Publication) {
+    event.stopPropagation();
+
+    let data: GestionPublicationAnnexesDialogComponent_DialogData = {
+        publication: publication, 
+        organization_publication_des_annexes: this.organization_publication_des_annexes,
+        valider_table_service: this.component_service,
+    }
+
+    let dialogRef = this.dialog.open(GestionPublicationAnnexesDialogComponent, { data });
+    dialogRef.afterClosed().subscribe(_ => this.refresh());
+  }
+
+  publish_annexes(): void {
+    let payload = { }
+    for (const publication of this.selection.selected) {
+      payload[publication.id] = this._commands_pjs_publish(publication, true);
+    }
+    this._do_request_for_annexes(payload);
+  }
+  unpublish_annexes(): void {
+    let payload = { }
+    for (const publication of this.selection.selected) {
+      payload[publication.id] = this._commands_pjs_publish(publication, false);
+    }
+    this._do_request_for_annexes(payload);
+  }
+
+  _commands_pjs_publish(p: Publication, publish: boolean) {
+    let payload = {}
+    for (const pj of p.pieces_jointe) {
+      payload[pj.id] = publish
+    }
+    return payload;
+  }
+
+  _do_request_for_annexes(payload: { [id: string]: PublicationPjsCommands }) {
+    this.service.publish_pj(payload).subscribe(_ => this.refresh())
+  }
+  // #endregion
 }
-
-
