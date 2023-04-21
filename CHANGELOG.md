@@ -6,8 +6,15 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [unreleased]
 
-### Changed
+### Ajouts
 
+ - Feature publication des annexes ([issue](https://https://github.com/megalis-bretagne/opendata-marqueblanche/issues/3))
+
+### Changés
+
+ - Divers refactorings
+   - Amélioration des flag de paramétrage d'organisation
+   - Suppression de duplication de code
  - [BUDGETS] Documentation développeur pour le module budget
 
 
