@@ -1,6 +1,6 @@
 import { Component, inject, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Publication } from 'src/app/models/publication';
+import { PieceJointe, Publication } from 'src/app/models/publication';
 import { MatTableModule } from '@angular/material/table';
 import { MatDialogRef, MAT_DIALOG_DATA, _MatDialogBase } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -43,7 +43,7 @@ export class GestionPublicationAnexesDialogComponent {
   private _global_publication_des_annexes: boolean;
   public get global_publication_des_annexes(): boolean { return this._global_publication_des_annexes; }
 
-  displayedColumns = ['nom', 'etat']
+  displayedColumns = ['nom', 'consulter','etat']
 
   /** Mise à jour du status des pièces jointes en cours*/
   pending = false;
@@ -61,6 +61,10 @@ export class GestionPublicationAnexesDialogComponent {
     this.component_service = data.valider_table_service;
     this.form = this._make_form();
     this.dialogRef.beforeClosed().subscribe(_ => this.onClose())
+  }
+
+  open_annexe(event, pj: PieceJointe) {
+    return this.component_service.openActe(event, pj);
   }
 
   onSubmit() {
