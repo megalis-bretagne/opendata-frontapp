@@ -13,14 +13,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ValiderTableService } from '../valider-table.service';
 
-export interface GestionPublicationAnexesDialogComponent_DialogData {
+export interface GestionPublicationAnnexesDialogComponent_DialogData {
   publication: Publication,
   global_publication_des_annexes: boolean,
   valider_table_service: ValiderTableService,
 }
 
 @Component({
-  selector: 'app-gestion-publication-anexes',
+  selector: 'app-gestion-publication-annexes',
   standalone: true,
   imports: [
     CommonModule,
@@ -28,10 +28,10 @@ export interface GestionPublicationAnexesDialogComponent_DialogData {
     MatProgressBarModule, MatIconModule, MatProgressSpinnerModule,
     FormsModule, ReactiveFormsModule
   ],
-  templateUrl: './gestion-publication-anexes.component.html',
+  templateUrl: './gestion-publication-annexes.component.html',
   styleUrls: ['./gestion-publication-annexes.component.scss']
 })
-export class GestionPublicationAnexesDialogComponent {
+export class GestionPublicationAnnexesDialogComponent {
   private fb = inject(FormBuilder);
   private publicationService = inject(PublicationsService);
   private component_service: ValiderTableService;
@@ -52,9 +52,9 @@ export class GestionPublicationAnexesDialogComponent {
   last_request_success = false;
 
   constructor(
-    public dialogRef: MatDialogRef<GestionPublicationAnexesDialogComponent>,
+    public dialogRef: MatDialogRef<GestionPublicationAnnexesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) 
-    public data: GestionPublicationAnexesDialogComponent_DialogData,
+    public data: GestionPublicationAnnexesDialogComponent_DialogData,
   ) {
     this._publication = data.publication;
     this._global_publication_des_annexes = data.global_publication_des_annexes;

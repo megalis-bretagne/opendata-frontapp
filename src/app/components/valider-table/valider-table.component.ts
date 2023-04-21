@@ -23,7 +23,7 @@ import {PublicationPjsCommands, PublicationsService} from '../../services/public
 import {User} from '../../models/user';
 import {ActivatedRoute} from '@angular/router';
 import {DialogBoxComponent} from '../dialog-box/dialog-box.component';
-import { GestionPublicationAnexesDialogComponent, GestionPublicationAnexesDialogComponent_DialogData } from './gestion-publication-anexes/gestion-publication-anexes.component';
+import { GestionPublicationAnnexesDialogComponent, GestionPublicationAnnexesDialogComponent_DialogData } from './gestion-publication-annexes/gestion-publication-annexes.component';
 import { selectAllParametrage } from 'src/app/store/selectors/parametrage.selectors';
 import { ParametrageLoadAction } from 'src/app/store/actions/parametrage.actions';
 import { ValiderTableService } from './valider-table.service';
@@ -446,13 +446,13 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   openGestionAnnexe(event, publication: Publication) {
     event.stopPropagation();
 
-    let data: GestionPublicationAnexesDialogComponent_DialogData = {
+    let data: GestionPublicationAnnexesDialogComponent_DialogData = {
         publication: publication, 
         global_publication_des_annexes: this.global_publication_des_annexes,
         valider_table_service: this.component_service,
     }
 
-    let dialogRef = this.dialog.open(GestionPublicationAnexesDialogComponent, { data });
+    let dialogRef = this.dialog.open(GestionPublicationAnnexesDialogComponent, { data });
     dialogRef.afterClosed().subscribe(_ => this.refresh());
   }
 
