@@ -399,6 +399,8 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // #region pieces jointes
   get can_load_annexes_feature() {
+    if (this.etatPublication == '0')
+      return false;
     return this.organization_publication_des_annexes != undefined;
   }
   selections_can_edit_annexes(): CanEditAnnexe {
