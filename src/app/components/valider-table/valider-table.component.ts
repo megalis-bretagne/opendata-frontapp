@@ -62,7 +62,8 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   private filter = '';
   public etatPublication = '0';
   private subscription: Subscription = new Subscription();
-  public global_publication_des_annexes: boolean = false;
+  /** null: pas de parametrage chargé*/
+  public organization_publication_des_annexes?: boolean = null;
   selection = new SelectionModel<Publication>(true, []);
   user: User | null = null;
   nombrePublicationLibelle = 'Nombre de publications à valider';
@@ -83,7 +84,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe((state) => this.user = state.user);
     this.store.pipe(select(selectAllParametrage))
       .pipe(map(param => param[0]))
-      .subscribe(param => this.global_publication_des_annexes = param?.publication_des_annexes);
+      .subscribe(param => this.organization_publication_des_annexes = param?.publication_des_annexes);
     this.store.pipe(select(selectAllPublication)).subscribe(publications => this.initializeData(publications));
     this.store.pipe(select(selectPublicationTotal)).subscribe(total => this.publicationTotal = total);
     this.subscription.add(this.store.pipe(select(selectPublicationLoading)).subscribe(loading => {
@@ -397,6 +398,9 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   // #region pieces jointes
+  get can_load_annexes_feature() {
+    return this.organization_publication_des_annexes != undefined;
+  }
   selections_can_edit_annexes(): CanEditAnnexe {
     let can_edit_per_publication: CanEditAnnexe[] = []
     for (const publication of this.selection.selected) {
@@ -410,7 +414,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   can_edit_annexes(p: Publication): CanEditAnnexe {
 
-    if (!this.global_publication_des_annexes)
+    if (!this.organization_publication_des_annexes)
       return { can: false, raison: CannotEditRaison.PUBLICATION_GLOBAL_DISABLED }
     if (!Boolean(p) || p.etat !== '1')
       return { can: false, raison: CannotEditRaison.ACTE_DEPUBLIE }
@@ -422,13 +426,16 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
   annexes_label(p: Publication) {
     let n_pjs = p.pieces_jointe.length;
+    let str = `${n_pjs} annexe(s)`;
+
+    if (!this.can_load_annexes_feature)
+      return str;
+
     let n_publiees = p.pieces_jointe
       .filter(pj => { 
-        return this.component_service.piece_jointe_publiee(pj, this.global_publication_des_annexes);
+        return this.component_service.is_annexe_publiee(pj, this.organization_publication_des_annexes);
       })
       .length
-
-    let str = `${n_pjs} annexe(s)`;
 
     if (!this.can_edit_annexes(p).can)
       return str;
@@ -448,7 +455,7 @@ export class ValiderTableComponent implements OnInit, OnDestroy, AfterViewInit {
 
     let data: GestionPublicationAnnexesDialogComponent_DialogData = {
         publication: publication, 
-        global_publication_des_annexes: this.global_publication_des_annexes,
+        organization_publication_des_annexes: this.organization_publication_des_annexes,
         valider_table_service: this.component_service,
     }
 

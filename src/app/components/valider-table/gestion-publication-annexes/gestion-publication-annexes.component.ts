@@ -15,7 +15,7 @@ import { ValiderTableService } from '../valider-table.service';
 
 export interface GestionPublicationAnnexesDialogComponent_DialogData {
   publication: Publication,
-  global_publication_des_annexes: boolean,
+  organization_publication_des_annexes: boolean,
   valider_table_service: ValiderTableService,
 }
 
@@ -40,8 +40,8 @@ export class GestionPublicationAnnexesDialogComponent {
 
   private _publication: Publication;
   public get publication(): Publication { return this._publication; }
-  private _global_publication_des_annexes: boolean;
-  public get global_publication_des_annexes(): boolean { return this._global_publication_des_annexes; }
+  private _organization_publication_des_annexes: boolean;
+  public get organization_publication_des_annexes(): boolean { return this._organization_publication_des_annexes; }
 
   displayedColumns = ['nom', 'consulter','etat']
 
@@ -57,7 +57,7 @@ export class GestionPublicationAnnexesDialogComponent {
     public data: GestionPublicationAnnexesDialogComponent_DialogData,
   ) {
     this._publication = data.publication;
-    this._global_publication_des_annexes = data.global_publication_des_annexes;
+    this._organization_publication_des_annexes = data.organization_publication_des_annexes;
     this.component_service = data.valider_table_service;
     this.form = this._make_form();
     this.dialogRef.beforeClosed().subscribe(_ => this.onClose())
@@ -108,11 +108,11 @@ export class GestionPublicationAnnexesDialogComponent {
 
   private _make_form(): FormGroup<any> {
     let publication: Publication = this.publication;
-    let global_publication_des_annexes = this.global_publication_des_annexes;
+    let organization_publication_des_annexes = this.organization_publication_des_annexes;
     let controls = {}
 
     for (const pj of publication.pieces_jointe) {
-      let control = this.fb.control(this.component_service.piece_jointe_publiee(pj, global_publication_des_annexes));
+      let control = this.fb.control(this.component_service.is_annexe_publiee(pj, organization_publication_des_annexes));
       controls[pj.id] = control;
     }
 

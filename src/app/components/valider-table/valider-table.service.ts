@@ -23,9 +23,9 @@ export class ValiderTableService {
 
   /** Indique si une pièce jointe est publiée 
    * en considérant le paramétrage global de publication d'annexe */
-  piece_jointe_publiee(pj: PieceJointe, global_publication_annexe: boolean) {
+  is_annexe_publiee(pj: PieceJointe, organization_publication_des_annexes: boolean) {
     if (pj.publie == undefined)
-      return global_publication_annexe
+      return organization_publication_des_annexes
     return pj.publie;
   }
 
