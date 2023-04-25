@@ -96,6 +96,7 @@ export class GestionPublicationAnnexesDialogComponent {
     this.last_request_error = null;
     this.last_request_success = true;
     this.form.markAsPristine();
+    this.dialogRef.close();
   }
   private _publish_pj_error(err) {
     this.last_request_success = false;
