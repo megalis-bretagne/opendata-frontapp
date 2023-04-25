@@ -29,7 +29,11 @@
   <!-- <textarea id="clipboard-example-textarea" cols="100" rows="10" [ngModel]="htmlStr"></textarea> -->
 
   <mat-card-actions align="end">
-    <button mat-button [cdkCopyToClipboard]="htmlStr">COPIER</button>
+    <button mat-button
+      [cdkCopyToClipboard]="htmlStr"
+      (click)="ouvre_snackbar('L\'extrait de code vient d\'être copié dans le presse papier.')">
+      COPIER
+    </button>
   </mat-card-actions>
 </mat-card>
 

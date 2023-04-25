@@ -12,6 +12,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changés
 
+ - Ajout du snackbar lors de la copie de l'extrait mq-actes.
  - Divers refactorings
    - Amélioration des flag de paramétrage d'organisation
    - Suppression de duplication de code
