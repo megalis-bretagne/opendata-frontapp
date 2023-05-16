@@ -6,6 +6,8 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [unreleased]
 
+## [1.0.13] - 2023-05-16
+
 ### Ajouts
 
  - Feature publication des annexes ([issue](https://https://github.com/megalis-bretagne/opendata-marqueblanche/issues/3))
