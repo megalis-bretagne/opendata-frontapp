@@ -37,10 +37,10 @@ docker image:
   variables:
     IMAGE_NAME: "megalis/opendata/opendata-front"
 
-deploy dev:
-  extends: .deployInteg
-  variables:
-    STACK_NAME: "front-data"
+# deploy dev:
+#   extends: .deployInteg
+#   variables:
+#     STACK_NAME: "front-data"
 
 deploy:
   extends: .deployPreProd

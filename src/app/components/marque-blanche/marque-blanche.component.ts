@@ -3,10 +3,10 @@ import { User } from '../../models/user';
 import { select, Store } from '@ngrx/store';
 import { GlobalState, selectAuthState } from '../../store/states/global.state';
 import { take } from 'rxjs/operators';
-import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SettingsService } from '../../../environments/settings.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 let mq_actes_themings_vm = [
   { code: null, label: "Défaut" },
@@ -44,7 +44,8 @@ export class MarqueBlancheComponent implements OnInit {
     this._url = value;
   }
 
-  constructor(private breakpointObserver: BreakpointObserver,
+  constructor(
+    private snackbar: MatSnackBar,
     private store: Store<GlobalState>, private domSanitizer: DomSanitizer, private settings: SettingsService) {
     this.getState = this.store.select(selectAuthState);
   }
@@ -80,5 +81,9 @@ export class MarqueBlancheComponent implements OnInit {
       title="Marque blanche open data" width="100%" height="600">
     </iframe>
     `;
+  }
+
+  ouvre_snackbar(msg: string) {
+    this.snackbar.open(msg)
   }
 }

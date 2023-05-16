@@ -4,6 +4,23 @@ Tous changements importants seront journalisés dans ce fichier.
 
 Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [unreleased]
+
+## [1.0.13] - 2023-05-16
+
+### Ajouts
+
+ - Feature publication des annexes ([issue](https://https://github.com/megalis-bretagne/opendata-marqueblanche/issues/3))
+
+### Changés
+
+ - Ajout du snackbar lors de la copie de l'extrait mq-actes.
+ - Divers refactorings
+   - Amélioration des flag de paramétrage d'organisation
+   - Suppression de duplication de code
+ - [BUDGETS] Documentation développeur pour le module budget
+
+
 ## [1.0.12] - 2023-01-24
 
 ### Changed

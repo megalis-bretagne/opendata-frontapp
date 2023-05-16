@@ -3,6 +3,12 @@ table {
   width: 100%;
 }
 
+.toolbar-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .mat-form-field {
   font-size: 14px;
   width: 100%;
@@ -10,14 +16,6 @@ table {
 
 td, th {
   width: 10%;
-}
-
-.mat-icon{
-  color: #3f51b5;
-  size: 48px;
-}
-.mat-icon:hover{
-  color:#ff4081;
 }
 
 .publication-content {
