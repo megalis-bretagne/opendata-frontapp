@@ -50,24 +50,15 @@ export class NavigationComponent implements OnInit {
   }
 
   is_admin_open_data(): boolean {
-    if (this.user === null) {
-      return false;
-    }
-    return this.user.role === 'admin_opendata';
+    return this.user?.role === 'admin_opendata';
   }
 
   is_Admin(): boolean {
-    if (this.user === null) {
-      return false;
-    }
-    return this.user.userType === 'ADMIN';
+    return this.user?.userType === 'ADMIN';
   }
 
   // TODO gérer le user super admin ne fonctionne pas actuellement
   is_superAdmin(): boolean {
-    if (this.user === null) {
-      return false;
-    }
-    return this.user.userType === 'ROLE_SUPER_ADMIN';
+    return this.user?.userType === 'ROLE_SUPER_ADMIN';
   }
 }
