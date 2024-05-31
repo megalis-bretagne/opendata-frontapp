@@ -42,6 +42,9 @@ const MEDIUM_MODE_MAX_WIDTH = 1200
 export class VisualisationDonut extends VisualisationComponent {
 
   echartsVm?: EchartsViewModel
+  
+  /** Flag pour forcer la désactivation du lien nomenclature*/
+  _disableChoixNomenclature = false;
 
   get donneesBudget() {
     return this.visualisationService.donnees_budgetaires
@@ -93,7 +96,11 @@ export class VisualisationDonut extends VisualisationComponent {
   }
 
   get afficherOptionsChoixNomenclatures() {
-    let afficher = true
+    let afficher = true;
+    
+    if (this._disableChoixNomenclature)
+      return false;
+
     afficher = afficher && Boolean(this.informationPlanDeComptes)
     afficher = afficher
       && !object_is_empty(this.informationPlanDeComptes.references_fonctionnelles)
@@ -138,8 +145,11 @@ export class VisualisationDonut extends VisualisationComponent {
     let typesNomenclaturesDisponibles = this.typesNomenclatureDisponibles(donneesBudget, informationsPlanDeComptes)
     let _typeNomenclature = this._normalizeTypeNomenclature(typesNomenclaturesDisponibles, this.typeNomenclature)
 
-    if (_typeNomenclature !== this.typeNomenclature)
+    if (_typeNomenclature !== this.typeNomenclature) {
       this._debug(`Nomenclature ${this.typeNomenclature} indisponible avec les données actuelles. On utilisera la nomenclature ${_typeNomenclature}`)
+      this.typeNomenclature = _typeNomenclature;
+      this._disableChoixNomenclature = true;
+    }
 
     let nomenclature = Pdc.extraire_nomenclature(informationsPlanDeComptes, _typeNomenclature)
     let donneesVisualisation = this.mapper.donneesPourDonut(donneesBudget, nomenclature, this.rd, typeVue)
