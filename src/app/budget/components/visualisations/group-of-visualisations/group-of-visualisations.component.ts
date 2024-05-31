@@ -101,6 +101,8 @@ export class GroupOfVisualisationsComponent implements OnInit, OnDestroy {
         return 'du budget primitif'
       case EtapeBudgetaire.COMPTE_ADMINISTRATIF:
         return 'du compte administratif'
+      case EtapeBudgetaire.COMPTE_FINANCIER_UNIQUE:
+        return 'du compte financier unique'
       case EtapeBudgetaire.BUDGET_SUPPLEMENTAIRE:
         return 'du budget supplémentaire'
       case EtapeBudgetaire.DECISION_MODIFICATIVE:
