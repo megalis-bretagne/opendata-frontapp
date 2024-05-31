@@ -29,6 +29,8 @@ export function etape_pretty_name(etape: EtapeBudgetaire): string {
             return "Compte administratif";
         case EtapeBudgetaire.DECISION_MODIFICATIVE:
             return "Décision modificatives";
+        case EtapeBudgetaire.COMPTE_FINANCIER_UNIQUE:
+            return "Compte financier unique";
         default:
             throw new Error(`${etape} non supportée`)
     }
