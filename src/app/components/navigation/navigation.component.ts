@@ -46,28 +46,19 @@ export class NavigationComponent implements OnInit {
   }
 
   has_role(): boolean {
-    return this.is_admin_open_data() || this.is_superAdmin() || this.is_Admin();
+    return this.has_role_opendata() || this.is_superAdmin() || this.is_Admin();
   }
 
-  is_admin_open_data(): boolean {
-    if (this.user === null) {
-      return false;
-    }
-    return this.user.role === 'admin_opendata';
+  has_role_opendata(): boolean {
+    return this.user?.role != null;
   }
 
   is_Admin(): boolean {
-    if (this.user === null) {
-      return false;
-    }
-    return this.user.userType === 'ADMIN';
+    return this.user?.userType === 'ADMIN';
   }
 
   // TODO gérer le user super admin ne fonctionne pas actuellement
   is_superAdmin(): boolean {
-    if (this.user === null) {
-      return false;
-    }
-    return this.user.userType === 'ROLE_SUPER_ADMIN';
+    return this.user?.userType === 'ROLE_SUPER_ADMIN';
   }
 }
