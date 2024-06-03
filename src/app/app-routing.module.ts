@@ -4,7 +4,6 @@ import { AuthGuard } from './services/auth-guard.service';
 import { ParametrageOrganisationComponent } from './components/parametrage-organisation/parametrage-organisation.component';
 import { ValiderTableComponent } from './components/valider-table/valider-table.component';
 import { MarqueBlancheComponent } from './components/marque-blanche/marque-blanche.component';
-import { ParametragePastellComponent } from "./components/parametrage-pastell/parametrage-pastell.component";
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { ROUTE_PREFIX_MODULE as BUDGETS_ROUTE_PREFIX_MODULE } from './budget/services/routing.service';
 
@@ -25,10 +24,6 @@ const routes: Routes = [
       {
         path: 'marqueblanche',
         component: MarqueBlancheComponent,
-      },
-      {
-        path: 'pastell',
-        component: ParametragePastellComponent,
       },
     ]
   },

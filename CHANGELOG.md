@@ -12,6 +12,7 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changements
 
 - [opendata-marqueblanche#32](https://github.com/megalis-bretagne/opendata-marqueblanche/issues/32) On permet l'affichage des écrans si un rôle opendata est présent mais sans requérir un rôle spécifique
+- [#13](https://github.com/megalis-bretagne/opendata-frontapp/issues/13) Suppression de l'écran "Paramétrage d'une nouvelle entité pastell"
 
 ## [1.0.13] - 2023-05-16
 
