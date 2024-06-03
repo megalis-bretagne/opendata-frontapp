@@ -6,7 +6,7 @@ import { take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SettingsService } from '../../../environments/settings.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 
 let mq_actes_themings_vm = [
   { code: null, label: "Défaut" },

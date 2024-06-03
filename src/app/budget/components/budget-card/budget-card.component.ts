@@ -2,9 +2,9 @@ import { Component, ContentChild, Input, OnDestroy, OnInit, Optional } from '@an
 import { Subject } from 'rxjs';
 import { IframeService } from '../../services/iframe.service';
 import { VisualisationComponent } from '../visualisations/visualisation.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { snackify_telechargement } from '../budget-utils';
 import { EditTitreDialogComponent, EditTitreDialogData } from '../edit-titre-dialog/edit-titre-dialog.component';
 import { BudgetParametrageComponentService } from '../budget-parametrage/budget-parametrage-component.service';
