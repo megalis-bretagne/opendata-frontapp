@@ -20,10 +20,10 @@ build angular app:
   before_script:
     - export http_proxy=http://pro01.sib.fr:3128
     - export https_proxy=http://pro01.sib.fr:3128
-  image: node:16.13-buster
+  image: node:20.14-alpine
   stage: build-angular
   script:
-    - npm install --force --silent
+    - npm ci --force --silent
     - ./node_modules/.bin/ng build --configuration=production --aot --project=opendata-app
   cache:
     key: ${CI_COMMIT_REF_SLUG}
