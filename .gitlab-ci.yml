@@ -23,12 +23,12 @@ build angular app:
   image: node:20.14-alpine
   stage: build-angular
   script:
-    - npm ci --force --silent
+    - npm ci --force --cache ${CI_PROJECT_DIR?}/.npm --prefer-offline --quiet
     - ./node_modules/.bin/ng build --configuration=production --aot --project=opendata-app
   cache:
-    key: ${CI_COMMIT_REF_SLUG}
+    key: ${CI_PROJECT_ID}-npm
     paths:
-      - node_modules/
+      - ${CI_PROJECT_DIR}/.npm/
   artifacts:
     expire_in: 15 mins
     paths:
