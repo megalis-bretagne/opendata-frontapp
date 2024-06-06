@@ -38,7 +38,7 @@ export class AuthEffects {
             // @ts-ignore
             user.userType = profile.attributes.userType[0];
            // @ts-ignore
-            user.role = profile.attributes.role_opendata[0];
+            user.role = profile.attributes.role_opendata?.[0];
             // @ts-ignore
             user.siren = profile.attributes.siren[0];
             return new LogInSuccess(user);
