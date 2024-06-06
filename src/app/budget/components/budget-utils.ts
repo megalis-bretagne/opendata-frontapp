@@ -1,4 +1,4 @@
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatLegacySnackBar as MatSnackBar } from "@angular/material/legacy-snack-bar";
 
 /** Wrap un traitement synchrone avec un snack */
 export function snackify(

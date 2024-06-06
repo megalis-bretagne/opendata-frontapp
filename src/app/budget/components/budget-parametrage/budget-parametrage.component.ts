@@ -16,9 +16,9 @@ import { BudgetParametrageComponentService } from './budget-parametrage-componen
 
 import { jsPDF } from 'jspdf'
 import { VisIframeDialogComponent } from '../vis-iframe-dialog/vis-iframe-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { IframeDialogData } from '../budget-card/budget-card.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { snackify_telechargement } from '../budget-utils';
 
 @Component({
