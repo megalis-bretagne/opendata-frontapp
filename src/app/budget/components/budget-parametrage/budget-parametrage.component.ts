@@ -11,7 +11,7 @@ import { IdentifiantVisualisation, PagesDeVisualisations } from '../../models/vi
 import { BudgetsStoresService } from '../../services/budgets-store.service';
 import { IframeService } from '../../services/iframe.service';
 import { RoutingService } from '../../services/routing.service';
-import { isInError, LoadingState } from '../../store/states/call-states';
+import { isInError, isNotFound, LoadingState } from '../../store/states/call-states';
 import { BudgetParametrageComponentService } from './budget-parametrage-component.service';
 
 import { jsPDF } from 'jspdf'
@@ -38,6 +38,7 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
 
   isLoadingDisponibles$;
   errorInLoadingDisponibles$;
+  notFoundInLoadingDisponibles$;
 
   id_visualisations: IdentifiantVisualisation[] = []
 
@@ -78,6 +79,10 @@ export class BudgetParametrageComponent implements OnInit, OnDestroy {
     this.errorInLoadingDisponibles$ = callState$
       .pipe(
         map(cs => isInError(cs))
+      )
+    this.notFoundInLoadingDisponibles$ = callState$
+      .pipe(
+        map(cs => isNotFound(cs))
       )
   }
 
