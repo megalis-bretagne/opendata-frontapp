@@ -8,13 +8,22 @@
     </ng-container>
 
     <ng-template #errorOrContenu>
-
-        <div *ngIf="errorInLoadingDisponibles$ | async as error; else contenu">
+        
+        <div *ngIf="notFoundInLoadingDisponibles$ | async as notFound; else checkError">
             <div class="in_error">
                 <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
-                Une erreur est survenue, veuillez recharger la page.
+                Aucune données budgetaire n'est disponible.
             </div>
         </div>
+
+        <ng-template #checkError>
+            <div *ngIf="errorInLoadingDisponibles$ | async as error; else contenu">
+                <div class="in_error">
+                    <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error"></mat-icon>
+                    Une erreur est survenue, veuillez recharger la page.
+                </div>
+            </div>
+        </ng-template>
 
         <ng-template #contenu>
 

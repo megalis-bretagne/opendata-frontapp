@@ -28,7 +28,7 @@ export class BudgetDisponiblesLoadSuccessAction implements Action {
 }
 export class BudgetDisponiblesLoadFailureAction implements Action {
     public readonly type = DonneesBudgetairesDisponiblesActionType.LoadFailure;
-    constructor(public siren: Siren, public error: any) {}
+    constructor(public siren: Siren, public error: any) { }
 }
 
 export type DonneesBudgetairesDisponiblesAction = BudgetDisponiblesInitAction
