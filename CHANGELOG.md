@@ -6,6 +6,8 @@ Basé sur [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [unreleased]
 
+## [1.0.14]
+
 - Budget: ajout du support des CFU
 - Budget: gestion d'erreur améliorée pour les collectivités sans données budgetaires.
 - N'affiche pas le choix de nomenclature si ce dernier n'est pas disponible.
