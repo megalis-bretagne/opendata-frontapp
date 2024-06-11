@@ -1,12 +1,12 @@
 import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatSort, Sort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatLegacyTableDataSource as MatTableDataSource} from '@angular/material/legacy-table';
 import {select, Store} from '@ngrx/store';
-import {MatPaginator} from '@angular/material/paginator';
+import {MatLegacyPaginator as MatPaginator} from '@angular/material/legacy-paginator';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {DataDialog, Publication} from '../../models/publication';
 import {GlobalState, selectAuthState} from '../../store/states/global.state';
-import {MatDialog} from '@angular/material/dialog';
+import {MatLegacyDialog as MatDialog} from '@angular/material/legacy-dialog';
 
 
 import {

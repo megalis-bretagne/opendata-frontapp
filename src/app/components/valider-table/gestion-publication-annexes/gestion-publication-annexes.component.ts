@@ -1,16 +1,16 @@
 import { Component, inject, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PieceJointe, Publication } from 'src/app/models/publication';
-import { MatTableModule } from '@angular/material/table';
-import { MatDialogRef, MAT_DIALOG_DATA, _MatDialogBase } from '@angular/material/dialog';
+import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
+import { MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, _MatLegacyDialogBase as _MatDialogBase } from '@angular/material/legacy-dialog';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatButtonModule } from '@angular/material/button';
+import { MatLegacyCheckboxModule as MatCheckboxModule } from '@angular/material/legacy-checkbox';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 import { PublicationPjsPayload, PublicationsService } from 'src/app/services/publications-service';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatLegacyProgressBarModule as MatProgressBarModule } from '@angular/material/legacy-progress-bar';
 import { finalize } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from '@angular/material/legacy-progress-spinner';
 import { ValiderTableService } from '../valider-table.service';
 
 export interface GestionPublicationAnnexesDialogComponent_DialogData {

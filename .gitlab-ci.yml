@@ -1,13 +1,15 @@
 include:
-  - 'https://gitlab.sib.fr/megalis/extraction-data-stack/raw/master/.docker-template.yml'
+  - project: 'megalis/extraction-data-stack'
+    ref: master
+    file: .docker-template.yml
 
 before_script:
-  - wget https://gitlab.sib.fr/megalis/extraction-data-stack/raw/master/init.sh
-  - source ./init.sh
   - export http_proxy=http://pro01.sib.fr:3128
   - export https_proxy=http://pro01.sib.fr:3128
   - export no_proxy=sib.fr
-  - apk update && apk add sshpass openssh-client bash
+  - apk update && apk add git sshpass openssh-client bash
+  - git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.sib.fr/megalis/extraction-data-stack stack
+  - source ./stack/init.sh
 
 stages:
   - build-angular
@@ -18,15 +20,15 @@ build angular app:
   before_script:
     - export http_proxy=http://pro01.sib.fr:3128
     - export https_proxy=http://pro01.sib.fr:3128
-  image: node:16.13-buster
+  image: node:20.14-alpine
   stage: build-angular
   script:
-    - npm install --force --silent
+    - npm ci --cache ${CI_PROJECT_DIR?}/.npm --prefer-offline --quiet
     - ./node_modules/.bin/ng build --configuration=production --aot --project=opendata-app
   cache:
-    key: ${CI_COMMIT_REF_SLUG}
+    key: ${CI_PROJECT_ID}-npm
     paths:
-      - node_modules/
+      - ${CI_PROJECT_DIR}/.npm/
   artifacts:
     expire_in: 15 mins
     paths:

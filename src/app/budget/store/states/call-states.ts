@@ -1,9 +1,11 @@
+import { HttpErrorResponse } from "@angular/common/http"
+
 export const enum LoadingState {
     LOADING = 'LOADING',
     LOADED = 'LOADED',
 }
 export interface ErrorState {
-    errorMsg: string
+    errorMsg: string | HttpErrorResponse
 }
 
 export type CallState = LoadingState | ErrorState
@@ -18,7 +20,7 @@ export function copy_and_insert(old: CallStates, k: string|number, v: CallState)
     return cloned
 }
 
-export function getError(callState: CallState): string | null {
+export function getError(callState: CallState): string | HttpErrorResponse | null {
 
     if (isInError(callState)) {
         return (callState as ErrorState).errorMsg
@@ -28,4 +30,14 @@ export function getError(callState: CallState): string | null {
 
 export function isInError(callState: CallState): boolean {
     return callState !== undefined && (callState as ErrorState).errorMsg !== undefined
+}
+
+export function isNotFound(callState: CallState): boolean {
+    
+    const es = (callState as ErrorState)
+    const errResponse = (es?.errorMsg as unknown as HttpErrorResponse)
+
+    return es !== undefined 
+        && errResponse !== undefined
+        && errResponse?.status == 404;
 }

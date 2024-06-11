@@ -4,6 +4,7 @@ export enum EtapeBudgetaire {
   BUDGET_SUPPLEMENTAIRE = "supplémentaire",
   DECISION_MODIFICATIVE = "modificative",
   COMPTE_ADMINISTRATIF = "administratif",
+  COMPTE_FINANCIER_UNIQUE = "cfu",
 }
 
 export class EtapeBudgetaireUtil {
@@ -22,6 +23,8 @@ export class EtapeBudgetaireUtil {
         return EtapeBudgetaire.DECISION_MODIFICATIVE;
       case "compte administratif":
         return EtapeBudgetaire.COMPTE_ADMINISTRATIF;
+      case "CFU":
+        return EtapeBudgetaire.COMPTE_FINANCIER_UNIQUE;
       default:
         throw new Error(`${etape_api} n'est pas une étape valide`)
     }
